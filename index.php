@@ -43,8 +43,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Login</title>
-    <link rel="stylesheet" href="css/css1.css">
+    <title>Iniciar Sesión </title>
+   <link rel="stylesheet" href="css/css1.css">
 </head>
 <body>
     <div class="login-container">
