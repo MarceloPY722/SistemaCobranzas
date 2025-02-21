@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Feb 20, 2025 at 01:18 AM
+-- Generation Time: Feb 21, 2025 at 12:17 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -44,7 +44,8 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`id`, `usuario_id`, `nombre`, `identificacion`, `direccion`, `telefono`, `email`, `created_at`, `imagen`) VALUES
-(2, 7, 'Ariel', '9426996', 'San Martin Casi Bolivar', '0971631959', 'ariel@gmail.com', '2025-02-17 01:00:40', 'default.png');
+(2, 7, 'Ariel', '9426996', 'San Martin Casi Bolivar', '0971631959', 'ariel@gmail.com', '2025-02-17 01:00:40', 'default.png'),
+(3, 8, 'Marcelo7', '4589552', 'San Marti', '0995648334', 'marceloariel862@gmail.com', '2025-02-20 01:50:11', 'default.png');
 
 -- --------------------------------------------------------
 
@@ -207,7 +208,8 @@ INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`,
 (3, 3, 'Carlos López', 'cliente@dominio.com', 'e4498123470460ded4fb56e7b83146290f0260c88bdd1fe09b335b351b5b5a95', 1, '2025-02-16 23:50:08', 'default.png'),
 (5, 1, 'Admin Principal', 'admin@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1, '2025-02-17 00:31:35', 'default.png'),
 (6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 00:37:57', 'default.png'),
-(7, 3, 'Ariel', 'ariel@gmail.com', '$2y$10$gCH7UkreWl9sJzzNPMvIWODmqdgJsJRmRb58fV0IgXVgWK8Vj9fc2', 1, '2025-02-17 01:00:40', 'default.png');
+(7, 3, 'Ariel', 'ariel@gmail.com', '$2y$10$gCH7UkreWl9sJzzNPMvIWODmqdgJsJRmRb58fV0IgXVgWK8Vj9fc2', 1, '2025-02-17 01:00:40', 'default.png'),
+(8, 3, 'Marcelo7', 'marceloariel862@gmail.com', '$2y$10$TFH2/34NmfzSb721KAkAHOytCYGnSKvUVLHvcZnOe41gDcG1JSGQu', 1, '2025-02-20 01:50:11', '2625eedc727819d507f49415fe8c3a4e.png');
 
 --
 -- Indexes for dumped tables
@@ -296,7 +298,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `deudas`
@@ -350,7 +352,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- Constraints for dumped tables
