@@ -1,0 +1,106 @@
+   /* Reinicio básico y estilos globales */
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    min-height: 100vh;
+    background: #f4f4f4;
+}
+/* Estilos para el sidebar */
+.sidebar {
+    background: #2c3e50;
+    color: #ecf0f1;
+    min-width: 250px;
+    max-width: 250px;
+    transition: all 0.3s;
+    overflow: hidden;
+}
+.sidebar.collapsed {
+    min-width: 80px;
+    max-width: 80px;
+}
+.sidebar .toggle-btn {
+    background: #1abc9c;
+    border: none;
+    width: 100%;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+}
+.sidebar nav ul {
+    list-style: none;
+}
+.sidebar nav ul li {
+    padding: 15px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+.sidebar nav ul li:hover {
+    background: #34495e;
+}
+.sidebar nav ul li i {
+    font-size: 20px;
+    margin-right: 10px;
+    width: 30px;
+    text-align: center;
+    display: inline-block;
+}
+.sidebar.collapsed nav ul li span {
+    display: none;
+}
+/* Encabezado (header) */
+.header {
+    width: 100%;
+    background: #fff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+}
+/* Área principal */
+.main-content {
+    flex: 1;
+    padding: 20px;
+}
+.cards {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.card {
+    background: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    flex: 1;
+    min-width: 250px;
+    text-align: center;
+    box-shadow: 0px 1px 5px rgba(0,0,0,0.1);
+}
+/* Estilos para los gráficos */
+.card canvas {
+    max-width: 150px !important; /* Tamaño reducido */
+    height: 150px !important; /* Tamaño reducido */
+    transition: all 0.3s;
+    margin: 0 auto; /* Centrar el gráfico */
+}
+/* Cuando el sidebar está contraído */
+.sidebar.collapsed + div .card canvas {
+    width: 150px !important; /* Mantener el tamaño reducido */
+    height: 150px !important; /* Mantener el tamaño reducido */
+}
+/* Diseño responsivo */
+@media (max-width: 768px) {
+    .cards {
+        flex-direction: column;
+    }
+    .sidebar.collapsed + div .card canvas {
+        width: 150px !important; /* Mantener el tamaño reducido */
+        height: 150px !important; /* Mantener el tamaño reducido */
+    }
+}
