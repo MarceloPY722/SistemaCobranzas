@@ -1,17 +1,13 @@
 <?php include 'include/header.php'; ?>
+<?php include 'include/sidebar.php';?>
 <?php
-// admin.php
-
-// Iniciar sesión para obtener datos del usuario
 session_start();
 
-// Verificar si el usuario está autenticado
 if (!isset($_SESSION['user_id'])) {
-    header("Location: login.php"); // Redirigir al login si no hay sesión
+    header("Location: ./index.php"); 
     exit();
 }
 
-// Parámetros de conexión a la base de datos (ajusta estos valores)
 $host     = "localhost";
 $dbname   = "sistema_cobranzas";
 $db_user  = "root";
@@ -55,22 +51,6 @@ $users_inactive   = 20; // Ejemplo: 20% de usuarios inactivos
 
   
 
-    <!-- Sidebar con opción de contraer -->
-    <div class="sidebar" id="sidebar">
-        <button class="toggle-btn" id="toggleBtn">☰</button>
-        <nav>
-            <ul>
-               <li onclick="navigate('inicio')">
-               <i class="bi bi-house"></i><span>Inicio</span> 
-                <li onclick="navigate('usuarios')">
-                    <i class="bi bi-people"></i><span>Usuarios</span>
-                </li>
-                <li onclick="navigate('configuracion')">
-                    <i class="bi bi-gear"></i><span>Configuración</span>
-                </li>
-            </ul>
-        </nav>
-    </div>
 
     <div style="flex: 1; display: flex; flex-direction: column;">
         <!-- Header que muestra el nombre del usuario -->

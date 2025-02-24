@@ -247,7 +247,7 @@ if (isset($_GET['action']) && $_GET['action'] === 'delete') {
         .close-modal {
             position: absolute;
             top: 10px;
-            right: 10px;
+            right: 10px; 
             font-size: 24px;
             color: #333;
             cursor: pointer;

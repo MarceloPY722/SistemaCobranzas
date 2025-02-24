@@ -11,48 +11,7 @@ body {
     background: #f4f4f4;
 }
 /* Estilos para el sidebar */
-.sidebar {
-    background: #2c3e50;
-    color: #ecf0f1;
-    min-width: 250px;
-    max-width: 250px;
-    transition: all 0.3s;
-    overflow: hidden;
-}
-.sidebar.collapsed {
-    min-width: 80px;
-    max-width: 80px;
-}
-.sidebar .toggle-btn {
-    background: #1abc9c;
-    border: none;
-    width: 100%;
-    padding: 10px;
-    cursor: pointer;
-    text-align: center;
-}
-.sidebar nav ul {
-    list-style: none;
-}
-.sidebar nav ul li {
-    padding: 15px;
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-}
-.sidebar nav ul li:hover {
-    background: #34495e;
-}
-.sidebar nav ul li i {
-    font-size: 20px;
-    margin-right: 10px;
-    width: 30px;
-    text-align: center;
-    display: inline-block;
-}
-.sidebar.collapsed nav ul li span {
-    display: none;
-}
+
 /* Encabezado (header) */
 .header {
     width: 100%;
