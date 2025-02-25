@@ -1,114 +1,126 @@
-<div class="sidebar" id="sidebar">
-        <button class="toggle-btn" id="toggleBtn">☰</button>
-        <nav>
-            <ul>
-                <li>
-                    <i class="bi bi-house"></i><span>Inicio</span> 
-                </li>
-                <li class="dropdown">
-                    <div class="dropdown-header">
-                        <i class="bi bi-people"></i><span>Usuarios</span>
-                    </div>
-                    <ul class="submenu">
-                        <li> 
-                            <a href="usuarios/agregar.php">
-                                <i class="bi bi-person-add"></i>
-                                <span>Agregar</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="usuarios/modificar.php">
-                                <i class="bi bi-person-gear"></i>
-                                <span>Modificar</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="usuarios/eliminar.php">
-                                <i class="bi bi-person-x"></i>
-                                <span>Eliminar</span>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-                <li>
-                    <a href="../logout.php" style="color:#fff">
-                        <i class="bi bi-gear"></i>
-                        <span class="title">Cerrar Sesion</span>
-                    </a>
-                </li>
+<link rel="stylesheet" href="/sistemacobranzas/admin/assets/css/sidebar.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<div class="sidebar">
+    <ul class="menu">
+        <li class="menu-item">
+            <a href="#" class="menu-link">
+                <i class="bi bi-house-door"></i> Inicio
+            </a>
+        </li>
+        
+        <li class="menu-item">
+            <a href="#" class="menu-link">
+                <i class="bi bi-people"></i> Clientes
+                <span class="toggle-icon">&#9654;</span>
+            </a>
+            <ul class="submenu">
+                <li><a href="#"><i class="bi bi-person-plus"></i> Agregar Cliente</a></li>
+                <li><a href="#"><i class="bi bi-person-gear"></i> Modificar Cliente</a></li>
+                <li><a href="#"><i class="bi bi-person-x"></i> Eliminar Cliente</a></li>
             </ul>
-        </nav>
-    </div>
+      </li>
+      
+      <!-- Deudas -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-cash-stack"></i> Deudas
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Lista de Deudas</a></li>
+          <li><a href="#">Registrar Deuda</a></li>
+          <li><a href="#">Eliminar Deuda</a></li>
+        </ul>
+      </li>
+      
+      <!-- Pagos -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-credit-card"></i> Pagos
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Historial de Pagos</a></li>
+          <li><a href="#">Registrar Pago</a></li>
+          <li><a href="#">Cancelar Pago</a></li>
+        </ul>
+      </li>
+      
+      <!-- Reclamos -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-exclamation-triangle"></i> Reclamos
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Gestión de Reclamos</a></li>
+          <li><a href="#">Seguimiento de Reclamos</a></li>
+          <li><a href="#">Cerrar Reclamo</a></li>
+        </ul>
+      </li>
+      
+      <!-- Documentos -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-folder2"></i> Documentos
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Archivos Adjuntos</a></li>
+          <li><a href="#">Subir Documento</a></li>
+          <li><a href="#">Eliminar Documento</a></li>
+        </ul>
+      </li>
+      
+      <!-- Configuración -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-gear-fill"></i> Configuración
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Políticas de Interés</a></li>
+          <li><a href="#">Gestión de Usuarios</a></li>
+          <li><a href="#">Preferencias</a></li>
+        </ul>
+      </li>
+      
+      <!-- Reportes -->
+      <li class="menu-item">
+        <a href="#" class="menu-link">
+          <i class="bi bi-bar-chart"></i> Reportes
+          <span class="toggle-icon">&#9654;</span>
+        </a>
+        <ul class="submenu">
+          <li><a href="#">Reporte General</a></li>
+          <li><a href="#">Reporte de Ventas</a></li>
+          <li><a href="#">Reporte de Clientes</a></li>
+        </ul>
+      </li>
+      
+      <!-- Cerrar Sesión -->
+      <li class="menu-item">
+        <a href="../logout.php" class="menu-link">
+          <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
+        </a>
+      </li>
+    </ul>
+  </div>
 
-    <style>
-        .sidebar {
-            background: #2c3e50;
-            color: #ecf0f1;
-            min-width: 250px;
-            max-width: 250px;
-            transition: all 0.3s;
-            overflow: hidden;
+  <script>
+    // Agrega funcionalidad para mostrar/ocultar el submenú al hacer clic
+    document.querySelectorAll('.menu-link').forEach(link => {
+      link.addEventListener('click', function(e) {
+        const submenu = this.nextElementSibling;
+        if (submenu && submenu.classList.contains('submenu')) {
+          e.preventDefault(); // Evita el comportamiento por defecto del enlace
+          // Alterna la clase 'active' en el elemento padre para mostrar/ocultar el submenú
+          this.parentElement.classList.toggle('active');
         }
-        .sidebar.collapsed {
-            min-width: 80px;
-            max-width: 80px;
-        }
-        .sidebar a {
-            text-decoration: none;
-            color: #ecf0f1;
-        }
-        .sidebar .toggle-btn {
-            background: #1abc9c;
-            border: none;
-            width: 100%;
-            padding: 10px;
-            cursor: pointer;
-            text-align: center;
-        }
-        .sidebar nav ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-        .sidebar nav ul li {
-            padding: 15px;
-            cursor: pointer;
-        }
-        .sidebar nav ul li:hover {
-            background: #34495e;
-        }
-        .sidebar nav ul li i {
-            font-size: 20px;
-            margin-right: 10px;
-            width: 30px;
-            text-align: center;
-            display: inline-block;
-        }
-        .dropdown-header {
-            display: flex;
-            align-items: center;
-        }
-        .submenu {
-            display: none;
-            padding-left: 20px;
-            margin-top: 15px;
-            margin-bottom: 5px;
-        }
-        .submenu li {
-            padding: 10px !important;
-        }
-        .dropdown.active .submenu {
-            display: block;
-        }
-        .sidebar.collapsed nav ul li span {
-            display: none;
-        }
-    </style>
-
-    <script>
-        document.querySelectorAll('.dropdown').forEach(dropdown => {
-            dropdown.addEventListener('click', function() {
-                this.classList.toggle('active');
-            });
-        });
-    </script>
+      });
+    });
+  </script>
+  
+</body>
+</html>
