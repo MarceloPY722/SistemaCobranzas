@@ -1,16 +1,12 @@
 <?php
-
-// Falta la verificacion de rol para que no entre otro que no sea admin
-
+session_start();
+if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard en Tiempo Real</title>
-  <!-- Chart.js desde CDN -->
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <style>
     body {
@@ -18,11 +14,10 @@
       font-family: Arial, sans-serif;
       background: #f0f2f5;
     }
-    /* Ajuste para que el contenido principal se ubique a la derecha del sidebar */
+   
     .main-content {
-      margin-left: 250px; /* Debe coincidir con el ancho del sidebar */
+      margin-left: 250px; 
       padding: 20px;
-      /* Para centrar el contenido en la sección principal */
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -31,25 +26,25 @@
       margin-bottom: 20px;
     }
 
-    /* Contenedor que agrupa los gráficos para ponerlos lado a lado */
+    
     .chart-row {
       display: flex;
-      justify-content: center; /* Centra los gráficos horizontalmente */
-      align-items: center;     /* Centra verticalmente (si fuera necesario) */
-      gap: 20px;               /* Separación entre gráficos */
-      flex-wrap: wrap;         /* Para que se ajusten si la pantalla es pequeña */
+      justify-content: center; 
+      align-items: center;    
+      gap: 20px;               
+      flex-wrap: wrap;       
       width: 100%;
-      max-width: 800px;        /* Ancho máximo del contenedor de gráficos */
+      max-width: 800px;       
     }
     .chart-container {
-      width: 200px;            /* Ajusta el ancho total del contenedor */
+      width: 200px;           
       background: #fff;
       padding: 10px;
       border-radius: 8px;
       box-shadow: 0 2px 5px rgba(0,0,0,0.1);
       text-align: center;
     }
-    /* Controla el tamaño máximo del canvas para que sean más pequeños */
+   
     .chart-container canvas {
       max-width: 150px;
       max-height: 150px;
@@ -59,20 +54,17 @@
 </head>
 <body>
 
-  <!-- Incluimos el sidebar -->
   <?php include('include/sidebar.php'); ?>
 
   <div class="main-content">
     <h1>Dashboard en Tiempo Real</h1>
     
-    <!-- Fila de gráficos -->
     <div class="chart-row">
-      <!-- Gráfico de Clientes -->
       <div class="chart-container">
         <canvas id="clientsChart"></canvas>
       </div>
 
-      <!-- Gráfico de Usuarios -->
+      
       <div class="chart-container">
         <canvas id="usersChart"></canvas>
       </div>
@@ -80,12 +72,12 @@
   </div>
 
   <script>
-    // Creamos el gráfico doughnut para Clientes (inicialmente 0)
+ 
     const ctxClients = document.getElementById('clientsChart').getContext('2d');
     const clientsChart = new Chart(ctxClients, {
       type: 'doughnut',
       data: {
-        labels: ['Clientes'], // Solo una categoría
+        labels: ['Clientes'], 
         datasets: [{
           label: 'Cantidad de Clientes',
           data: [0], // Inicialmente 0
@@ -147,6 +139,4 @@
     // Repetir cada 5 segundos
     setInterval(updateData, 5000);
   </script>
-  
-</body>
-</html>
+

@@ -56,7 +56,7 @@
 
   /* Submenú oculto por defecto */
   .submenu {
-    list-style: none;
+    list-style-type: disc;
     margin: 0;
     padding: 0;
     max-height: 0;

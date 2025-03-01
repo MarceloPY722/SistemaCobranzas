@@ -16,7 +16,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     
     if ($user && password_verify($password, $user['password'])) {
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['user_rol'] = $user['rol'];
+        $_SESSION['rol_id'] = $user['rol_id']; // Add this line
+        $_SESSION['role'] = $user['rol'];
         
         switch ($user['rol']) {
             case 'Administrador':
