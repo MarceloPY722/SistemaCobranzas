@@ -1,3 +1,6 @@
+<?php include('include/sidebar.php'); ?>
+
+
 <?php
 session_start();
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
@@ -54,8 +57,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 </head>
 <body>
 
-  <?php include('include/sidebar.php'); ?>
-
+ 
   <div class="main-content">
     <h1>Dashboard en Tiempo Real</h1>
     

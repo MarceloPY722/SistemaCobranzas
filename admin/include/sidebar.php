@@ -1,4 +1,4 @@
-<?php include('include/header.php');?>
+<?php include('header.php');?>
 <!-- sidebar_admin.php -->
 <div class="sidebar unified-sidebar">
   <ul class="menu">
@@ -79,7 +79,7 @@
 
     <!-- Salir -->
     <li class="menu-item">
-      <a href="logout.php" class="menu-link">
+      <a href="../../logout.php" class="menu-link">
         <i class="bi bi-box-arrow-right icono-menu"></i> Salir
       </a>
     </li>

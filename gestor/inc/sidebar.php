@@ -1,6 +1,4 @@
-<?php include('header.php');?>
-
-<!-- sidebar_gestor.php -->
+<!-- Remove the header include since it's already in index.php -->
 <div class="sidebar unified-sidebar">
   <ul class="menu">
     <!-- Inicio -->
@@ -122,7 +120,7 @@
 
     <!-- Salir -->
     <li class="menu-item">
-      <a href="logout.php" class="menu-link">
+      <a href="./../logout.php" class="menu-link">
         <i class="bi bi-box-arrow-right icono-menu"></i> Salir
       </a>
     </li>
@@ -138,9 +136,11 @@
     height: 100vh;
     position: fixed;
     left: 0;
+    top: 0;
     overflow-y: auto;
     padding: 15px 0;
     box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    z-index: 1000;
   }
   .sidebar.unified-sidebar .menu,
     .sidebar.unified-sidebar .submenu {
