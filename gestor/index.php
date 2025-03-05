@@ -1,8 +1,7 @@
 <?php
-// Verificar autenticación y rol
+
 require_once 'inc/auth.php';
 
-// Incluir conexión a la base de datos
 require_once 'inc/cnx.php';
 ?>
 

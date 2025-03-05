@@ -1,93 +1,150 @@
-<?php include('header.php');?>
-<!-- sidebar_admin.php -->
 <div class="sidebar unified-sidebar">
   <ul class="menu">
-    <!-- Usuarios -->
+    <!-- Inicio -->
+    <li class="menu-item">
+      <a href="/sistemacobranzas/admin/index.php" class="menu-link">
+        <i class="bi bi-house-door"></i> Inicio
+      </a>
+    </li>
+
+    <!-- Categoría 1 -->
     <li class="menu-item">
       <a href="#" class="menu-link">
-        <i class="bi bi-people-fill icono-menu"></i> Usuarios
+        <i class="bi bi-gear icono-menu"></i> Usuarios
         <span class="toggle-icon">&#9654;</span>
       </a>
       <ul class="submenu">
         <li>
-          <a href="#">
-            <i class="bi bi-person-plus"></i> Agregar Usuario
+          <a href="categoria1/subcategoria1.php">
+            <i class="bi bi-plus-circle"></i> 
+          Agregar Usuarios
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-pencil-square"></i> Modificar Usuario
+          <a href="categoria1/subcategoria2.php">
+            <i class="bi bi-pencil"></i> Eliminar Usuarios
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-person-x"></i> Eliminar Usuario
+          <a href="categoria1/subcategoria3.php">
+            <i class="bi bi-trash"></i> Subcategoría 3
           </a>
         </li>
       </ul>
     </li>
 
-    <!-- Configuración -->
+    <!-- Categoría 2 -->
     <li class="menu-item">
       <a href="#" class="menu-link">
-        <i class="bi bi-gear-fill icono-menu"></i> Configuración
+        <i class="bi bi-people icono-menu"></i> Categoría 2
         <span class="toggle-icon">&#9654;</span>
       </a>
       <ul class="submenu">
         <li>
-          <a href="#">
-            <i class="bi bi-tools"></i> Parámetros del Sistema
+          <a href="categoria2/subcategoria1.php">
+            <i class="bi bi-person-plus"></i> Subcategoría 1
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-shield-lock"></i> Seguridad
+          <a href="categoria2/subcategoria2.php">
+            <i class="bi bi-person-lines-fill"></i> Subcategoría 2
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-cloud-arrow-up"></i> Backups
+          <a href="categoria2/subcategoria3.php">
+            <i class="bi bi-person-x"></i> Subcategoría 3
           </a>
         </li>
       </ul>
     </li>
 
-    <!-- Reportes -->
+    <!-- Categoría 3 -->
     <li class="menu-item">
       <a href="#" class="menu-link">
-        <i class="bi bi-bar-chart-fill icono-menu"></i> Reportes
+        <i class="bi bi-file-earmark-text icono-menu"></i> Categoría 3
         <span class="toggle-icon">&#9654;</span>
       </a>
       <ul class="submenu">
         <li>
-          <a href="#">
-            <i class="bi bi-people"></i> Reporte de Usuarios
+          <a href="categoria3/subcategoria1.php">
+            <i class="bi bi-file-earmark-plus"></i> Subcategoría 1
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-graph-up"></i> Reporte de Actividad
+          <a href="categoria3/subcategoria2.php">
+            <i class="bi bi-file-earmark-check"></i> Subcategoría 2
           </a>
         </li>
         <li>
-          <a href="#">
-            <i class="bi bi-pc-display"></i> Reporte del Sistema
+          <a href="categoria3/subcategoria3.php">
+            <i class="bi bi-file-earmark-x"></i> Subcategoría 3
           </a>
         </li>
       </ul>
     </li>
 
-    <!-- Salir -->
+    <!-- Categoría 4 -->
     <li class="menu-item">
-      <a href="../../logout.php" class="menu-link">
+      <a href="#" class="menu-link">
+        <i class="bi bi-bar-chart icono-menu"></i> Categoría 4
+        <span class="toggle-icon">&#9654;</span>
+      </a>
+      <ul class="submenu">
+        <li>
+          <a href="categoria4/subcategoria1.php">
+            <i class="bi bi-graph-up"></i> Subcategoría 1
+          </a>
+        </li>
+        <li>
+          <a href="categoria4/subcategoria2.php">
+            <i class="bi bi-pie-chart"></i> Subcategoría 2
+          </a>
+        </li>
+        <li>
+          <a href="categoria4/subcategoria3.php">
+            <i class="bi bi-table"></i> Subcategoría 3
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    <!-- Categoría 5 -->
+    <li class="menu-item">
+      <a href="#" class="menu-link">
+        <i class="bi bi-gear-fill icono-menu"></i> Categoría 5
+        <span class="toggle-icon">&#9654;</span>
+      </a>
+      <ul class="submenu">
+        <li>
+          <a href="categoria5/subcategoria1.php">
+            <i class="bi bi-wrench"></i> Subcategoría 1
+          </a>
+        </li>
+        <li>
+          <a href="categoria5/subcategoria2.php">
+            <i class="bi bi-tools"></i> Subcategoría 2
+          </a>
+        </li>
+        <li>
+          <a href="categoria5/subcategoria3.php">
+            <i class="bi bi-sliders"></i> Subcategoría 3
+          </a>
+        </li>
+      </ul>
+    </li>
+
+    
+    <li class="menu-item">
+      <a href="../logout.php" class="menu-link">
         <i class="bi bi-box-arrow-right icono-menu"></i> Salir
       </a>
     </li>
   </ul>
 </div>
 
+<!-- Estilo y funcionalidad del sidebar -->
 <style>
-  .unified-sidebar {
+  .sidebar.unified-sidebar {
     width: 250px;
     min-width: 250px;
     background: #343a40;
@@ -95,19 +152,27 @@
     height: 100vh;
     position: fixed;
     left: 0;
+    top: 0;
     overflow-y: auto;
     padding: 15px 0;
     box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+    z-index: 1000;
   }
-  .unified-sidebar .menu {
-    list-style: none; /* Quita los puntos de la lista */
+  .sidebar.unified-sidebar .menu,
+  .sidebar.unified-sidebar .submenu {
+    list-style: none;
     padding: 0;
     margin: 0;
   }
-  .unified-sidebar .menu-item {
+  .sidebar.unified-sidebar .submenu {
+    padding-left: 20px;
+    display: none;
+    background: rgba(0, 0, 0, 0.1);
+  }
+  .sidebar.unified-sidebar .menu-item {
     position: relative;
   }
-  .unified-sidebar .menu-link {
+  .sidebar.unified-sidebar .menu-link {
     display: block;
     padding: 10px 20px;
     color: #ccc;
@@ -115,33 +180,29 @@
     font-size: 0.95em;
     transition: background 0.3s, color 0.3s;
   }
-  .unified-sidebar .menu-link:hover {
+  .sidebar.unified-sidebar .menu-link:hover {
     background: #495057;
     color: #fff;
   }
-  .unified-sidebar .icono-menu {
+  .sidebar.unified-sidebar .icono-menu {
     margin-right: 8px;
     font-size: 1em;
   }
-  .unified-sidebar .toggle-icon {
+  .sidebar.unified-sidebar .toggle-icon {
     float: right;
     transition: transform 0.3s;
   }
-  .unified-sidebar .submenu {
-    padding-left: 20px;
-    display: none; /* Oculto por defecto */
-  }
-  .unified-sidebar .menu-item.active > .menu-link {
+  .sidebar.unified-sidebar .menu-item.active > .menu-link {
     background: #764AF1;
     color: #fff;
   }
-  .unified-sidebar .menu-item.active .submenu {
-    display: block; /* Se muestra al hacer clic */
+  .sidebar.unified-sidebar .menu-item.active .submenu {
+    display: block;
   }
-  .unified-sidebar .menu-item.active .toggle-icon {
+  .sidebar.unified-sidebar .menu-item.active .toggle-icon {
     transform: rotate(90deg);
   }
-  .unified-sidebar .submenu li a {
+  .sidebar.unified-sidebar .submenu li a {
     display: block;
     padding: 8px 20px;
     color: #bbb;
@@ -149,18 +210,14 @@
     font-size: 0.9em;
     transition: background 0.3s;
   }
-  .unified-sidebar .submenu li a i {
-    margin-right: 6px; /* Espacio entre ícono y texto */
-  }
-  .unified-sidebar .submenu li a:hover {
+  .sidebar.unified-sidebar .submenu li a:hover {
     background: #5a5f69;
     color: #fff;
   }
 </style>
 
 <script>
-  // Funcionalidad para desplegar el submenú al hacer clic
-  document.querySelectorAll('.unified-sidebar .menu-link').forEach(link => {
+  document.querySelectorAll('.sidebar.unified-sidebar .menu-link').forEach(link => {
     link.addEventListener('click', function(e) {
       const submenu = this.nextElementSibling;
       if (submenu && submenu.classList.contains('submenu')) {

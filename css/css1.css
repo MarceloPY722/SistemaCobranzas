@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    background: #343a40; /* Color principal */
     height: 100vh;
     display: flex;
     justify-content: center;
@@ -14,35 +14,38 @@ body {
 }
 
 .login-container {
-    background-color: #fff;
-    padding: 40px;
+    background-color: #f8f9fa; /* Gris claro */
+    padding: 50px;
     border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     width: 100%;
     max-width: 400px;
     text-align: center;
 }
 
 .login-container h2 {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     color: #333;
+    font-size: 24px;
 }
 
 .login-container input[type="text"],
 .login-container input[type="password"] {
     width: 100%;
-    padding: 12px;
+    padding: 12px 15px;
     margin: 10px 0;
-    border: 2px solid #ddd;
+    border: 1px solid #ddd;
     border-radius: 5px;
     font-size: 16px;
     transition: border-color 0.3s ease;
+    background-color: #fff;
 }
 
 .login-container input[type="text"]:focus,
 .login-container input[type="password"]:focus {
     border-color: #6e8efb;
     outline: none;
+    box-shadow: 0 0 5px rgba(110, 142, 251, 0.5);
 }
 
 .login-container button {
@@ -55,28 +58,40 @@ body {
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .login-container button:hover {
     background-color: #5a7de2;
+    box-shadow: 0 4px 10px rgba(90, 125, 226, 0.5);
 }
 
 .error-message {
-    color: red;
+    color: #dc3545;
     margin-bottom: 15px;
+    font-size: 14px;
 }
 
 .signup-link {
     margin-top: 20px;
     font-size: 14px;
+    color: #6c757d;
 }
 
 .signup-link a {
     color: #6e8efb;
     text-decoration: none;
+    font-weight: bold;
 }
 
 .signup-link a:hover {
     text-decoration: underline;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+    .login-container {
+        padding: 30px;
+        max-width: 90%;
+    }
 }

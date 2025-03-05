@@ -40,14 +40,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 ?>
 
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <title>Iniciar Sesión </title>
    <link rel="stylesheet" href="css/css1.css">
-</head>
-<body>
+
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
         <?php if (isset($_GET['error'])): ?>
@@ -74,5 +68,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
     </script>
-</body>
-</html>
