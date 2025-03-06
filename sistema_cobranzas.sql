@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 03, 2025 at 05:42 PM
+-- Generation Time: Mar 06, 2025 at 09:21 AM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -42,7 +42,8 @@ CREATE TABLE `chats` (
 
 INSERT INTO `chats` (`id`, `reclamo_id`, `emisor_id`, `contenido`, `fecha_hora`, `tipo_emisor`) VALUES
 (1, 4, 9, 'Hola', '2025-03-03 15:41:50', 'administrador'),
-(2, 4, 9, 'por aqui hablaremos mejor', '2025-03-03 15:42:59', 'administrador');
+(2, 4, 9, 'por aqui hablaremos mejor', '2025-03-03 15:42:59', 'administrador'),
+(3, 4, 9, 'Aqui estoy', '2025-03-05 22:39:44', 'administrador');
 
 -- --------------------------------------------------------
 
@@ -206,7 +207,7 @@ CREATE TABLE `reclamos` (
 --
 
 INSERT INTO `reclamos` (`id`, `cliente_id`, `deuda_id`, `descripcion`, `estado`, `created_at`, `respuesta`, `respondido_por`) VALUES
-(4, 4, 1, 'El cliente afirma que realizó el pago el 15/11/2023 mediante transferencia bancaria, pero el sistema no lo refleja.', 'cerrado', '2025-03-03 12:21:15', 'Estaremos revisando su reclamo!!', 9);
+(4, 4, 1, 'El cliente afirma que realizó el pago el 15/11/2023 mediante transferencia bancaria, pero el sistema no lo refleja.', 'abierto', '2025-03-03 12:21:15', 'Estaremos revisando su reclamo!!', 9);
 
 -- --------------------------------------------------------
 
@@ -357,7 +358,7 @@ ALTER TABLE `usuarios`
 -- AUTO_INCREMENT for table `chats`
 --
 ALTER TABLE `chats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `clientes`
