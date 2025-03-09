@@ -1,3 +1,4 @@
+<?php include 'include/header.php'; ?>
 <?php
 session_start();
 require 'bd/conexion.php';

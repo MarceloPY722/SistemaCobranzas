@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesion</title>
+    <title>Registro Cliente</title>
     <link rel="stylesheet" href="css/css2.css">
-    <link rel="shortcut icon" href="img/contrasena.png" type="image/x-icon">
+    <link rel="shortcut icon" href="img/usuario.png" type="image/x-icon">
 </head>
 <body>
 </body>

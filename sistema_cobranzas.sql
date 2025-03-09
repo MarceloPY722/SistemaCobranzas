@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 06, 2025 at 09:21 AM
+-- Generation Time: Mar 09, 2025 at 06:37 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -70,7 +70,10 @@ CREATE TABLE `clientes` (
 INSERT INTO `clientes` (`id`, `usuario_id`, `nombre`, `identificacion`, `direccion`, `telefono`, `email`, `created_at`, `imagen`) VALUES
 (2, 7, 'Ariel', '9426996', 'San Martin Casi Bolivar', '0971631959', 'ariel@gmail.com', '2025-02-17 01:00:40', 'default.png'),
 (3, 8, 'Marcelo7', '4589552', 'San Marti', '0995648334', 'marceloariel862@gmail.com', '2025-02-20 01:50:11', 'default.png'),
-(4, 7, 'Carlos Martínez', '12345678', 'Av. San Martín 123', '0981122334', 'carlos.martinez@example.com', '2025-03-03 11:58:41', 'default.png');
+(4, 7, 'Carlos Martínez', '12345678', 'Av. San Martín 123', '0981122334', 'carlos.martinez@example.com', '2025-03-03 11:58:41', 'default.png'),
+(6, 12, 'Daniel Ascurra', '8888999', 'San Lorenzo', '0974598652', 'dani@gmail.com', '2025-03-09 18:06:40', 'default.png'),
+(7, 13, 'Diego Arguello', '2568922', 'San Marti', '0915748655', 'diego@gmail.com', '2025-03-09 18:24:33', 'default.png'),
+(8, 14, 'Ivan Benitez', '8123698', 'San Marti', '0971659032', 'ivan@gmail.com', '2025-03-09 18:32:13', 'default.png');
 
 -- --------------------------------------------------------
 
@@ -261,7 +264,10 @@ INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`,
 (7, 3, 'Ariel', 'ariel@gmail.com', '$2y$10$gCH7UkreWl9sJzzNPMvIWODmqdgJsJRmRb58fV0IgXVgWK8Vj9fc2', 1, '2025-02-17 01:00:40', 'default.png'),
 (8, 3, 'Marcelo7', 'marceloariel862@gmail.com', '$2y$10$TFH2/34NmfzSb721KAkAHOytCYGnSKvUVLHvcZnOe41gDcG1JSGQu', 1, '2025-02-20 01:50:11', '2625eedc727819d507f49415fe8c3a4e.png'),
 (9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 02:13:21', 'default.png'),
-(10, 3, 'Carlos Martínez', 'carlos.martinez@example.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-03 12:08:32', 'default.png');
+(10, 3, 'Carlos Martínez', 'carlos.martinez@example.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-03 12:08:32', 'default.png'),
+(12, 3, 'Daniel Ascurra', 'dani@gmail.com', '$2y$10$n2ZO9kDwUwSlZ5bpnJ0uuuPyZvgfva2zIOdZfgE5r7mivso/5HTDK', 1, '2025-03-09 18:06:40', 'default.png'),
+(13, 3, 'Diego Arguello', 'diego@gmail.com', '$2y$10$r7tIfUPVsnZwMRqL8lDiMu8IWk6KWp4ejpXK0JTmzIrvQTHzgL/yS', 1, '2025-03-09 18:24:33', 'bf5d8ae99231110c5170f690a2c5c6ff.jpg'),
+(14, 3, 'Ivan Benitez', 'ivan@gmail.com', '$2y$10$FDb73xzvI92r211C8cRM8eZ8/tG8xnl8Np5huE6ZPVOyFNlhCMyLm', 1, '2025-03-09 18:32:13', 'fotos-de-perfil-xj8jigxkai9jag4g.jpg');
 
 --
 -- Indexes for dumped tables
@@ -364,7 +370,7 @@ ALTER TABLE `chats`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT for table `deudas`
@@ -418,7 +424,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables

@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <title>Ver Clientes</title>
-    <!-- Bootstrap CSS -->
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -117,9 +112,7 @@
           }
       }
     </style>
-</head>
-<body>
-  <!-- Sidebar -->
+
   <div class="sidebar unified-sidebar">
     <ul class="menu">
       <!-- Inicio -->
@@ -142,7 +135,7 @@
             </a>
           </li>
           <li>
-            <a href="">
+            <a href="/sistemacobranzas/admin/sidebar/usuarios/ver_usuarios.php">
               <i class="bi bi-eye"></i> Ver Usuarios
             </a>
           </li>
@@ -256,5 +249,3 @@
       });
     });
   </script>
-</body>
-</html>

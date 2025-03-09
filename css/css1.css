@@ -6,7 +6,7 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: #343a40; /* Color principal */
+    background: white; /* Color principal */
     height: 100vh;
     display: flex;
     justify-content: center;
