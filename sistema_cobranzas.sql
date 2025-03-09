@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 09, 2025 at 06:37 PM
+-- Generation Time: Mar 09, 2025 at 11:22 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -36,15 +36,6 @@ CREATE TABLE `chats` (
   `tipo_emisor` enum('administrador','cliente') COLLATE utf8mb3_unicode_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
---
--- Dumping data for table `chats`
---
-
-INSERT INTO `chats` (`id`, `reclamo_id`, `emisor_id`, `contenido`, `fecha_hora`, `tipo_emisor`) VALUES
-(1, 4, 9, 'Hola', '2025-03-03 15:41:50', 'administrador'),
-(2, 4, 9, 'por aqui hablaremos mejor', '2025-03-03 15:42:59', 'administrador'),
-(3, 4, 9, 'Aqui estoy', '2025-03-05 22:39:44', 'administrador');
-
 -- --------------------------------------------------------
 
 --
@@ -68,12 +59,8 @@ CREATE TABLE `clientes` (
 --
 
 INSERT INTO `clientes` (`id`, `usuario_id`, `nombre`, `identificacion`, `direccion`, `telefono`, `email`, `created_at`, `imagen`) VALUES
-(2, 7, 'Ariel', '9426996', 'San Martin Casi Bolivar', '0971631959', 'ariel@gmail.com', '2025-02-17 01:00:40', 'default.png'),
-(3, 8, 'Marcelo7', '4589552', 'San Marti', '0995648334', 'marceloariel862@gmail.com', '2025-02-20 01:50:11', 'default.png'),
-(4, 7, 'Carlos Martínez', '12345678', 'Av. San Martín 123', '0981122334', 'carlos.martinez@example.com', '2025-03-03 11:58:41', 'default.png'),
-(6, 12, 'Daniel Ascurra', '8888999', 'San Lorenzo', '0974598652', 'dani@gmail.com', '2025-03-09 18:06:40', 'default.png'),
-(7, 13, 'Diego Arguello', '2568922', 'San Marti', '0915748655', 'diego@gmail.com', '2025-03-09 18:24:33', 'default.png'),
-(8, 14, 'Ivan Benitez', '8123698', 'San Marti', '0971659032', 'ivan@gmail.com', '2025-03-09 18:32:13', 'default.png');
+(9, 15, 'Ivan Benitez', '8123698', 'San Marti', '0971659032', 'ivan@gmail.com', '2025-03-09 19:44:22', 'fotos-de-perfil-xj8jigxkai9jag4g_1.jpg'),
+(10, 16, 'Marcelo Ariel Benitez', '8426996', 'San Martin Casi Bolivar', '0971631959', 'marceloariel722@gmail.com', '2025-03-09 20:07:39', '35f6716adc65383508eca7cfda5b5594.jpg');
 
 -- --------------------------------------------------------
 
@@ -92,13 +79,6 @@ CREATE TABLE `deudas` (
   `estado` enum('pendiente','pagado','vencido','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `deudas`
---
-
-INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `monto`, `saldo_pendiente`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
-(1, 4, 1, '1500000.00', '1500000.00', 'Deuda por préstamo no pagado', '2024-12-31', 'pendiente', '2025-03-03 12:12:46');
 
 -- --------------------------------------------------------
 
@@ -205,13 +185,6 @@ CREATE TABLE `reclamos` (
   `respondido_por` int DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Dumping data for table `reclamos`
---
-
-INSERT INTO `reclamos` (`id`, `cliente_id`, `deuda_id`, `descripcion`, `estado`, `created_at`, `respuesta`, `respondido_por`) VALUES
-(4, 4, 1, 'El cliente afirma que realizó el pago el 15/11/2023 mediante transferencia bancaria, pero el sistema no lo refleja.', 'abierto', '2025-03-03 12:21:15', 'Estaremos revisando su reclamo!!', 9);
-
 -- --------------------------------------------------------
 
 --
@@ -256,18 +229,11 @@ CREATE TABLE `usuarios` (
 --
 
 INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`, `created_at`, `imagen`) VALUES
-(1, 1, 'Juan Pérez', 'admin@dominio.com', 'df8d881c50a6916c7ee00baef250c9850a3172fdd003fa5f54db0678aa84185a', 1, '2025-02-16 23:50:08', 'default.png'),
-(2, 2, 'María García', 'gestor@dominio.com', '9c6d1957fcc63331ca2df0980f19bcf1401b727cb6c459d6ddeff209c2347767', 1, '2025-02-16 23:50:08', 'default.png'),
-(3, 3, 'Carlos López', 'cliente@dominio.com', 'e4498123470460ded4fb56e7b83146290f0260c88bdd1fe09b335b351b5b5a95', 1, '2025-02-16 23:50:08', 'default.png'),
-(5, 1, 'Admin Principal', 'admin@gmail.com', '03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4', 1, '2025-02-17 00:31:35', 'default.png'),
-(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 00:37:57', 'default.png'),
-(7, 3, 'Ariel', 'ariel@gmail.com', '$2y$10$gCH7UkreWl9sJzzNPMvIWODmqdgJsJRmRb58fV0IgXVgWK8Vj9fc2', 1, '2025-02-17 01:00:40', 'default.png'),
-(8, 3, 'Marcelo7', 'marceloariel862@gmail.com', '$2y$10$TFH2/34NmfzSb721KAkAHOytCYGnSKvUVLHvcZnOe41gDcG1JSGQu', 1, '2025-02-20 01:50:11', '2625eedc727819d507f49415fe8c3a4e.png'),
-(9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 02:13:21', 'default.png'),
-(10, 3, 'Carlos Martínez', 'carlos.martinez@example.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-03 12:08:32', 'default.png'),
-(12, 3, 'Daniel Ascurra', 'dani@gmail.com', '$2y$10$n2ZO9kDwUwSlZ5bpnJ0uuuPyZvgfva2zIOdZfgE5r7mivso/5HTDK', 1, '2025-03-09 18:06:40', 'default.png'),
-(13, 3, 'Diego Arguello', 'diego@gmail.com', '$2y$10$r7tIfUPVsnZwMRqL8lDiMu8IWk6KWp4ejpXK0JTmzIrvQTHzgL/yS', 1, '2025-03-09 18:24:33', 'bf5d8ae99231110c5170f690a2c5c6ff.jpg'),
-(14, 3, 'Ivan Benitez', 'ivan@gmail.com', '$2y$10$FDb73xzvI92r211C8cRM8eZ8/tG8xnl8Np5huE6ZPVOyFNlhCMyLm', 1, '2025-03-09 18:32:13', 'fotos-de-perfil-xj8jigxkai9jag4g.jpg');
+(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 00:37:57', 'usuario_6_1741560443.jpg'),
+(9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 02:13:21', 'usuario_9_1741560308.png'),
+(15, 3, 'Ivan Benitez', 'ivan@gmail.com', '$2y$10$kbNygzTyapWzUysy/yzySunbV0T6kdDlBV9W/kyo00h6vEEJh4pIK', 1, '2025-03-09 19:44:22', 'fotos-de-perfil-xj8jigxkai9jag4g_1.jpg'),
+(16, 3, 'Marcelo Ariel Benitez', 'marceloariel722@gmail.com', '$2y$10$c20QpLyGm1nnrl93Yr16huU5s5OSSX7icjw/V7l.b3I/t625Fu70a', 1, '2025-03-09 20:07:39', '35f6716adc65383508eca7cfda5b5594.jpg'),
+(17, 1, 'Administrador', 'Admin@gmail.com', '$2y$10$5C4ffiSK9KiYJXoSVK9F0edURthp0iWYNJ9tVUCXKD7tpRsO9sb3G', 1, '2025-03-09 22:12:00', 'cd9f1fc8fcbf5d15eb8b4809567c6294.png');
 
 --
 -- Indexes for dumped tables
@@ -370,7 +336,7 @@ ALTER TABLE `chats`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `deudas`
@@ -424,7 +390,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables
