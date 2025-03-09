@@ -1,54 +1,19 @@
 <?php
-
 require_once 'inc/auth.php';
-
 require_once 'inc/cnx.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Sistema de Cobranzas</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        .stat-card {
-            background: #fff;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            display: flex;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-        .stat-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 15px;
-        }
-        .badge {
-            font-size: 0.9em;
-            padding: 0.6em 0.8em;
-        }
-        main {
-            margin-left: 250px;
-            padding: 20px;
-        }
-        @media (max-width: 768px) {
-            main {
-                margin-left: 0;
-            }
-        }
-    </style>
-</head>
-<body>
-    <?php include 'inc/sidebar.php'; ?>
+<?php include 'inc/header.php'; ?>
+<?php include 'inc/sidebar.php'; ?>
+    <!-- Theme Toggle Switch -->
+    <div class="theme-toggle">
+        <label class="switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider">
+                <i class="bi bi-sun-fill"></i>
+                <i class="bi bi-moon-fill"></i>
+            </span>
+        </label>
+    </div>
 
     <main>
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -189,5 +154,4 @@ require_once 'inc/cnx.php';
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <script src="js/index.js"></script>

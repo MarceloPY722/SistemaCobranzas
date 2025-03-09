@@ -28,38 +28,23 @@ $conn->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        body {
-            display: flex;
-            margin: 0;
-            font-family: Arial, sans-serif;
-        }
-        .dashboard {
-            flex: 1;
-            padding: 20px;
-            padding-left: 350px;
-            height: 100vh;
-            overflow-y: auto;
-            box-sizing: border-box;
-        }
-        .charts {
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            height: 80%;
-        }
-        canvas {
-            max-width: 400px;
-            max-height: 300px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="css/css1.css">
 </head>
 <body>
     <!-- El sidebar ya está incluido desde include/sidebar.php -->
+    
+    <!-- Theme Toggle Switch -->
+    <div class="theme-toggle">
+        <label class="switch">
+            <input type="checkbox" id="themeToggle">
+            <span class="slider">
+                <i class="bi bi-sun-fill"></i>
+                <i class="bi bi-moon-fill"></i>
+            </span>
+        </label>
+    </div>
+    
     <main>
         <div class="dashboard">
             <h1>Dashboard</h1>
@@ -73,11 +58,46 @@ $conn->close();
     <script>
         var totalClientes = <?php echo $totalClientes; ?>;
         var totalUsuarios = <?php echo $totalUsuarios; ?>;
-
+        
+        // Theme Toggle Functionality
         document.addEventListener('DOMContentLoaded', function() {
+            const themeToggle = document.getElementById('themeToggle');
+            
+            // Check for saved theme preference or use preferred color scheme
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                themeToggle.checked = true;
+                updateChartsTheme(true);
+            }
+            
+            // Toggle theme when switch is clicked
+            themeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                    updateChartsTheme(true);
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                    updateChartsTheme(false);
+                }
+            });
+            
+            // Function to update chart colors based on theme
+            function updateChartsTheme(isDark) {
+                // Update chart text colors based on theme
+                window.clientesChart.options.plugins.legend.labels.color = isDark ? '#fff' : '#000';
+                window.usuariosChart.options.plugins.legend.labels.color = isDark ? '#fff' : '#000';
+                
+                // Update the charts to reflect the changes
+                window.clientesChart.update();
+                window.usuariosChart.update();
+            }
+            
             // Gráfico de clientes
             var ctxClientes = document.getElementById('clientesChart').getContext('2d');
-            new Chart(ctxClientes, {
+            window.clientesChart = new Chart(ctxClientes, {
                 type: 'doughnut',
                 data: {
                     labels: ['Total Clientes', 'Resto'],
@@ -85,8 +105,8 @@ $conn->close();
                         label: 'Clientes',
                         data: [totalClientes, 1000 - totalClientes], // Total y resto
                         backgroundColor: [
-                            'rgba(54, 162, 235, 0.2)', // Color para clientes
-                            'rgba(200, 200, 200, 0.2)'  // Color para el resto
+                            'rgba(54, 162, 235, 0.7)', // Color para clientes (increased opacity)
+                            'rgba(200, 200, 200, 0.3)'  // Color para el resto
                         ],
                         borderColor: [
                             'rgba(54, 162, 235, 1)',
@@ -98,7 +118,10 @@ $conn->close();
                 options: {
                     plugins: {
                         legend: {
-                            display: true
+                            display: true,
+                            labels: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#000'
+                            }
                         },
                         tooltip: {
                             callbacks: {
@@ -113,7 +136,7 @@ $conn->close();
 
             // Gráfico de usuarios
             var ctxUsuarios = document.getElementById('usuariosChart').getContext('2d');
-            new Chart(ctxUsuarios, {
+            window.usuariosChart = new Chart(ctxUsuarios, {
                 type: 'doughnut',
                 data: {
                     labels: ['Total Usuarios', 'Libre'],
@@ -121,8 +144,8 @@ $conn->close();
                         label: 'Usuarios',
                         data: [totalUsuarios, 1000 - totalUsuarios], // Total y resto
                         backgroundColor: [
-                            'rgba(255, 99, 132, 0.2)', // Color para usuarios
-                            'rgba(200, 200, 200, 0.2)'  // Color para el resto
+                            'rgba(255, 99, 132, 0.7)', // Color para usuarios (increased opacity)
+                            'rgba(200, 200, 200, 0.3)'  // Color para el resto
                         ],
                         borderColor: [
                             'rgba(255, 99, 132, 1)',
@@ -134,7 +157,10 @@ $conn->close();
                 options: {
                     plugins: {
                         legend: {
-                            display: true
+                            display: true,
+                            labels: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#000'
+                            }
                         },
                         tooltip: {
                             callbacks: {

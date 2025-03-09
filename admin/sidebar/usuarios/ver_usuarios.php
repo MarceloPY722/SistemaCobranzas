@@ -55,7 +55,7 @@ require_once 'inc/cnx.php';
                           <thead>
                               <tr>
                                   <th>#</th>
-                                  <th>Imagen</th>
+                                  <th>Perfil</th>
                                   <th>Nombre</th>
                                   <th>Email</th>
                                   <th>Rol</th>
@@ -66,9 +66,11 @@ require_once 'inc/cnx.php';
                           <tbody>
                               <?php
                               // Consulta para obtener los usuarios con sus roles
+                              // Excluimos a los usuarios con rol de cliente (rol_id = 3)
                               $query = "SELECT u.id, u.nombre, u.email, u.imagen, u.activo, r.nombre as rol_nombre 
                                         FROM usuarios u 
                                         JOIN roles r ON u.rol_id = r.id
+                                        WHERE r.id != 3
                                         ORDER BY u.id DESC";
                               $result = $conn->query($query);
 
@@ -173,7 +175,7 @@ require_once 'inc/cnx.php';
 
   <script>
     function editarUsuario(id) {
-        window.location.href = `editar_usuario.php?id=${id}`;
+        window.location.href = `modificar_usuarios.php?id=${id}`;
     }
 
     function eliminarUsuario(id) {

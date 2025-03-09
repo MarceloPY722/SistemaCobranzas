@@ -1,0 +1,121 @@
+body {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode {
+    background-color: #121a35;
+    color: #fff;
+}
+.stat-card {
+    background: #fff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+body.dark-mode .stat-card {
+    background: #1e2746;
+    color: #fff;
+}
+.stat-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 15px;
+}
+.badge {
+    font-size: 0.9em;
+    padding: 0.6em 0.8em;
+}
+main {
+    margin-left: 250px;
+    padding: 20px;
+}
+@media (max-width: 768px) {
+    main {
+        margin-left: 0;
+    }
+}
+
+/* Toggle Switch Styles */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+.switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 5px;
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+    z-index: 2;
+}
+input:checked + .slider {
+    background-color: #2196F3;
+}
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+.slider i {
+    color: white;
+    font-size: 16px;
+    z-index: 1;
+}
+
+/* Dark mode styles for card and table */
+body.dark-mode .card {
+    background-color: #1e2746;
+    color: #fff;
+}
+body.dark-mode .card-header {
+    background-color: #121a35;
+    border-color: #2a3356;
+}
+body.dark-mode .table {
+    color: #fff;
+}
+body.dark-mode .table-light {
+    background-color: #2a3356;
+    color: #fff;
+}
+body.dark-mode .table-hover tbody tr:hover {
+    background-color: #2a3356;
+    color: #fff;
+}
