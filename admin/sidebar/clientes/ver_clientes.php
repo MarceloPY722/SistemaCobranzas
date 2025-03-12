@@ -1,7 +1,7 @@
 <?php include 'inc/sidebar.php'; ?>
 
 <?php
-require_once 'inc/cnx.php';
+require_once '../cnx.php';
 ?>
 
   <!-- Contenido principal -->

@@ -1,7 +1,7 @@
 <?php include 'inc/sidebar.php'; ?>
 
 <?php
-require_once 'inc/cnx.php';
+require_once '../cnx.php';
 
 // Verificar si se proporcionó un ID de cliente
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {

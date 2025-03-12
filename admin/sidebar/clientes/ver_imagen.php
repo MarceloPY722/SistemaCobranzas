@@ -1,5 +1,5 @@
 <?php
-require_once 'inc/cnx.php';
+require_once '../cnx.php';
 
 if (!isset($_GET['id']) || empty($_GET['id'])) {
     header('Content-Type: image/png');

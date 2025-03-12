@@ -1,5 +1,5 @@
 <?php
-require_once 'inc/cnx.php';
+require_once '../cnx.php';
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Recibir datos del formulario

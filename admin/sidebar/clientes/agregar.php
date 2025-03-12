@@ -1,4 +1,4 @@
-<?php include 'inc/sidebar.php'; ?>
+<?php require_once '../cnx.php'; ?>
 
 <div class="content-wrapper">
     <div class="container mt-4">

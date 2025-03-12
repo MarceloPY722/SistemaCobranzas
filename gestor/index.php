@@ -4,7 +4,7 @@ require_once 'inc/cnx.php';
 ?>
 <?php include 'inc/header.php'; ?>
 <?php include 'inc/sidebar.php'; ?>
-    <!-- Theme Toggle Switch -->
+   
     <div class="theme-toggle">
         <label class="switch">
             <input type="checkbox" id="themeToggle">
@@ -20,7 +20,6 @@ require_once 'inc/cnx.php';
             <h1 class="h2">Panel de Control</h1>
         </div>
 
-        <!-- Estadísticas -->
         <div class="row">
             <?php
             try {

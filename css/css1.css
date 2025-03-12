@@ -6,8 +6,8 @@
 
 body {
     font-family: 'Arial', sans-serif;
-    background: white; /* Color principal */
-    height: 100vh;
+    background: linear-gradient(to bottom, black 75%, #000066 25%);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;

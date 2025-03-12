@@ -1,5 +1,5 @@
 <?php
-require_once 'inc/cnx.php';
+require_once '../cnx.php';
 session_start();
 
 // Verificar si se recibió un ID válido
