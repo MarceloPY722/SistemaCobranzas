@@ -11,7 +11,7 @@
       .sidebar.unified-sidebar {
         width: 250px;
         min-width: 250px;
-        background: #343a40;
+        background: linear-gradient(to bottom, #343a40, #212529);
         border-right: 1px solid #222;
         height: 100vh;
         position: fixed;
@@ -19,7 +19,7 @@
         top: 0;
         overflow-y: auto;
         padding: 15px 0;
-        box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        box-shadow: 2px 0 10px rgba(0,0,0,0.3);
         z-index: 1000;
       }
       .sidebar.unified-sidebar .menu,
@@ -31,101 +31,103 @@
       .sidebar.unified-sidebar .submenu {
         padding-left: 20px;
         display: none;
-        background: rgba(0, 0, 0, 0.1);
+        background: rgba(0, 0, 0, 0.15);
+        border-radius: 0 0 5px 5px;
+        margin-top: 2px;
+        overflow: hidden;
+        transition: all 0.3s ease;
       }
       .sidebar.unified-sidebar .menu-item {
         position: relative;
+        margin-bottom: 5px;
       }
       .sidebar.unified-sidebar .menu-link {
         display: block;
-        padding: 10px 20px;
-        color: #ccc;
-        text-decoration: none;
+        padding: 12px 20px;
+        color: #e9ecef;
+        text-decoration: none !important;
         font-size: 0.95em;
-        transition: background 0.3s, color 0.3s;
+        transition: all 0.3s ease;
+        border-radius: 5px;
+        margin: 0 8px;
       }
       .sidebar.unified-sidebar .menu-link:hover {
-        background: #495057;
+        background: rgba(255, 255, 255, 0.1);
         color: #fff;
+        transform: translateX(3px);
       }
       .sidebar.unified-sidebar .icono-menu {
-        margin-right: 8px;
-        font-size: 1em;
+        margin-right: 10px;
+        font-size: 1.1em;
+        width: 20px;
+        text-align: center;
       }
       .sidebar.unified-sidebar .toggle-icon {
         float: right;
         transition: transform 0.3s;
+        opacity: 0.7;
+        font-size: 0.8em;
+        margin-top: 4px;
       }
       .sidebar.unified-sidebar .menu-item.active > .menu-link {
         background: #764AF1;
         color: #fff;
+        box-shadow: 0 2px 5px rgba(118, 74, 241, 0.3);
       }
       .sidebar.unified-sidebar .menu-item.active .submenu {
         display: block;
       }
       .sidebar.unified-sidebar .menu-item.active .toggle-icon {
         transform: rotate(90deg);
+        opacity: 1;
+      }
+      .sidebar.unified-sidebar .submenu li {
+        margin: 5px 0;
       }
       .sidebar.unified-sidebar .submenu li a {
         display: block;
-        padding: 8px 20px;
-        color: #bbb;
-        text-decoration: none;
+        padding: 10px 15px;
+        color: #ced4da;
+        text-decoration: none !important;
         font-size: 0.9em;
-        transition: background 0.3s;
+        transition: all 0.3s ease;
+        border-radius: 4px;
+        margin: 0 5px;
       }
       .sidebar.unified-sidebar .submenu li a:hover {
-        background: #5a5f69;
+        background: rgba(255, 255, 255, 0.1);
         color: #fff;
+        transform: translateX(3px);
       }
-
-      /* Estilos del contenido */
-      .content-wrapper {
-          margin-left: 250px;
-          padding: 20px;
+      
+      /* Añadir un poco de espacio para el logo o título */
+      .sidebar-header {
+        padding: 15px 20px;
+        margin-bottom: 15px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+        text-align: center;
       }
-      .bg-custom {
-          background-color: #121a35;
-      }
-      .profile-image {
-          object-fit: cover;
-          border: 2px solid #121a35;
-      }
-      .btn-custom-edit {
-          background-color: #121a35;
-          color: white;
-          margin-right: 5px;
-      }
-      .btn-custom-edit:hover {
-          background-color: #1a2547;
-          color: white;
-      }
-      .btn-custom-delete {
-          background-color: #dc3545;
-          color: white;
-      }
-      .btn-custom-delete:hover {
-          background-color: #bb2d3b;
-          color: white;
-      }
-      @media print {
-          .sidebar, .btn-custom-edit, .btn-custom-delete {
-              display: none;
-          }
-          .content-wrapper {
-              margin-left: 0;
-          }
+      
+      .sidebar-header h4 {
+        color: #fff;
+        margin: 0;
+        font-size: 1.2em;
       }
     </style>
 </head>
 <body>
   <!-- Sidebar -->
   <div class="sidebar unified-sidebar">
+    <!-- Añadir un encabezado al sidebar -->
+    <div class="sidebar-header">
+      <h4>Sistema Cobranzas</h4>
+    </div>
+    
     <ul class="menu">
       <!-- Inicio -->
       <li class="menu-item">
         <a href="/sistemacobranzas/admin/index.php" class="menu-link">
-          <i class="bi bi-house-door"></i> Inicio
+          <i class="bi bi-house-door icono-menu"></i> Inicio
         </a>
       </li>
 

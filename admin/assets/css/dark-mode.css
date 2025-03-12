@@ -1,0 +1,152 @@
+/* Estilos para el modo oscuro */
+body.dark-mode {
+    background-color: #121a35;
+    color: #fff;
+}
+
+/* Tarjetas en modo oscuro */
+body.dark-mode .card {
+    background-color: #1e2746;
+    color: #fff;
+    border-color: #2a3356;
+}
+
+body.dark-mode .card-header {
+    background-color: #121a35;
+    border-color: #2a3356;
+}
+
+/* Tablas en modo oscuro */
+body.dark-mode .table {
+    color: #fff;
+}
+
+body.dark-mode .table-light,
+body.dark-mode .table-striped tbody tr:nth-of-type(odd) {
+    background-color: #2a3356;
+    color: #fff;
+}
+
+body.dark-mode .table-hover tbody tr:hover {
+    background-color: #2a3356;
+    color: #fff;
+}
+
+/* Formularios en modo oscuro */
+body.dark-mode .form-control {
+    background-color: #2a3356;
+    border-color: #3a4366;
+    color: #fff;
+}
+
+body.dark-mode .form-control:focus {
+    background-color: #2a3356;
+    color: #fff;
+}
+
+/* Botones en modo oscuro */
+body.dark-mode .btn-custom-edit {
+    background-color: #3a4366;
+}
+
+/* Sidebar en modo oscuro */
+body.dark-mode .sidebar.unified-sidebar {
+    background: #121a35;
+    border-right: 1px solid #0a0f20;
+}
+
+body.dark-mode .sidebar.unified-sidebar .menu-link {
+    color: #adb5bd;
+}
+
+body.dark-mode .sidebar.unified-sidebar .menu-link:hover {
+    background: #2a3356;
+    color: #fff;
+}
+
+body.dark-mode .sidebar.unified-sidebar .submenu {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+body.dark-mode .sidebar.unified-sidebar .menu-item.active > .menu-link {
+    background: #764AF1;
+}
+
+body.dark-mode .sidebar.unified-sidebar .submenu li a:hover {
+    background: #3a4366;
+}
+
+/* Estilos para el switch de modo oscuro */
+.dark-mode-switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    margin-left: 10px;
+}
+
+.dark-mode-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.dark-mode-switch .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 34px;
+}
+
+.dark-mode-switch .slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+.dark-mode-switch input:checked + .slider {
+    background-color: #764AF1;
+}
+
+.dark-mode-switch input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+.dark-mode-switch .slider i {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    transition: opacity 0.3s ease;
+}
+
+.dark-mode-switch .slider .bi-moon-fill {
+    right: 10px;
+    color: #fff;
+    opacity: 0;
+}
+
+.dark-mode-switch .slider .bi-sun-fill {
+    left: 10px;
+    color: #fff;
+    opacity: 1;
+}
+
+.dark-mode-switch input:checked + .slider .bi-moon-fill {
+    opacity: 1;
+}
+
+.dark-mode-switch input:checked + .slider .bi-sun-fill {
+    opacity: 0;
+}
