@@ -81,9 +81,6 @@
         transform: rotate(90deg);
         opacity: 1;
       }
-      .sidebar.unified-sidebar .submenu li {
-        margin: 5px 0;
-      }
       .sidebar.unified-sidebar .submenu li a {
         display: block;
         padding: 10px 15px;
@@ -99,7 +96,7 @@
         color: #fff;
         transform: translateX(3px);
       }
-      
+  
       /* Añadir un poco de espacio para el logo o título */
       .sidebar-header {
         padding: 15px 20px;
@@ -112,6 +109,51 @@
         color: #fff;
         margin: 0;
         font-size: 1.2em;
+      }
+  
+      /* Estilos del modo oscuro */
+      body.dark-mode {
+        background-color: #121a35;
+        color: #fff;
+      }
+  
+      body.dark-mode .card {
+        background-color: #1e2746;
+        border-color: #2a3356;
+      }
+  
+      body.dark-mode .card-title {
+        color: #fff;
+      }
+  
+      body.dark-mode .sidebar.unified-sidebar {
+        background: linear-gradient(to bottom, #121a35, #0a0f20);
+        border-right-color: #0a0f20;
+      }
+  
+      body.dark-mode .menu-link {
+        color: #adb5bd;
+      }
+  
+      body.dark-mode .menu-link:hover {
+        background: #2a3356;
+        color: #fff;
+      }
+  
+      /* Estilos del contenido */
+      .content-wrapper {
+        margin-left: 250px;
+        padding: 20px;
+        transition: background-color 0.3s ease;
+      }
+      
+      @media print {
+        .sidebar, .btn-custom-edit, .btn-custom-delete {
+          display: none;
+        }
+        .content-wrapper {
+          margin-left: 0;
+        }
       }
     </style>
 </head>
@@ -130,7 +172,7 @@
           <i class="bi bi-house-door icono-menu"></i> Inicio
         </a>
       </li>
-
+  
       <!-- Categoría: Usuarios -->
       <li class="menu-item">
         <a href="#" class="menu-link">
@@ -144,13 +186,13 @@
             </a>
           </li>
           <li>
-            <a href="">
+            <a href="/sistemacobranzas/admin/sidebar/usuarios/ver_usuarios.php">
               <i class="bi bi-eye"></i> Ver Usuarios
             </a>
           </li>
         </ul>
       </li>
-
+  
       <!-- Categoría: Clientes -->
       <li class="menu-item">
         <a href="#" class="menu-link">
@@ -170,55 +212,56 @@
           </li>
         </ul>
       </li>
-
-   
-
+  
+      <!-- Categoría: Estadísticas -->
       <li class="menu-item">
         <a href="#" class="menu-link">
-          <i class="bi bi-bar-chart icono-menu"></i> Estadisticas
+          <i class="bi bi-bar-chart icono-menu"></i> Estadísticas
           <span class="toggle-icon">&#9654;</span>
         </a>
         <ul class="submenu">
           <li>
-            <a href="categoria4/subcategoria1.php">
-              <i class="bi bi-graph-up"></i> Ver Estadisticas
+            <a href="/sistemacobranzas/admin/estadisticas/ver_estadisticas.php">
+              <i class="bi bi-graph-up"></i> Ver Estadísticas
             </a>
           </li>
           <li>
-            <a href="categoria4/subcategoria2.php">
+            <a href="/sistemacobranzas/admin/estadisticas/generar_reportes.php">
               <i class="bi bi-pie-chart"></i> Generar Reportes
             </a>
           </li>
         </ul>
       </li>
-
+  
+      <!-- Categoría: Configuración -->
       <li class="menu-item">
         <a href="#" class="menu-link">
-          <i class="bi bi-gear-fill icono-menu"></i> Configuracion
+          <i class="bi bi-gear-fill icono-menu"></i> Configuración
           <span class="toggle-icon">&#9654;</span>
         </a>
         <ul class="submenu">
           <li>
-            <a href="categoria5/subcategoria1.php">
-              <i class="bi bi-wrench"></i>
+            <a href="#" id="darkModeButton" class="d-flex align-items-center">
+              <i class="bi bi-moon-fill me-2"></i> <span id="darkModeText">Modo Oscuro</span>
             </a>
           </li>
           <li>
-            <a href="categoria5/subcategoria2.php">
-              <i class="bi bi-tools"></i>
+            <a href="/sistemacobranzas/admin/configuracion/perfil.php">
+              <i class="bi bi-person-circle"></i> Perfil
             </a>
           </li>
         </ul>
       </li>
-
+  
+      <!-- Salir -->
       <li class="menu-item">
-        <a href="../logout.php" class="menu-link">
+        <a href="/sistemacobranzas/logout.php" class="menu-link">
           <i class="bi bi-box-arrow-right icono-menu"></i> Salir
         </a>
       </li>
     </ul>
   </div>
-
+  
   <!-- JavaScript para el funcionamiento del sidebar -->
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -256,7 +299,36 @@
           }
         }
       });
+  
+      // Funcionalidad para el modo oscuro
+      const darkModeButton = document.getElementById('darkModeButton');
+      const darkModeText = document.getElementById('darkModeText');
+      
+      if (darkModeButton && darkModeText) {
+        // Verificar si hay una preferencia guardada
+        const isDarkMode = localStorage.getItem('darkMode') === 'true';
+        
+        // Aplicar modo oscuro si está guardado
+        if (isDarkMode) {
+          document.body.classList.add('dark-mode');
+          darkModeText.textContent = 'Modo Claro';
+        }
+        
+        // Evento para cambiar el modo
+        darkModeButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          if (document.body.classList.contains('dark-mode')) {
+            document.body.classList.remove('dark-mode');
+            darkModeText.textContent = 'Modo Oscuro';
+            localStorage.setItem('darkMode', 'false');
+          } else {
+            document.body.classList.add('dark-mode');
+            darkModeText.textContent = 'Modo Claro';
+            localStorage.setItem('darkMode', 'true');
+          }
+        });
+      }
     });
   </script>
-</body>
-</html>
+
