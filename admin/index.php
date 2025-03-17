@@ -19,8 +19,10 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Crecimiento de Usuarios</h5>
-            <canvas id="userGrowthChart"></canvas>
+            <h5 class="card-title">Crecimiento de Clientes</h5>
+            <div style="height: 300px;">
+              <canvas id="userGrowthChart"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -42,31 +44,48 @@
       fetch('get_user_stats.php')
         .then(response => response.json())
         .then(data => {
-          // Gráfico de crecimiento
+          // Gráfico de crecimiento de clientes
           const growthCtx = document.getElementById('userGrowthChart').getContext('2d');
           new Chart(growthCtx, {
             type: 'line',
             data: {
               labels: data.dates,
               datasets: [{
-                label: 'Nuevos Usuarios',
+                label: 'Nuevos Clientes',
                 data: data.counts,
                 borderColor: '#764AF1',
+                backgroundColor: 'rgba(118, 74, 241, 0.2)',
+                borderWidth: 2,
                 tension: 0.4,
-                fill: false
+                fill: true,
+                pointRadius: 0
               }]
             },
             options: {
               responsive: true,
+              maintainAspectRatio: false,
               interaction: {
                 intersect: false,
                 mode: 'index'
+              },
+              scales: {
+                x: {
+                  grid: {
+                    display: false
+                  }
+                },
+                y: {
+                  beginAtZero: true,
+                  grid: {
+                    color: 'rgba(0, 0, 0, 0.05)'
+                  }
+                }
               },
               plugins: {
                 tooltip: {
                   callbacks: {
                     label: function(context) {
-                      return `Usuarios registrados: ${context.raw}`;
+                      return `Clientes registrados: ${context.raw}`;
                     }
                   }
                 }
@@ -74,7 +93,7 @@
             }
           });
 
-          // Gráfico de roles
+          // Gráfico de roles (sin cambios)
           const rolesCtx = document.getElementById('userRolesChart').getContext('2d');
           new Chart(rolesCtx, {
             type: 'doughnut',
@@ -90,21 +109,12 @@
               }]
             },
             options: {
-              responsive: true,
-              plugins: {
-                legend: {
-                  position: 'bottom'
-                },
-                tooltip: {
-                  callbacks: {
-                    label: function(context) {
-                      return `${context.label}: ${context.raw} usuarios`;
-                    }
-                  }
-                }
-              }
+              responsive: true
             }
           });
+        })
+        .catch(error => {
+          console.error('Error fetching data:', error);
         });
     });
   </script>

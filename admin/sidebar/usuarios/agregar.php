@@ -1,4 +1,4 @@
-<?php include 'inc/sidebar.php'; ?>
+<?php include '../../../admin/include/sidebar.php'; ?>
 
 <div class="content-wrapper">
     <div class="container mt-4">

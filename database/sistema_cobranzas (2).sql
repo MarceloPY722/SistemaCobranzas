@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Mar 17, 2025 at 12:11 AM
+-- Generation Time: Mar 15, 2025 at 03:35 PM
 -- Server version: 8.0.30
 -- PHP Version: 8.1.10
 
@@ -47,7 +47,6 @@ CREATE TABLE `clientes` (
   `nombre` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `identificacion` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `direccion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `ubicacion_link` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `telefono` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
@@ -59,38 +58,28 @@ CREATE TABLE `clientes` (
 -- Dumping data for table `clientes`
 --
 
-INSERT INTO `clientes` (`id`, `nombre`, `identificacion`, `direccion`, `ubicacion_link`, `telefono`, `email`, `created_at`, `imagen`, `password`) VALUES
-(13, 'Carlos Rodríguez', '1255665', 'Av. Mcal. López 1234', NULL, '0961345678', 'carlos.rodríguez@gmail.com', '2025-03-17 14:15:41', 'default.png', NULL),
-(14, 'María González', '1456789', 'Av. España 567', NULL, '0971456789', 'maría.gonzález@gmail.com', '2025-03-17 03:00:00', 'default.png', NULL),
-(15, 'Juan Martínez', '1678901', 'Calle Palma 890', NULL, '0981567890', 'juan.martínez@gmail.com', '2025-03-17 23:47:32', 'default.png', NULL),
-(16, 'Ana Sánchez', '1890123', 'Av. Artigas 123', NULL, '0991678901', 'ana.sánchez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(17, 'Pedro Gómez', '2345678', 'Calle Estrella 456', NULL, '0962789012', 'pedro.gómez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(18, 'Laura Fernández', '2567890', 'Av. Mariscal Estigarribia 789', NULL, '0972890123', 'laura.fernández@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(19, 'Miguel López', '2789012', 'Calle Independencia 012', NULL, '0982901234', 'miguel.lópez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(20, 'Sofía Díaz', '3012345', 'Av. Sacramento 345', NULL, '0992012345', 'sofía.díaz@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(21, 'José Pérez', '3234567', 'Calle Colón 678', NULL, '0963123456', 'josé.pérez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(22, 'Lucía Torres', '3456789', 'Av. Aviadores del Chaco 901', NULL, '0973234567', 'lucía.torres@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(23, 'Roberto Ramírez', '3678901', 'Calle Yegros 234', NULL, '0983345678', 'roberto.ramírez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(24, 'Valentina Flores', '4012345', 'Av. Santísima Trinidad 567', NULL, '0993456789', 'valentina.flores@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(25, 'Daniel Acosta', '4234567', 'Calle Iturbe 890', NULL, '0964567890', 'daniel.acosta@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(26, 'Camila Benítez', '4567890', 'Av. Félix Bogado 123', NULL, '0974678901', 'camila.benítez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(27, 'Alejandro Romero', '5678901', 'Calle 14 de Mayo 456', NULL, '0984789012', 'alejandro.romero@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(28, 'Valeria Medina', '6123456', 'Av. Bernardino Caballero 789', NULL, '0994890123', 'valeria.medina@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(29, 'Gabriel Rojas', '6789012', 'Calle Antequera 012', NULL, '0961901234', 'gabriel.rojas@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(30, 'Natalia Ortiz', '7123456', 'Av. General Santos 345', NULL, '0971012345', 'natalia.ortiz@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(31, 'Sebastián Giménez', '7890123', 'Calle Azara 678', NULL, '0981123456', 'sebastián.giménez@gmail.com', '2025-03-15 14:15:41', 'default.png', NULL),
-(32, 'Isabella Núñez', '8456789', 'Av. Eusebio Ayala 901', NULL, '0991234567', 'isabella@gmail.com', '2025-03-15 14:15:41', '67d5b441a2250.png', '$2y$10$brQH3OaqebPGApU8D9HjxuX8X1rVn7paW8BAA.mSmNNIApefNwwu.'),
-(33, 'Marcelo Ariel Benitez', '8426996', 'San Martin Casi Bolivar\r\n', 'https://maps.app.goo.gl/wXF5gWGD2DnNGXR8A', '0971631959', 'marceloariel722@gmail.com', '2025-03-15 14:41:59', '67d591b74dc66.png', '$2y$10$9f/axWlK2x6jnJT.0QezjuViITYt84Fz3JUOixAgzZmyinI8QbjXS'),
-(34, 'Juan Pérez', '12345678', 'Calle 1, Asunción', 'https://maps.google.com/?q=-25.2637,-57.5759', '094086970', 'juan.pérez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(35, 'María López', '87654321', 'Avenida 2, Ciudad del Este', 'https://maps.google.com/?q=-25.5085,-54.6111', '099245273', 'maría.lópez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(36, 'Carlos Gómez', '45678912', 'Calle 3, Encarnación', 'https://maps.google.com/?q=-27.3306,-55.8667', '093965455', 'carlos.gómez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(37, 'Ana Martínez', '78912345', 'Avenida 4, Luque', 'https://maps.google.com/?q=-25.2753,-57.4845', '092091456', 'ana.martínez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(38, 'Pedro Rodríguez', '32165498', 'Calle 5, San Lorenzo', 'https://maps.google.com/?q=-25.3395,-57.5078', '098560918', 'pedro.rodríguez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(39, 'Laura Fernández', '98765432', 'Avenida 6, Fernando de la Mora', 'https://maps.google.com/?q=-25.3468,-57.5384', '096530223', 'laura.fernández@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(40, 'Luis González', '65432178', 'Calle 7, Lambaré', 'https://maps.google.com/?q=-25.3462,-57.6065', '096968362', 'luis.gonzález@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(41, 'Gabriela Díaz', '15975328', 'Avenida 8, Villa Elisa', 'https://maps.google.com/?q=-25.3645,-57.5669', '095251143', 'gabriela.díaz@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(42, 'Jorge Ramírez', '75395146', 'Calle 9, Mariano Roque Alonso', 'https://maps.google.com/?q=-25.1892,-57.5463', '095350629', 'jorge.ramírez@gmail.com', '2025-03-16 23:41:52', 'default.png', NULL),
-(43, 'Natalia Castro', '85274169', 'Avenida 10, Ñemby', 'https://maps.google.com/?q=-25.3949,-57.5352', '09999716', 'natalia.castro@gmail.com', '2025-03-16 23:41:52', '67d765326ee9d.png', '$2y$10$TLodIibguAyGI/5iIK/uNuXRlFgOmy71vTX/xtcevfJUv3Av58acW');
+INSERT INTO `clientes` (`id`, `nombre`, `identificacion`, `direccion`, `telefono`, `email`, `created_at`, `imagen`, `password`) VALUES
+(13, 'Carlos Rodríguez', '1255665', 'Av. Mcal. López 1234', '0961345678', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(14, 'María González', '1456789', 'Av. España 567', '0971456789', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(15, 'Juan Martínez', '1678901', 'Calle Palma 890', '0981567890', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(16, 'Ana Sánchez', '1890123', 'Av. Artigas 123', '0991678901', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(17, 'Pedro Gómez', '2345678', 'Calle Estrella 456', '0962789012', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(18, 'Laura Fernández', '2567890', 'Av. Mariscal Estigarribia 789', '0972890123', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(19, 'Miguel López', '2789012', 'Calle Independencia 012', '0982901234', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(20, 'Sofía Díaz', '3012345', 'Av. Sacramento 345', '0992012345', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(21, 'José Pérez', '3234567', 'Calle Colón 678', '0963123456', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(22, 'Lucía Torres', '3456789', 'Av. Aviadores del Chaco 901', '0973234567', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(23, 'Roberto Ramírez', '3678901', 'Calle Yegros 234', '0983345678', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(24, 'Valentina Flores', '4012345', 'Av. Santísima Trinidad 567', '0993456789', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(25, 'Daniel Acosta', '4234567', 'Calle Iturbe 890', '0964567890', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(26, 'Camila Benítez', '4567890', 'Av. Félix Bogado 123', '0974678901', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(27, 'Alejandro Romero', '5678901', 'Calle 14 de Mayo 456', '0984789012', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(28, 'Valeria Medina', '6123456', 'Av. Bernardino Caballero 789', '0994890123', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(29, 'Gabriel Rojas', '6789012', 'Calle Antequera 012', '0961901234', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(30, 'Natalia Ortiz', '7123456', 'Av. General Santos 345', '0971012345', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(31, 'Sebastián Giménez', '7890123', 'Calle Azara 678', '0981123456', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(32, 'Isabella Núñez', '8456789', 'Av. Eusebio Ayala 901', '0991234567', NULL, '2025-03-15 14:15:41', 'default.png', NULL),
+(33, 'Marcelo Ariel Benitez', '8426996', 'Sam Martin Casi Bolivar\r\n', '0971631959', 'marceloariel722@gmail.com', '2025-03-15 14:41:59', '67d591b74dc66.png', '$2y$10$9f/axWlK2x6jnJT.0QezjuViITYt84Fz3JUOixAgzZmyinI8QbjXS');
 
 -- --------------------------------------------------------
 
@@ -111,14 +100,6 @@ CREATE TABLE `deudas` (
   `estado` enum('pendiente','pagado','vencido','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `deudas`
---
-
-INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `notas`, `monto`, `fecha_emision`, `saldo_pendiente`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
-(1, 33, 2, '', '1000000.00', '2025-03-15', '1000000.00', 'CrediAgil', '2025-04-14', 'pendiente', '2025-03-15 16:50:15'),
-(5, 32, 3, '', '41000000.00', '2025-03-16', '41000000.00', 'CrediAgil San Lorenzo', '2026-04-15', 'pendiente', '2025-03-16 23:13:03');
 
 -- --------------------------------------------------------
 
@@ -149,14 +130,6 @@ CREATE TABLE `historial_deudas` (
   `detalle` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Dumping data for table `historial_deudas`
---
-
-INSERT INTO `historial_deudas` (`id`, `deuda_id`, `usuario_id`, `accion`, `detalle`, `created_at`) VALUES
-(1, 1, 6, 'creación', 'Creación de nueva deuda por monto $1,000,000.00', '2025-03-15 16:50:15'),
-(5, 5, 6, 'creación', 'Creación de nueva deuda por monto 41.000.000,00 Gs.', '2025-03-16 23:13:03');
 
 -- --------------------------------------------------------
 
@@ -268,18 +241,17 @@ CREATE TABLE `usuarios` (
   `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `activo` tinyint(1) DEFAULT '1',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `imagen` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default.png',
-  `last_activity` datetime DEFAULT CURRENT_TIMESTAMP
+  `imagen` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Dumping data for table `usuarios`
 --
 
-INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`, `created_at`, `imagen`, `last_activity`) VALUES
-(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 03:37:57', 'usuario_6_1741560443.jpg', '2025-03-16 21:09:44'),
-(9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 05:13:21', 'usuario_9_1741560308.png', '2025-03-15 22:12:53'),
-(17, 1, 'Administrador', 'Admin@gmail.com', '$2y$10$5C4ffiSK9KiYJXoSVK9F0edURthp0iWYNJ9tVUCXKD7tpRsO9sb3G', 1, '2025-03-10 01:12:00', 'cd9f1fc8fcbf5d15eb8b4809567c6294.png', '2025-03-15 22:12:53');
+INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`, `created_at`, `imagen`) VALUES
+(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 03:37:57', 'usuario_6_1741560443.jpg'),
+(9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 05:13:21', 'usuario_9_1741560308.png'),
+(17, 1, 'Administrador', 'Admin@gmail.com', '$2y$10$5C4ffiSK9KiYJXoSVK9F0edURthp0iWYNJ9tVUCXKD7tpRsO9sb3G', 1, '2025-03-10 01:12:00', 'cd9f1fc8fcbf5d15eb8b4809567c6294.png');
 
 --
 -- Indexes for dumped tables
@@ -381,13 +353,13 @@ ALTER TABLE `chats`
 -- AUTO_INCREMENT for table `clientes`
 --
 ALTER TABLE `clientes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT for table `deudas`
 --
 ALTER TABLE `deudas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `documentos`
@@ -399,7 +371,7 @@ ALTER TABLE `documentos`
 -- AUTO_INCREMENT for table `historial_deudas`
 --
 ALTER TABLE `historial_deudas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT for table `notificaciones`
@@ -435,7 +407,7 @@ ALTER TABLE `roles`
 -- AUTO_INCREMENT for table `usuarios`
 --
 ALTER TABLE `usuarios`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- Constraints for dumped tables

@@ -32,7 +32,7 @@ function check_auth($required_role) {
     if ($user['rol_id'] != $required_role) {
         
         $_SESSION['error_message'] = "Acceso denegado. No tiene el rol requerido.";
-        header("Location: ../unauthorized.php");
+        header("Location: ../error.php");
         exit;
     }
 

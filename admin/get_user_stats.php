@@ -10,16 +10,16 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Get user growth data
+    // Get client growth data instead of user growth
     $stmt = $pdo->query("
         SELECT DATE(created_at) as join_date, COUNT(*) as count 
-        FROM usuarios 
+        FROM clientes 
         GROUP BY DATE(created_at) 
         ORDER BY join_date
     ");
     $growth_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Get user roles data
+    // Keep the user roles data as is
     $stmt = $pdo->query("
         SELECT r.nombre, COUNT(u.id) as count
         FROM roles r

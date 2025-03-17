@@ -162,7 +162,7 @@
   <div class="sidebar unified-sidebar">
     <!-- Añadir un encabezado al sidebar -->
     <div class="sidebar-header">
-      <h4>Sistema Cobranzas</h4>
+      <h4>Sistema de Cobranzas</h4>
     </div>
     
     <ul class="menu">
@@ -221,13 +221,8 @@
         </a>
         <ul class="submenu">
           <li>
-            <a href="/sistemacobranzas/admin/estadisticas/ver_estadisticas.php">
-              <i class="bi bi-graph-up"></i> Ver Estadísticas
-            </a>
-          </li>
-          <li>
-            <a href="/sistemacobranzas/admin/estadisticas/generar_reportes.php">
-              <i class="bi bi-pie-chart"></i> Generar Reportes
+            <a href="/sistemacobranzas/admin/sidebar/estadisticas/estadisticas.php">
+              <i class="bi bi-graph-up"></i> Estadísticas en Tiempo Real
             </a>
           </li>
         </ul>
@@ -245,11 +240,7 @@
               <i class="bi bi-moon-fill me-2"></i> <span id="darkModeText">Modo Oscuro</span>
             </a>
           </li>
-          <li>
-            <a href="/sistemacobranzas/admin/configuracion/perfil.php">
-              <i class="bi bi-person-circle"></i> Perfil
-            </a>
-          </li>
+          
         </ul>
       </li>
   

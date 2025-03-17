@@ -1,5 +1,20 @@
-<?php require_once '../cnx.php'; ?>
+<?php 
+session_start();
+require_once '../cnx.php';
 
+// Existing auth check
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../../../index.php');
+    exit;
+}
+
+// Add activity update here
+$stmt = $conn->prepare("UPDATE usuarios SET last_activity = NOW() WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+
+include '../../../admin/include/sidebar.php';
+
+?>
 <div class="content-wrapper">
     <div class="container mt-4">
         <div class="card">
@@ -7,6 +22,38 @@
                 <h4 class="mb-0">Registro de Nuevo Cliente</h4>
             </div>
             <div class="card-body">
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="alert alert-danger">
+                        <?php 
+                        switch ($_GET['error']) {
+                            case 'campos_vacios':
+                                echo 'Por favor complete todos los campos requeridos.';
+                                break;
+                            case 'email_duplicado':
+                                echo 'El correo electrónico ya está registrado.';
+                                break;
+                            case 'identificacion_duplicada':
+                                echo 'La identificación ya está registrada.';
+                                break;
+                            case 'telefono_duplicado':
+                                echo 'El número de teléfono ya está registrado.';
+                                break;
+                            case 'extension_invalida':
+                                echo 'El formato de imagen no es válido. Use JPG, JPEG, PNG o GIF.';
+                                break;
+                            case 'subida_foto':
+                                echo 'Error al subir la imagen. ' . (isset($_GET['code']) ? 'Código: ' . $_GET['code'] : '');
+                                break;
+                            case 'db_error':
+                                echo 'Error en la base de datos: ' . (isset($_GET['message']) ? $_GET['message'] : 'Error desconocido');
+                                break;
+                            default:
+                                echo 'Ha ocurrido un error. Por favor intente nuevamente.';
+                        }
+                        ?>
+                    </div>
+                <?php endif; ?>
+
                 <form action="procesar_cliente.php" method="POST" enctype="multipart/form-data">
                     <div class="row">
                         <div class="col-md-6">
@@ -21,6 +68,7 @@
                             <div class="mb-3">
                                 <label for="password" class="form-label">Contraseña</label>
                                 <input type="password" class="form-control" id="password" name="password" required>
+                                <small class="form-text text-muted">La contraseña debe tener al menos 8 caracteres.</small>
                             </div>
                             <div class="mb-3">
                                 <label for="identificacion" class="form-label">Cedula</label>

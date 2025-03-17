@@ -1,7 +1,8 @@
-<?php include 'inc/sidebar.php'; ?>
+<?php include '../../../admin/include/sidebar.php'; ?>
 
 <?php
-require_once '../cnx.php';
+require_once '../../../admin/include/cnx.php';
+$conn = $pdo;
 ?>
 
   <!-- Contenido principal -->
@@ -63,12 +64,14 @@ require_once '../cnx.php';
                               $query = "SELECT c.id, c.identificacion, c.email, c.imagen, c.nombre 
                                         FROM clientes c 
                                         ORDER BY c.id DESC";
-                              $result = $conn->query($query);
-
-                              if (!$result) {
-                                  die("Error en la consulta: " . $conn->error);
+                              $stmt = $conn->prepare($query);
+                              $stmt->execute();
+                              
+                              if (!$stmt) {
+                                  die("Error en la consulta: " . $conn->errorInfo()[2]);
                               }
-                              while($row = $result->fetch_assoc()):
+                              
+                              while($row = $stmt->fetch()):
                               ?>
                               <tr>
                                   <td><?php echo $row['id']; ?></td>
@@ -110,14 +113,116 @@ require_once '../cnx.php';
       </div>
   </div>
 
+  <style>
+    /* Estilos generales */
+    .content-wrapper {
+        margin-left: 250px;
+        padding: 20px;
+    }
+    .bg-custom {
+        background-color: #121a35;
+    }
+    .btn-custom-info {
+        background-color: #0dcaf0;
+        color: white;
+    }
+    .btn-custom-info:hover {
+        background-color: #0bacda;
+        color: white;
+    }
+    .btn-custom-delete {
+        background-color: #dc3545;
+        color: white;
+    }
+    .btn-custom-delete:hover {
+        background-color: #bb2d3b;
+        color: white;
+    }
+    .profile-image {
+        object-fit: cover;
+        border: 2px solid #121a35;
+    }
+    
+    /* Estilos específicos para modo oscuro */
+    body.dark-mode .table {
+        color: #fff !important;
+    }
+    body.dark-mode .table td, 
+    body.dark-mode .table th {
+        color: #fff !important;
+    }
+    body.dark-mode .table-hover tbody tr:hover {
+        background-color: #2a3356 !important;
+        color: #fff !important;
+    }
+    
+    /* Estilos para impresión */
+    @media print {
+        .sidebar, .btn-custom-edit, .btn-custom-delete, .btn-custom-info {
+            display: none;
+        }
+        .content-wrapper {
+            margin-left: 0;
+            padding: 0;
+        }
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        .card {
+            border: none !important;
+        }
+        .card-header {
+            background-color: white !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd;
+        }
+        .table {
+            color: black !important;
+        }
+        .table td, .table th {
+            color: black !important;
+        }
+    }
+  </style>
+
   <script>
     // Funcionalidad para mostrar/ocultar submenús en el sidebar
-    document.querySelectorAll('.sidebar.unified-sidebar .menu-link').forEach(link => {
-      link.addEventListener('click', function(e) {
-        const submenu = this.nextElementSibling;
-        if (submenu && submenu.classList.contains('submenu')) {
-          e.preventDefault();
-          this.parentElement.classList.toggle('active');
+    document.addEventListener('DOMContentLoaded', function() {
+      // Seleccionar todos los elementos del menú que tienen submenús
+      const menuItems = document.querySelectorAll('.sidebar.unified-sidebar .menu-item');
+      
+      // Añadir evento de clic a cada elemento del menú
+      menuItems.forEach(function(item) {
+        const menuLink = item.querySelector('.menu-link');
+        
+        if (menuLink) {
+          menuLink.addEventListener('click', function(e) {
+            // Prevenir la navegación si el enlace es "#"
+            if (this.getAttribute('href') === '#') {
+              e.preventDefault();
+            }
+            
+            // Alternar la clase 'active' en el elemento del menú
+            item.classList.toggle('active');
+            
+            // Rotar el icono de flecha
+            const toggleIcon = this.querySelector('.toggle-icon');
+            if (toggleIcon) {
+              toggleIcon.style.transform = item.classList.contains('active') ? 'rotate(90deg)' : '';
+            }
+          });
+        }
+      });
+      
+      // Marcar como activo el menú actual basado en la URL
+      const currentPath = window.location.pathname;
+      document.querySelectorAll('.sidebar.unified-sidebar .submenu a').forEach(function(link) {
+        if (link.getAttribute('href') === currentPath) {
+          const parentItem = link.closest('.menu-item');
+          if (parentItem) {
+            parentItem.classList.add('active');
+          }
         }
       });
     });

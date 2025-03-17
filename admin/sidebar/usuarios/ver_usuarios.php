@@ -1,7 +1,9 @@
-<?php include 'inc/sidebar.php'; ?>
+<?php include '../../../admin/include/sidebar.php'; ?>
 
 <?php
-require_once 'inc/cnx.php';
+require_once '../../../admin/include/cnx.php';
+// Create $conn variable from the $pdo connection
+$conn = $pdo;
 ?>
 
   <!-- Contenido principal -->
@@ -45,7 +47,7 @@ require_once 'inc/cnx.php';
           <div class="card">
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Usuarios</h4>
-                  <button onclick="window.print()" class="btn btn-light">
+                  <button class="btn btn-light">
                       <i class="bi bi-printer"></i> Imprimir
                   </button>
               </div>
@@ -65,19 +67,19 @@ require_once 'inc/cnx.php';
                           </thead>
                           <tbody>
                               <?php
-                              // Consulta para obtener los usuarios con sus roles
-                              // Excluimos a los usuarios con rol de cliente (rol_id = 3)
                               $query = "SELECT u.id, u.nombre, u.email, u.imagen, u.activo, r.nombre as rol_nombre 
                                         FROM usuarios u 
                                         JOIN roles r ON u.rol_id = r.id
                                         WHERE r.id != 3
                                         ORDER BY u.id DESC";
-                              $result = $conn->query($query);
-
-                              if (!$result) {
-                                  die("Error en la consulta: " . $conn->error);
+                              $stmt = $conn->prepare($query);
+                              $stmt->execute();
+                              
+                              if (!$stmt) {
+                                  die("Error en la consulta: " . $conn->errorInfo()[2]);
                               }
-                              while($row = $result->fetch_assoc()):
+                              
+                              while($row = $stmt->fetch()):
                               ?>
                               <tr>
                                   <td><?php echo $row['id']; ?></td>
@@ -171,9 +173,73 @@ require_once 'inc/cnx.php';
             margin-left: 0;
         }
     }
+    
+    /* Estilos para modo oscuro */
+    body.dark-mode .table {
+        color: #fff !important;
+    }
+    body.dark-mode .table td, 
+    body.dark-mode .table th {
+        color: #fff !important;
+    }
+    body.dark-mode .table-hover tbody tr:hover {
+        background-color: #2a3356 !important;
+        color: #fff !important;
+    }
+    body.dark-mode .table-hover tbody tr:hover td {
+        color: #fff !important;
+    }
+    body.dark-mode .card {
+        background-color: #1e2746;
+        color: #fff;
+    }
+    body.dark-mode .card-header {
+        background-color: #121a35;
+        border-color: #2a3356;
+    }
   </style>
 
   <script>
+    // Funcionalidad para mostrar/ocultar submenús en el sidebar
+    document.addEventListener('DOMContentLoaded', function() {
+      // Seleccionar todos los elementos del menú que tienen submenús
+      const menuItems = document.querySelectorAll('.sidebar.unified-sidebar .menu-item');
+      
+      // Añadir evento de clic a cada elemento del menú
+      menuItems.forEach(function(item) {
+        const menuLink = item.querySelector('.menu-link');
+        
+        if (menuLink) {
+          menuLink.addEventListener('click', function(e) {
+            // Prevenir la navegación si el enlace es "#"
+            if (this.getAttribute('href') === '#') {
+              e.preventDefault();
+            }
+            
+            // Alternar la clase 'active' en el elemento del menú
+            item.classList.toggle('active');
+            
+            // Rotar el icono de flecha
+            const toggleIcon = this.querySelector('.toggle-icon');
+            if (toggleIcon) {
+              toggleIcon.style.transform = item.classList.contains('active') ? 'rotate(90deg)' : '';
+            }
+          });
+        }
+      });
+      
+      // Marcar como activo el menú actual basado en la URL
+      const currentPath = window.location.pathname;
+      document.querySelectorAll('.sidebar.unified-sidebar .submenu a').forEach(function(link) {
+        if (link.getAttribute('href') === currentPath) {
+          const parentItem = link.closest('.menu-item');
+          if (parentItem) {
+            parentItem.classList.add('active');
+          }
+        }
+      });
+    });
+
     function editarUsuario(id) {
         window.location.href = `modificar_usuarios.php?id=${id}`;
     }
