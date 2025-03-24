@@ -33,19 +33,37 @@ $descripcion_deuda = $deuda['descripcion'];
 $conn->begin_transaction();
 
 try {
-    // Primero eliminar los pagos asociados a la deuda
+    // 1. Eliminar las cuotas asociadas a la deuda
+    $query_eliminar_cuotas = "DELETE FROM cuotas_deuda WHERE deuda_id = ?";
+    $stmt_eliminar_cuotas = $conn->prepare($query_eliminar_cuotas);
+    $stmt_eliminar_cuotas->bind_param("i", $deuda_id);
+    $stmt_eliminar_cuotas->execute();
+    
+    // 2. Eliminar los documentos asociados a la deuda
+    $query_eliminar_documentos = "DELETE FROM documentos WHERE deuda_id = ?";
+    $stmt_eliminar_documentos = $conn->prepare($query_eliminar_documentos);
+    $stmt_eliminar_documentos->bind_param("i", $deuda_id);
+    $stmt_eliminar_documentos->execute();
+    
+    // 3. Eliminar los reclamos asociados a la deuda
+    $query_eliminar_reclamos = "DELETE FROM reclamos WHERE deuda_id = ?";
+    $stmt_eliminar_reclamos = $conn->prepare($query_eliminar_reclamos);
+    $stmt_eliminar_reclamos->bind_param("i", $deuda_id);
+    $stmt_eliminar_reclamos->execute();
+    
+    // 4. Eliminar los pagos asociados a la deuda
     $query_eliminar_pagos = "DELETE FROM pagos WHERE deuda_id = ?";
     $stmt_eliminar_pagos = $conn->prepare($query_eliminar_pagos);
     $stmt_eliminar_pagos->bind_param("i", $deuda_id);
     $stmt_eliminar_pagos->execute();
     
-    // Eliminar registros del historial de la deuda
+    // 5. Eliminar registros del historial de la deuda
     $query_eliminar_historial = "DELETE FROM historial_deudas WHERE deuda_id = ?";
     $stmt_eliminar_historial = $conn->prepare($query_eliminar_historial);
     $stmt_eliminar_historial->bind_param("i", $deuda_id);
     $stmt_eliminar_historial->execute();
     
-    // Finalmente, eliminar la deuda
+    // 6. Finalmente, eliminar la deuda
     $query_eliminar_deuda = "DELETE FROM deudas WHERE id = ?";
     $stmt_eliminar_deuda = $conn->prepare($query_eliminar_deuda);
     $stmt_eliminar_deuda->bind_param("i", $deuda_id);
@@ -54,7 +72,7 @@ try {
     // Registrar la acción en el historial general (si existe una tabla para esto)
     if ($conn->query("SHOW TABLES LIKE 'historial_sistema'")->num_rows > 0) {
         $accion = "Eliminación de deuda #$deuda_id: $descripcion_deuda";
-        $usuario_id = isset($_SESSION['usuario_id']) ? $_SESSION['usuario_id'] : 0;
+        $usuario_id = isset($_SESSION['user_id']) ? $_SESSION['user_id'] : 0;
         
         $query_historial = "INSERT INTO historial_sistema (usuario_id, accion, detalles) VALUES (?, ?, ?)";
         $stmt_historial = $conn->prepare($query_historial);

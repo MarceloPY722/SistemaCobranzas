@@ -2,21 +2,15 @@
 
 <?php
 require_once '../../../admin/include/cnx.php';
-// Create $conn variable from the $pdo connection
 $conn = $pdo;
 ?>
 
   <!-- Contenido principal -->
   <div class="content-wrapper">
       <div class="container mt-4">
-          <?php if(isset($_GET['success']) && $_GET['success'] == 1): ?>
+          <?php if(isset($_GET['success']) && $_GET['success'] == 1 && isset($_GET['nombre'])): ?>
               <div class="alert alert-success alert-dismissible fade show" role="alert">
-                  <strong>¡Éxito!</strong> 
-                  <?php if(isset($_GET['nombre'])): ?>
-                      El usuario "<?php echo htmlspecialchars($_GET['nombre']); ?>" ha sido borrado exitosamente.
-                  <?php else: ?>
-                      La operación se completó exitosamente.
-                  <?php endif; ?>
+                  <strong>¡Éxito!</strong> El usuario "<?php echo htmlspecialchars($_GET['nombre']); ?>" ha sido borrado exitosamente.
                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
           <?php endif; ?>
@@ -47,9 +41,14 @@ $conn = $pdo;
           <div class="card">
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Usuarios</h4>
-                  <button class="btn btn-light">
-                      <i class="bi bi-printer"></i> Imprimir
-                  </button>
+                  <div>
+                      <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
+                          <i class="bi bi-person-plus"></i> Nuevo Usuario
+                      </button>
+                      <button onclick="window.location.href='generar_pdf.php'" class="btn btn-light">
+                          <i class="bi bi-printer"></i> Imprimir
+                      </button>
+                  </div>
               </div>
               <div class="card-body">
                   <div class="table-responsive">
@@ -57,7 +56,7 @@ $conn = $pdo;
                           <thead>
                               <tr>
                                   <th>#</th>
-                                  <th>Perfil</th>
+                                  <th>Imagen</th>
                                   <th>Nombre</th>
                                   <th>Email</th>
                                   <th>Rol</th>
@@ -67,10 +66,10 @@ $conn = $pdo;
                           </thead>
                           <tbody>
                               <?php
+                              // Consulta para obtener los usuarios con su rol
                               $query = "SELECT u.id, u.nombre, u.email, u.imagen, u.activo, r.nombre as rol_nombre 
                                         FROM usuarios u 
                                         JOIN roles r ON u.rol_id = r.id
-                                        WHERE r.id != 3
                                         ORDER BY u.id DESC";
                               $stmt = $conn->prepare($query);
                               $stmt->execute();
@@ -91,7 +90,7 @@ $conn = $pdo;
                                                width="40" 
                                                height="40">
                                       <?php else: ?>
-                                          <img src="/sistemacobranzas/uploads/usuarios/default.png" 
+                                          <img src="/sistemacobranzas/uploads/profiles/default.png" 
                                                alt="Perfil" 
                                                class="rounded-circle profile-image"
                                                width="40" 
@@ -100,7 +99,7 @@ $conn = $pdo;
                                   </td>
                                   <td><?php echo $row['nombre']; ?></td>
                                   <td><?php echo $row['email']; ?></td>
-                                  <td><span class="badge bg-info"><?php echo $row['rol_nombre']; ?></span></td>
+                                  <td><?php echo $row['rol_nombre']; ?></td>
                                   <td>
                                       <?php if($row['activo'] == 1): ?>
                                           <span class="badge bg-success">Activo</span>
@@ -109,14 +108,15 @@ $conn = $pdo;
                                       <?php endif; ?>
                                   </td>
                                   <td>
-                                      <button class="btn btn-sm btn-custom-edit" onclick="editarUsuario(<?php echo $row['id']; ?>)">
+                                      <button class="btn btn-sm btn-custom-info" onclick="verUsuario(<?php echo $row['id']; ?>)">
+                                          <i class="bi bi-eye"></i> Ver
+                                      </button>
+                                      <button class="btn btn-sm btn-primary" onclick="editarUsuario(<?php echo $row['id']; ?>)">
                                           <i class="bi bi-pencil"></i> Editar
                                       </button>
-                                      <?php if($row['id'] != 1): // Evitar eliminar al usuario administrador principal ?>
                                       <button class="btn btn-sm btn-custom-delete" onclick="eliminarUsuario(<?php echo $row['id']; ?>)">
                                           <i class="bi bi-trash"></i> Eliminar
                                       </button>
-                                      <?php endif; ?>
                                   </td>
                               </tr>
                               <?php endwhile; ?>
@@ -129,6 +129,7 @@ $conn = $pdo;
   </div>
 
   <style>
+    /* Estilos generales */
     .content-wrapper {
         margin-left: 250px;
         padding: 20px;
@@ -136,13 +137,12 @@ $conn = $pdo;
     .bg-custom {
         background-color: #121a35;
     }
-    .btn-custom-edit {
-        background-color: #121a35;
+    .btn-custom-info {
+        background-color: #0dcaf0;
         color: white;
-        margin-right: 5px;
     }
-    .btn-custom-edit:hover {
-        background-color: #1a2547;
+    .btn-custom-info:hover {
+        background-color: #0bacda;
         color: white;
     }
     .btn-custom-delete {
@@ -153,28 +153,12 @@ $conn = $pdo;
         background-color: #bb2d3b;
         color: white;
     }
-    .btn-custom-info {
-        background-color: #0dcaf0;
-        color: white;
-    }
-    .btn-custom-info:hover {
-        background-color: #0bacda;
-        color: white;
-    }
     .profile-image {
         object-fit: cover;
         border: 2px solid #121a35;
     }
-    @media print {
-        .sidebar, .btn-custom-edit, .btn-custom-delete, .btn-custom-info {
-            display: none;
-        }
-        .content-wrapper {
-            margin-left: 0;
-        }
-    }
     
-    /* Estilos para modo oscuro */
+    /* Estilos específicos para modo oscuro */
     body.dark-mode .table {
         color: #fff !important;
     }
@@ -186,62 +170,44 @@ $conn = $pdo;
         background-color: #2a3356 !important;
         color: #fff !important;
     }
-    body.dark-mode .table-hover tbody tr:hover td {
-        color: #fff !important;
-    }
-    body.dark-mode .card {
-        background-color: #1e2746;
-        color: #fff;
-    }
-    body.dark-mode .card-header {
-        background-color: #121a35;
-        border-color: #2a3356;
+    
+    /* Estilos para impresión */
+    @media print {
+        .sidebar, .btn-custom-edit, .btn-custom-delete, .btn-custom-info {
+            display: none;
+        }
+        .content-wrapper {
+            margin-left: 0;
+            padding: 0;
+        }
+        body {
+            background-color: white !important;
+            color: black !important;
+        }
+        .card {
+            border: none !important;
+        }
+        .card-header {
+            background-color: white !important;
+            color: black !important;
+            border-bottom: 1px solid #ddd;
+        }
+        .table {
+            color: black !important;
+        }
+        .table td, .table th {
+            color: black !important;
+        }
     }
   </style>
 
   <script>
-    // Funcionalidad para mostrar/ocultar submenús en el sidebar
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionar todos los elementos del menú que tienen submenús
-      const menuItems = document.querySelectorAll('.sidebar.unified-sidebar .menu-item');
-      
-      // Añadir evento de clic a cada elemento del menú
-      menuItems.forEach(function(item) {
-        const menuLink = item.querySelector('.menu-link');
-        
-        if (menuLink) {
-          menuLink.addEventListener('click', function(e) {
-            // Prevenir la navegación si el enlace es "#"
-            if (this.getAttribute('href') === '#') {
-              e.preventDefault();
-            }
-            
-            // Alternar la clase 'active' en el elemento del menú
-            item.classList.toggle('active');
-            
-            // Rotar el icono de flecha
-            const toggleIcon = this.querySelector('.toggle-icon');
-            if (toggleIcon) {
-              toggleIcon.style.transform = item.classList.contains('active') ? 'rotate(90deg)' : '';
-            }
-          });
-        }
-      });
-      
-      // Marcar como activo el menú actual basado en la URL
-      const currentPath = window.location.pathname;
-      document.querySelectorAll('.sidebar.unified-sidebar .submenu a').forEach(function(link) {
-        if (link.getAttribute('href') === currentPath) {
-          const parentItem = link.closest('.menu-item');
-          if (parentItem) {
-            parentItem.classList.add('active');
-          }
-        }
-      });
-    });
+    function verUsuario(id) {
+        window.location.href = `usuario_datos.php?id=${id}`;
+    }
 
     function editarUsuario(id) {
-        window.location.href = `modificar_usuarios.php?id=${id}`;
+        window.location.href = `editar_usuario.php?id=${id}`;
     }
 
     function eliminarUsuario(id) {

@@ -176,7 +176,7 @@
       <!-- Categoría: Usuarios -->
       <li class="menu-item">
         <a href="#" class="menu-link">
-          <i class="bi bi-people icono-menu"></i> Usuarios
+          <i class="bi bi-people icono-menu"></i> Super Usuarios 
           <span class="toggle-icon">&#9654;</span>
         </a>
         <ul class="submenu">

@@ -10,7 +10,7 @@ $conn = $pdo;
       <div class="container mt-4">
           <?php if(isset($_GET['success']) && $_GET['success'] == 1 && isset($_GET['nombre'])): ?>
               <div class="alert alert-success alert-dismissible fade show" role="alert">
-                  <strong>¡Éxito!</strong> El cliente "<?php echo htmlspecialchars($_GET['nombre']); ?>" ha sido borrado exitosamente.
+                  <strong>¡Éxito!</strong> El cliente "<?php echo htmlspecialchars($_GET['nombre']); ?>" ha sido registrado exitosamente.
                   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
               </div>
           <?php endif; ?>
@@ -20,14 +20,14 @@ $conn = $pdo;
                   <strong>¡Error!</strong> 
                   <?php 
                       switch($_GET['error']) {
-                          case 'id_invalido':
-                              echo "ID de cliente inválido.";
+                          case 'campos_requeridos':
+                              echo "Todos los campos marcados son obligatorios.";
                               break;
-                          case 'cliente_no_encontrado':
-                              echo "El cliente no existe.";
+                          case 'identificacion_existente':
+                              echo "La identificación ya está registrada en el sistema.";
                               break;
-                          case 'eliminacion_fallida':
-                              echo "No se pudo eliminar el cliente. ";
+                          case 'db_error':
+                              echo "Error en la base de datos. ";
                               if(isset($_GET['mensaje'])) echo htmlspecialchars($_GET['mensaje']);
                               break;
                           default:
@@ -41,9 +41,14 @@ $conn = $pdo;
           <div class="card">
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Clientes</h4>
-                  <button onclick="window.print()" class="btn btn-light">
-                      <i class="bi bi-printer"></i> Imprimir
-                  </button>
+                  <div>
+                      <button onclick="window.location.href='agregar_cliente.php'" class="btn btn-success me-2">
+                          <i class="bi bi-person-plus"></i> Nuevo Cliente
+                      </button>
+                      <button onclick="window.location.href='generar_pdf_clientes.php'" class="btn btn-light">
+                          <i class="bi bi-printer"></i> Imprimir
+                      </button>
+                  </div>
               </div>
               <div class="card-body">
                   <div class="table-responsive">
@@ -52,8 +57,9 @@ $conn = $pdo;
                               <tr>
                                   <th>#</th>
                                   <th>Imagen</th>
-                                  <th>Identificación</th>
                                   <th>Nombre</th>
+                                  <th>Identificación</th>
+                                  <th>Teléfono</th>
                                   <th>Email</th>
                                   <th>Acciones</th>
                               </tr>
@@ -61,9 +67,9 @@ $conn = $pdo;
                           <tbody>
                               <?php
                               // Consulta para obtener los clientes
-                              $query = "SELECT c.id, c.identificacion, c.email, c.imagen, c.nombre 
-                                        FROM clientes c 
-                                        ORDER BY c.id DESC";
+                              $query = "SELECT id, nombre, identificacion, telefono, email, imagen 
+                                        FROM clientes 
+                                        ORDER BY id DESC";
                               $stmt = $conn->prepare($query);
                               $stmt->execute();
                               
@@ -76,15 +82,13 @@ $conn = $pdo;
                               <tr>
                                   <td><?php echo $row['id']; ?></td>
                                   <td>
-                                      <?php if(!empty($row['imagen'])): ?>
-                                          <!-- Se muestra la imagen desde la BD usando mostrar_imagen.php -->
-                                          <img src="ver_imagen.php?id=<?php echo $row['id']; ?>" 
+                                      <?php if(!empty($row['imagen']) && $row['imagen'] != 'default.png'): ?>
+                                          <img src="/sistemacobranzas/uploads/clientes/<?php echo $row['imagen']; ?>" 
                                                alt="Perfil" 
                                                class="rounded-circle profile-image"
                                                width="40" 
                                                height="40">
                                       <?php else: ?>
-                                          <!-- Si no hay imagen en la BD, se muestra la imagen por defecto -->
                                           <img src="/sistemacobranzas/uploads/profiles/default.png" 
                                                alt="Perfil" 
                                                class="rounded-circle profile-image"
@@ -92,12 +96,16 @@ $conn = $pdo;
                                                height="40">
                                       <?php endif; ?>
                                   </td>
-                                  <td><?php echo $row['identificacion']; ?></td>
                                   <td><?php echo $row['nombre']; ?></td>
+                                  <td><?php echo $row['identificacion']; ?></td>
+                                  <td><?php echo $row['telefono']; ?></td>
                                   <td><?php echo $row['email']; ?></td>
                                   <td>
                                       <button class="btn btn-sm btn-custom-info" onclick="verCliente(<?php echo $row['id']; ?>)">
-                                          <i class="bi bi-eye"></i> Ver Cliente
+                                          <i class="bi bi-eye"></i> Ver
+                                      </button>
+                                      <button class="btn btn-sm btn-primary" onclick="editarCliente(<?php echo $row['id']; ?>)">
+                                          <i class="bi bi-pencil"></i> Editar
                                       </button>
                                       <button class="btn btn-sm btn-custom-delete" onclick="eliminarCliente(<?php echo $row['id']; ?>)">
                                           <i class="bi bi-trash"></i> Eliminar
@@ -114,7 +122,6 @@ $conn = $pdo;
   </div>
 
   <style>
-    /* Estilos generales */
     .content-wrapper {
         margin-left: 250px;
         padding: 20px;
@@ -143,7 +150,7 @@ $conn = $pdo;
         border: 2px solid #121a35;
     }
     
-    /* Estilos específicos para modo oscuro */
+    /* Dark mode styles */
     body.dark-mode .table {
         color: #fff !important;
     }
@@ -156,9 +163,9 @@ $conn = $pdo;
         color: #fff !important;
     }
     
-    /* Estilos para impresión */
+    /* Print styles */
     @media print {
-        .sidebar, .btn-custom-edit, .btn-custom-delete, .btn-custom-info {
+        .sidebar, .btn-custom-info, .btn-custom-delete, .btn-primary {
             display: none;
         }
         .content-wrapper {
@@ -187,52 +194,16 @@ $conn = $pdo;
   </style>
 
   <script>
-    // Funcionalidad para mostrar/ocultar submenús en el sidebar
-    document.addEventListener('DOMContentLoaded', function() {
-      // Seleccionar todos los elementos del menú que tienen submenús
-      const menuItems = document.querySelectorAll('.sidebar.unified-sidebar .menu-item');
-      
-      // Añadir evento de clic a cada elemento del menú
-      menuItems.forEach(function(item) {
-        const menuLink = item.querySelector('.menu-link');
-        
-        if (menuLink) {
-          menuLink.addEventListener('click', function(e) {
-            // Prevenir la navegación si el enlace es "#"
-            if (this.getAttribute('href') === '#') {
-              e.preventDefault();
-            }
-            
-            // Alternar la clase 'active' en el elemento del menú
-            item.classList.toggle('active');
-            
-            // Rotar el icono de flecha
-            const toggleIcon = this.querySelector('.toggle-icon');
-            if (toggleIcon) {
-              toggleIcon.style.transform = item.classList.contains('active') ? 'rotate(90deg)' : '';
-            }
-          });
-        }
-      });
-      
-      // Marcar como activo el menú actual basado en la URL
-      const currentPath = window.location.pathname;
-      document.querySelectorAll('.sidebar.unified-sidebar .submenu a').forEach(function(link) {
-        if (link.getAttribute('href') === currentPath) {
-          const parentItem = link.closest('.menu-item');
-          if (parentItem) {
-            parentItem.classList.add('active');
-          }
-        }
-      });
-    });
-
     function verCliente(id) {
         window.location.href = `cliente_datos.php?id=${id}`;
     }
 
+    function editarCliente(id) {
+        window.location.href = `editar_cliente.php?id=${id}`;
+    }
+
     function eliminarCliente(id) {
-        if(confirm('¿Está seguro de que desea eliminar este cliente?')) {
+        if(confirm('¿Está seguro de que desea eliminar este cliente? Esta acción no se puede deshacer.')) {
             window.location.href = `eliminar_cliente.php?id=${id}`;
         }
     }

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost:3306
--- Generation Time: Mar 17, 2025 at 12:11 AM
--- Server version: 8.0.30
--- PHP Version: 8.1.10
+-- Servidor: localhost:3306
+-- Tiempo de generación: 22-03-2025 a las 15:04:56
+-- Versión del servidor: 8.0.30
+-- Versión de PHP: 8.1.10
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,13 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `sistema_cobranzas`
+-- Base de datos: `sistema_cobranzas`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `chats`
+-- Estructura de tabla para la tabla `chats`
 --
 
 CREATE TABLE `chats` (
@@ -39,7 +39,7 @@ CREATE TABLE `chats` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `clientes`
+-- Estructura de tabla para la tabla `clientes`
 --
 
 CREATE TABLE `clientes` (
@@ -52,11 +52,11 @@ CREATE TABLE `clientes` (
   `email` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `imagen` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'default.png',
-  `password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL
+  `password` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `clientes`
+-- Volcado de datos para la tabla `clientes`
 --
 
 INSERT INTO `clientes` (`id`, `nombre`, `identificacion`, `direccion`, `ubicacion_link`, `telefono`, `email`, `created_at`, `imagen`, `password`) VALUES
@@ -95,35 +95,84 @@ INSERT INTO `clientes` (`id`, `nombre`, `identificacion`, `direccion`, `ubicacio
 -- --------------------------------------------------------
 
 --
--- Table structure for table `deudas`
+-- Estructura de tabla para la tabla `cuotas_deuda`
+--
+
+CREATE TABLE `cuotas_deuda` (
+  `id` int NOT NULL,
+  `deuda_id` int NOT NULL,
+  `numero_cuota` int NOT NULL,
+  `monto_cuota` decimal(12,2) NOT NULL,
+  `fecha_vencimiento` date NOT NULL,
+  `estado` enum('pendiente','pagado','vencido') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `deudas`
 --
 
 CREATE TABLE `deudas` (
   `id` int NOT NULL,
   `cliente_id` int NOT NULL,
   `politica_interes_id` int NOT NULL,
-  `notas` text COLLATE utf8mb4_unicode_ci,
+  `notas` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `monto` decimal(12,2) NOT NULL,
+  `cuotas` int NOT NULL DEFAULT '1',
   `fecha_emision` date NOT NULL,
   `saldo_pendiente` decimal(12,2) NOT NULL,
   `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `fecha_vencimiento` date NOT NULL,
   `estado` enum('pendiente','pagado','vencido','cancelado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
-  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `monto_cuota` decimal(12,2) GENERATED ALWAYS AS ((`monto` / `cuotas`)) STORED
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `deudas`
+-- Volcado de datos para la tabla `deudas`
 --
 
-INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `notas`, `monto`, `fecha_emision`, `saldo_pendiente`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
-(1, 33, 2, '', '1000000.00', '2025-03-15', '1000000.00', 'CrediAgil', '2025-04-14', 'pendiente', '2025-03-15 16:50:15'),
-(5, 32, 3, '', '41000000.00', '2025-03-16', '41000000.00', 'CrediAgil San Lorenzo', '2026-04-15', 'pendiente', '2025-03-16 23:13:03');
+INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `notas`, `monto`, `cuotas`, `fecha_emision`, `saldo_pendiente`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
+(1, 33, 2, '', 1000000.00, 1, '2025-03-15', 1000000.00, 'CrediAgil', '2025-04-14', 'pendiente', '2025-03-15 16:50:15'),
+(5, 32, 3, '', 41000000.00, 1, '2025-03-16', 41000000.00, 'CrediAgil San Lorenzo', '2026-04-15', 'pendiente', '2025-03-16 23:13:03');
+
+--
+-- Disparadores `deudas`
+--
+DELIMITER $$
+CREATE TRIGGER `after_deuda_insert` AFTER INSERT ON `deudas` FOR EACH ROW BEGIN
+    DECLARE i INT DEFAULT 1;
+    DECLARE fecha_venc DATE;
+    
+    WHILE i <= NEW.cuotas DO
+        -- Calculate the due date for each installment (monthly)
+        SET fecha_venc = DATE_ADD(NEW.fecha_emision, INTERVAL i MONTH);
+        
+        -- Insert the installment record
+        INSERT INTO `cuotas_deuda` (
+            `deuda_id`, 
+            `numero_cuota`, 
+            `monto_cuota`, 
+            `fecha_vencimiento`
+        ) VALUES (
+            NEW.id,
+            i,
+            NEW.monto / NEW.cuotas,
+            fecha_venc
+        );
+        
+        SET i = i + 1;
+    END WHILE;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `documentos`
+-- Estructura de tabla para la tabla `documentos`
 --
 
 CREATE TABLE `documentos` (
@@ -138,7 +187,7 @@ CREATE TABLE `documentos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `historial_deudas`
+-- Estructura de tabla para la tabla `historial_deudas`
 --
 
 CREATE TABLE `historial_deudas` (
@@ -151,7 +200,7 @@ CREATE TABLE `historial_deudas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `historial_deudas`
+-- Volcado de datos para la tabla `historial_deudas`
 --
 
 INSERT INTO `historial_deudas` (`id`, `deuda_id`, `usuario_id`, `accion`, `detalle`, `created_at`) VALUES
@@ -161,7 +210,7 @@ INSERT INTO `historial_deudas` (`id`, `deuda_id`, `usuario_id`, `accion`, `detal
 -- --------------------------------------------------------
 
 --
--- Table structure for table `notificaciones`
+-- Estructura de tabla para la tabla `notificaciones`
 --
 
 CREATE TABLE `notificaciones` (
@@ -177,7 +226,7 @@ CREATE TABLE `notificaciones` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `pagos`
+-- Estructura de tabla para la tabla `pagos`
 --
 
 CREATE TABLE `pagos` (
@@ -193,14 +242,17 @@ CREATE TABLE `pagos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `politicas_interes`
---
+-- Estructura de tabla para la tabla `politicas_interes`
 
 CREATE TABLE `politicas_interes` (
   `id` int NOT NULL,
   `nombre` varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `tipo` enum('simple','compuesto') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `tipo` enum('simple','compuesto','escalonado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `periodo` enum('diario','mensual','anual') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'mensual',
   `tasa` decimal(5,2) NOT NULL,
+  `tasa_escalonada_json` JSON DEFAULT NULL,
+  `penalizacion_fija` decimal(12,2) DEFAULT NULL,
+  `dias_penalizacion` int DEFAULT NULL,
   `fecha_inicio` date NOT NULL,
   `fecha_fin` date DEFAULT NULL,
   `activa` tinyint(1) DEFAULT '1',
@@ -208,18 +260,15 @@ CREATE TABLE `politicas_interes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `politicas_interes`
---
-
-INSERT INTO `politicas_interes` (`id`, `nombre`, `tipo`, `tasa`, `fecha_inicio`, `fecha_fin`, `activa`, `created_at`) VALUES
-(1, 'Interés Simple Mensual', 'simple', '5.00', '2024-01-01', NULL, 1, '2025-03-03 15:03:28'),
-(2, 'Interés Compuesto Anual', 'compuesto', '12.00', '2024-01-01', NULL, 1, '2025-03-03 15:03:28'),
-(3, 'Interés Promocional', 'simple', '3.50', '2024-01-01', '2024-12-31', 1, '2025-03-03 15:03:28');
-
+-- Volcado de datos para la tabla `politicas_interes`
+INSERT INTO `politicas_interes` (`id`, `nombre`, `tipo`, `periodo`, `tasa`, `tasa_escalonada_json`, `penalizacion_fija`, `dias_penalizacion`, `fecha_inicio`, `fecha_fin`, `activa`) VALUES
+(1, 'Interés Simple Diario', 'simple', 'diario', 0.10, NULL, NULL, NULL, '2025-03-22', NULL, 1),
+(2, 'Interés Compuesto Diario', 'compuesto', 'diario', 0.05, NULL, NULL, NULL, '2025-03-22', NULL, 1),
+(3, 'Interés Moratorio Escalonado', 'escalonado', 'diario', 0.08, '[{"dias_desde": 1, "dias_hasta": 5, "tasa": 0.08}, {"dias_desde": 6, "dias_hasta": 10, "tasa": 0.15}, {"dias_desde": 11, "dias_hasta": null, "tasa": 0.20}]', 10000.00, 5, '2025-03-22', NULL, 1);
 -- --------------------------------------------------------
 
 --
--- Table structure for table `reclamos`
+-- Estructura de tabla para la tabla `reclamos`
 --
 
 CREATE TABLE `reclamos` (
@@ -236,7 +285,7 @@ CREATE TABLE `reclamos` (
 -- --------------------------------------------------------
 
 --
--- Table structure for table `roles`
+-- Estructura de tabla para la tabla `roles`
 --
 
 CREATE TABLE `roles` (
@@ -247,7 +296,7 @@ CREATE TABLE `roles` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `roles`
+-- Volcado de datos para la tabla `roles`
 --
 
 INSERT INTO `roles` (`id`, `nombre`, `permisos`, `created_at`) VALUES
@@ -257,7 +306,7 @@ INSERT INTO `roles` (`id`, `nombre`, `permisos`, `created_at`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `usuarios`
+-- Estructura de tabla para la tabla `usuarios`
 --
 
 CREATE TABLE `usuarios` (
@@ -273,20 +322,20 @@ CREATE TABLE `usuarios` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
--- Dumping data for table `usuarios`
+-- Volcado de datos para la tabla `usuarios`
 --
 
 INSERT INTO `usuarios` (`id`, `rol_id`, `nombre`, `email`, `password`, `activo`, `created_at`, `imagen`, `last_activity`) VALUES
-(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 03:37:57', 'usuario_6_1741560443.jpg', '2025-03-16 21:09:44'),
+(6, 1, 'Marcelo', 'marcelo@gmail.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-02-17 03:37:57', 'usuario_6_1741560443.jpg', '2025-03-22 10:02:16'),
 (9, 2, 'gestor.php', 'gestor.php@dominio.com', '$2y$10$sM2SMBWuM85jqx7tV7Xhj.y.pWEOhmcXbTo0XYwKzWiRN.HMzUZ5m', 1, '2025-03-01 05:13:21', 'usuario_9_1741560308.png', '2025-03-15 22:12:53'),
 (17, 1, 'Administrador', 'Admin@gmail.com', '$2y$10$5C4ffiSK9KiYJXoSVK9F0edURthp0iWYNJ9tVUCXKD7tpRsO9sb3G', 1, '2025-03-10 01:12:00', 'cd9f1fc8fcbf5d15eb8b4809567c6294.png', '2025-03-15 22:12:53');
 
 --
--- Indexes for dumped tables
+-- Índices para tablas volcadas
 --
 
 --
--- Indexes for table `chats`
+-- Indices de la tabla `chats`
 --
 ALTER TABLE `chats`
   ADD PRIMARY KEY (`id`),
@@ -294,14 +343,21 @@ ALTER TABLE `chats`
   ADD KEY `emisor_id` (`emisor_id`);
 
 --
--- Indexes for table `clientes`
+-- Indices de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `identificacion` (`identificacion`);
 
 --
--- Indexes for table `deudas`
+-- Indices de la tabla `cuotas_deuda`
+--
+ALTER TABLE `cuotas_deuda`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `idx_cuotas_deuda` (`deuda_id`);
+
+--
+-- Indices de la tabla `deudas`
 --
 ALTER TABLE `deudas`
   ADD PRIMARY KEY (`id`),
@@ -309,7 +365,7 @@ ALTER TABLE `deudas`
   ADD KEY `idx_deudas_politica` (`politica_interes_id`);
 
 --
--- Indexes for table `documentos`
+-- Indices de la tabla `documentos`
 --
 ALTER TABLE `documentos`
   ADD PRIMARY KEY (`id`),
@@ -317,7 +373,7 @@ ALTER TABLE `documentos`
   ADD KEY `deuda_id` (`deuda_id`);
 
 --
--- Indexes for table `historial_deudas`
+-- Indices de la tabla `historial_deudas`
 --
 ALTER TABLE `historial_deudas`
   ADD PRIMARY KEY (`id`),
@@ -325,27 +381,27 @@ ALTER TABLE `historial_deudas`
   ADD KEY `usuario_id` (`usuario_id`);
 
 --
--- Indexes for table `notificaciones`
+-- Indices de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
   ADD PRIMARY KEY (`id`),
   ADD KEY `cliente_id` (`cliente_id`);
 
 --
--- Indexes for table `pagos`
+-- Indices de la tabla `pagos`
 --
 ALTER TABLE `pagos`
   ADD PRIMARY KEY (`id`),
   ADD KEY `idx_pagos_deuda` (`deuda_id`);
 
 --
--- Indexes for table `politicas_interes`
+-- Indices de la tabla `politicas_interes`
 --
 ALTER TABLE `politicas_interes`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `reclamos`
+-- Indices de la tabla `reclamos`
 --
 ALTER TABLE `reclamos`
   ADD PRIMARY KEY (`id`),
@@ -353,14 +409,14 @@ ALTER TABLE `reclamos`
   ADD KEY `idx_reclamos_cliente` (`cliente_id`);
 
 --
--- Indexes for table `roles`
+-- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `nombre` (`nombre`);
 
 --
--- Indexes for table `usuarios`
+-- Indices de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   ADD PRIMARY KEY (`id`),
@@ -368,115 +424,127 @@ ALTER TABLE `usuarios`
   ADD KEY `rol_id` (`rol_id`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT de las tablas volcadas
 --
 
 --
--- AUTO_INCREMENT for table `chats`
+-- AUTO_INCREMENT de la tabla `chats`
 --
 ALTER TABLE `chats`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `clientes`
+-- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 
 --
--- AUTO_INCREMENT for table `deudas`
+-- AUTO_INCREMENT de la tabla `cuotas_deuda`
+--
+ALTER TABLE `cuotas_deuda`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `deudas`
 --
 ALTER TABLE `deudas`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `documentos`
+-- AUTO_INCREMENT de la tabla `documentos`
 --
 ALTER TABLE `documentos`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `historial_deudas`
+-- AUTO_INCREMENT de la tabla `historial_deudas`
 --
 ALTER TABLE `historial_deudas`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
--- AUTO_INCREMENT for table `notificaciones`
+-- AUTO_INCREMENT de la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `pagos`
+-- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `politicas_interes`
+-- AUTO_INCREMENT de la tabla `politicas_interes`
 --
 ALTER TABLE `politicas_interes`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT for table `reclamos`
+-- AUTO_INCREMENT de la tabla `reclamos`
 --
 ALTER TABLE `reclamos`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT for table `roles`
+-- AUTO_INCREMENT de la tabla `roles`
 --
 ALTER TABLE `roles`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
--- AUTO_INCREMENT for table `usuarios`
+-- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
--- Constraints for dumped tables
+-- Restricciones para tablas volcadas
 --
 
 --
--- Constraints for table `chats`
+-- Filtros para la tabla `chats`
 --
 ALTER TABLE `chats`
   ADD CONSTRAINT `chats_ibfk_1` FOREIGN KEY (`reclamo_id`) REFERENCES `reclamos` (`id`),
   ADD CONSTRAINT `chats_ibfk_2` FOREIGN KEY (`emisor_id`) REFERENCES `usuarios` (`id`);
 
 --
--- Constraints for table `deudas`
+-- Filtros para la tabla `cuotas_deuda`
+--
+ALTER TABLE `cuotas_deuda`
+  ADD CONSTRAINT `fk_cuotas_deuda` FOREIGN KEY (`deuda_id`) REFERENCES `deudas` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `deudas`
 --
 ALTER TABLE `deudas`
   ADD CONSTRAINT `deudas_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `fk_deudas_politicas` FOREIGN KEY (`politica_interes_id`) REFERENCES `politicas_interes` (`id`);
 
 --
--- Constraints for table `documentos`
+-- Filtros para la tabla `documentos`
 --
 ALTER TABLE `documentos`
   ADD CONSTRAINT `documentos_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `documentos_ibfk_2` FOREIGN KEY (`deuda_id`) REFERENCES `deudas` (`id`) ON DELETE SET NULL;
 
 --
--- Constraints for table `historial_deudas`
+-- Filtros para la tabla `historial_deudas`
 --
 ALTER TABLE `historial_deudas`
   ADD CONSTRAINT `historial_deudas_ibfk_1` FOREIGN KEY (`deuda_id`) REFERENCES `deudas` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `historial_deudas_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE RESTRICT;
 
 --
--- Constraints for table `notificaciones`
+-- Filtros para la tabla `notificaciones`
 --
 ALTER TABLE `notificaciones`
   ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE CASCADE;
 
 --
--- Constraints for table `pagos`
+-- Filtros para la tabla `pagos`
 --
 ALTER TABLE `pagos`
   ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`deuda_id`) REFERENCES `deudas` (`id`) ON DELETE CASCADE;

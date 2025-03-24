@@ -5,15 +5,7 @@ require_once 'inc/cnx.php';
 <?php include 'inc/header.php'; ?>
 <?php include 'inc/sidebar.php'; ?>
    
-    <div class="theme-toggle">
-        <label class="switch">
-            <input type="checkbox" id="themeToggle">
-            <span class="slider">
-                <i class="bi bi-sun-fill"></i>
-                <i class="bi bi-moon-fill"></i>
-            </span>
-        </label>
-    </div>
+ 
 
     <main>
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">

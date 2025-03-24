@@ -1,6 +1,5 @@
 <?php
-// Solucionar el error luego-no reconoce la
-//carpeta con las base de datos
+
 $host = 'localhost';
 $dbname = 'sistema_cobranzas';
 $username = 'root';

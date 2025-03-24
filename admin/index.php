@@ -29,7 +29,7 @@
       <div class="col-md-6 mb-4">
         <div class="card">
           <div class="card-body">
-            <h5 class="card-title">Total de Usuarios por Rol</h5>
+            <h5 class="card-title">SuperUsuarios con Roles</h5>
             <canvas id="userRolesChart"></canvas>
           </div>
         </div>
