@@ -1,4 +1,4 @@
-<?php include '../../../../admin/include/sidebar.php'; ?>
+<?php include '../../../inc/sidebar.php'; ?>
 
 <?php
 require_once '../../cnx.php';

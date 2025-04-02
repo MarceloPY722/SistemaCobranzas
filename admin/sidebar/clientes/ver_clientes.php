@@ -42,10 +42,10 @@ $conn = $pdo;
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Clientes</h4>
                   <div>
-                      <button onclick="window.location.href='agregar_cliente.php'" class="btn btn-success me-2">
+                      <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
                           <i class="bi bi-person-plus"></i> Nuevo Cliente
                       </button>
-                      <button onclick="window.location.href='generar_pdf_clientes.php'" class="btn btn-light">
+                      <button onclick="window.location.href='generar2_pdf.php'" class="btn btn-light">
                           <i class="bi bi-printer"></i> Imprimir
                       </button>
                   </div>

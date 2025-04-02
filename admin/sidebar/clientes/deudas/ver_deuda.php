@@ -2,8 +2,7 @@
 
 <?php
 require_once '../../cnx.php';
-
-// Verificar si se proporcionó un ID de deuda
+        
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
     header('Location: ../../ver_clientes.php?error=id_invalido');
     exit();
@@ -12,8 +11,8 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 $deuda_id = $_GET['id'];
 
 // Consulta para obtener los datos de la deuda con información del cliente y política de interés
-$query = "SELECT d.*, c.nombre as cliente_nombre, c.id as cliente_id, c.identificacion as cliente_identificacion,
-          p.nombre as politica_nombre, p.tasa, p.tipo as politica_tipo, p.periodo as politica_periodo
+$query = "SELECT d.*, c.nombre as cliente_nombre, c.id as cliente_id, 
+          p.nombre as politica_nombre, p.tasa, p.tipo as politica_tipo
           FROM deudas d 
           JOIN clientes c ON d.cliente_id = c.id
           JOIN politicas_interes p ON d.politica_interes_id = p.id
@@ -24,18 +23,11 @@ $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
-    header('Location: ../../ver_clientes.php?error=deuda_no_encontrada');
+    header('Location: ver_clientes.php?error=deuda_no_encontrada');
     exit();
 }
 
 $deuda = $result->fetch_assoc();
-
-// Consulta para obtener las cuotas de la deuda
-$query_cuotas = "SELECT * FROM cuotas_deuda WHERE deuda_id = ? ORDER BY numero_cuota ASC";
-$stmt_cuotas = $conn->prepare($query_cuotas);
-$stmt_cuotas->bind_param("i", $deuda_id);
-$stmt_cuotas->execute();
-$result_cuotas = $stmt_cuotas->get_result();
 
 // Consulta para obtener los pagos relacionados con esta deuda
 $query_pagos = "SELECT * FROM pagos WHERE deuda_id = ? ORDER BY fecha_pago DESC";
@@ -74,27 +66,7 @@ if ($deuda['estado'] == 'vencido') {
 
 // Función para formatear dinero
 function formatMoney($amount) {
-    // Check if amount is null or not numeric and provide a default value
-    if ($amount === null || !is_numeric($amount)) {
-        $amount = 0;
-    }
     return number_format($amount, 0, ',', '.') . ' Gs.';
-}
-
-// Función para obtener el estado de la cuota con badge
-function getEstadoBadge($estado) {
-    switch ($estado) {
-        case 'pendiente':
-            return '<span class="badge bg-warning text-dark">Pendiente</span>';
-        case 'pagado':
-            return '<span class="badge bg-success">Pagado</span>';
-        case 'vencido':
-            return '<span class="badge bg-danger">Vencido</span>';
-        case 'parcial':
-            return '<span class="badge bg-info">Pago Parcial</span>';
-        default:
-            return '<span class="badge bg-secondary">Desconocido</span>';
-    }
 }
 ?>
 
@@ -127,20 +99,12 @@ function getEstadoBadge($estado) {
                                         </a>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
-                                        <strong>Identificación:</strong>
-                                        <span><?php echo htmlspecialchars($deuda['cliente_identificacion']); ?></span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between">
                                         <strong>Descripción:</strong>
                                         <span><?php echo htmlspecialchars($deuda['descripcion']); ?></span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
                                         <strong>Monto Original:</strong>
                                         <span><?php echo formatMoney($deuda['monto']); ?></span>
-                                    </li>
-                                    <li class="list-group-item d-flex justify-content-between">
-                                        <strong>Cuotas:</strong>
-                                        <span><?php echo $deuda['cuotas']; ?></span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
                                         <strong>Saldo Pendiente:</strong>
@@ -159,7 +123,13 @@ function getEstadoBadge($estado) {
                                     <li class="list-group-item d-flex justify-content-between">
                                         <strong>Estado:</strong>
                                         <span>
-                                            <?php echo getEstadoBadge($deuda['estado']); ?>
+                                            <?php if($deuda['estado'] == 'pendiente'): ?>
+                                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                            <?php elseif($deuda['estado'] == 'pagado'): ?>
+                                                <span class="badge bg-success">Pagado</span>
+                                            <?php elseif($deuda['estado'] == 'vencido'): ?>
+                                                <span class="badge bg-danger">Vencido</span>
+                                            <?php endif; ?>
                                         </span>
                                     </li>
                                 </ul>
@@ -173,7 +143,7 @@ function getEstadoBadge($estado) {
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
                                         <strong>Tasa de Interés:</strong>
-                                        <span><?php echo $deuda['tasa']; ?>% <?php echo $deuda['politica_periodo']; ?></span>
+                                        <span><?php echo $deuda['tasa']; ?>% mensual</span>
                                     </li>
                                     <li class="list-group-item d-flex justify-content-between">
                                         <strong>Tipo:</strong>
@@ -239,53 +209,10 @@ function getEstadoBadge($estado) {
             </div>
         </div>
 
-        <!-- Sección de Cuotas -->
-        <div class="card mb-4">
-            <div class="card-header bg-custom text-white">
-                <h5 class="mb-0">Plan de Cuotas</h5>
-            </div>
-            <div class="card-body">
-                <?php if($result_cuotas->num_rows > 0): ?>
-                    <div class="table-responsive">
-                        <table class="table">
-                            <thead>
-                                <tr>
-                                    <th>Cuota</th>
-                                    <th>Monto</th>
-                                    <th>Vencimiento</th>
-                                    <th>Estado</th>
-                                    <th>Interés</th>
-                                    <th>Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php while($cuota = $result_cuotas->fetch_assoc()): 
-                                    $total_cuota = $cuota['monto_cuota'] + $cuota['interes_acumulado'];
-                                ?>
-                                <tr class="<?php echo ($cuota['estado'] == 'vencido') ? 'table-danger' : (($cuota['estado'] == 'pagado') ? 'table-success' : ''); ?>">
-                                    <td><?php echo $cuota['numero_cuota']; ?></td>
-                                    <td><?php echo formatMoney($cuota['monto_cuota']); ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($cuota['fecha_vencimiento'])); ?></td>
-                                    <td><?php echo getEstadoBadge($cuota['estado']); ?></td>
-                                    <td><?php echo formatMoney($cuota['interes_acumulado']); ?></td>
-                                    <td><strong><?php echo formatMoney($total_cuota); ?></strong></td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                <?php else: ?>
-                    <div class="alert alert-info">
-                        No hay cuotas registradas para esta deuda.
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-
         <!-- Sección de Pagos -->
         <div class="card mb-4">
             <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
-                <h5 class="mb-0">Historial de Pagos</h5>
+                <h5 class="mb-0">Pagos Realizados</h5>
                 <?php if($deuda['estado'] != 'pagado'): ?>
                 <a href="registrar_pago.php?deuda_id=<?php echo $deuda_id; ?>" class="btn btn-light btn-sm">
                     <i class="bi bi-plus-circle"></i> Nuevo Pago
@@ -298,29 +225,36 @@ function getEstadoBadge($estado) {
                         <table class="table table-hover">
                             <thead>
                                 <tr>
+                                    <th>ID</th>
                                     <th>Fecha</th>
                                     <th>Monto</th>
                                     <th>Método</th>
-                                    <th>Referencia</th>
-                                    <th>Registrado por</th>
+                                    <th>Comprobante</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <?php while($pago = $result_pagos->fetch_assoc()): ?>
                                 <tr>
+                                    <td><?php echo $pago['id']; ?></td>
                                     <td><?php echo date('d/m/Y', strtotime($pago['fecha_pago'])); ?></td>
                                     <td><?php echo formatMoney($pago['monto_pagado']); ?></td>
-                                    <td><?php echo ucfirst(htmlspecialchars($pago['metodo_pago'])); ?></td>
-                                    <td><?php echo htmlspecialchars($pago['referencia'] ?? 'N/A'); ?></td>
-                                    <td><?php echo htmlspecialchars($pago['usuario_nombre'] ?? 'Sistema'); ?></td>
+                                    <td><?php echo htmlspecialchars($pago['metodo_pago']); ?></td>
                                     <td>
-                                        <a href="ver_pago.php?id=<?php echo $pago['id']; ?>" class="btn btn-sm btn-info">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="./anular_pago.php?id=<?php echo $pago['id']; ?>" class="btn btn-sm btn-danger" onclick="return confirm('¿Estás seguro de que deseas anular este pago? Esta acción no se puede deshacer.')">
-                                            <i class="bi bi-x-circle"></i>
-                                        </a>
+                                        <?php if(!empty($pago['comprobante'])): ?>
+                                            <a href="#" class="btn btn-sm btn-outline-info" onclick="verComprobante('<?php echo htmlspecialchars($pago['comprobante']); ?>')">
+                                                Ver Comprobante
+                                            </a>
+                                        <?php else: ?>
+                                            <span class="text-muted">Sin comprobante</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <button class="btn btn-sm btn-danger" onclick="eliminarPago(<?php echo $pago['id']; ?>)">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </div>
                                     </td>
                                 </tr>
                                 <?php endwhile; ?>
@@ -335,30 +269,35 @@ function getEstadoBadge($estado) {
             </div>
         </div>
 
-        <!-- Sección de Historial -->
+        <!-- Historial de la Deuda -->
         <div class="card mb-4">
             <div class="card-header bg-custom text-white">
-                <h5 class="mb-0">Historial de Actividad</h5>
+                <h5 class="mb-0">Historial de la Deuda</h5>
             </div>
             <div class="card-body">
                 <?php if($result_historial->num_rows > 0): ?>
                     <div class="timeline">
                         <?php while($historial = $result_historial->fetch_assoc()): ?>
                             <div class="timeline-item">
-                                <div class="timeline-date">
-                                    <?php echo date('d/m/Y H:i', strtotime($historial['created_at'])); ?>
-                                </div>
+                                <div class="timeline-marker"></div>
                                 <div class="timeline-content">
-                                    <h6><?php echo ucfirst($historial['accion']); ?></h6>
-                                    <p><?php echo htmlspecialchars($historial['detalle']); ?></p>
-                                    <small>Por: <?php echo htmlspecialchars($historial['usuario_nombre'] ?? 'Sistema'); ?></small>
+                                    <h6 class="timeline-title">
+                                        <?php echo ucfirst($historial['accion']); ?>
+                                        <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($historial['created_at'])); ?></small>
+                                    </h6>
+                                    <p class="timeline-text">
+                                        <?php echo isset($historial['descripcion']) ? htmlspecialchars($historial['descripcion']) : ''; ?>
+                                        <?php if(!empty($historial['usuario_nombre'])): ?>
+                                            <br><small>Por: <?php echo htmlspecialchars($historial['usuario_nombre']); ?></small>
+                                        <?php endif; ?>
+                                    </p>
                                 </div>
                             </div>
                         <?php endwhile; ?>
                     </div>
                 <?php else: ?>
                     <div class="alert alert-info">
-                        No hay registros de actividad para esta deuda.
+                        No hay registros en el historial de esta deuda.
                     </div>
                 <?php endif; ?>
             </div>
@@ -366,460 +305,314 @@ function getEstadoBadge($estado) {
     </div>
 </div>
 
-<div class="modal fade" id="imprimirModal" tabindex="-1" aria-labelledby="imprimirModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
+<!-- Modal para eliminar deuda -->
+<div class="modal fade" id="eliminarDeudaModal" tabindex="-1" aria-labelledby="eliminarDeudaModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="imprimirModalLabel">Vista previa del comprobante</h5>
+                <h5 class="modal-title" id="eliminarDeudaModalLabel">Confirmar Eliminación</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body" id="comprobante-contenido">
-                <!-- Contenido del comprobante -->
-                <div class="comprobante-header text-center">
-                    <h3>Comprobante de Deuda</h3>
-                    <p>Sistema de Cobranzas</p>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-6">
-                        <p><strong>Cliente:</strong> <?php echo htmlspecialchars($deuda['cliente_nombre']); ?></p>
-                        <p><strong>Identificación:</strong> <?php echo htmlspecialchars($deuda['cliente_identificacion']); ?></p>
-                    </div>
-                    <div class="col-6 text-end">
-                        <p><strong>Fecha:</strong> <?php echo date('d/m/Y'); ?></p>
-                        <p><strong>Deuda #:</strong> <?php echo $deuda_id; ?></p>
-                    </div>
-                </div>
-                <hr>
-                <div class="row">
-                    <div class="col-12">
-                        <h5>Detalles de la Deuda</h5>
-                        <table class="table table-bordered">
-                            <tr>
-                                <th>Descripción</th>
-                                <td><?php echo htmlspecialchars($deuda['descripcion']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Monto Original</th>
-                                <td><?php echo formatMoney($deuda['monto']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Saldo Pendiente</th>
-                                <td><?php echo formatMoney($deuda['saldo_pendiente']); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Fecha de Emisión</th>
-                                <td><?php echo date('d/m/Y', strtotime($deuda['fecha_emision'])); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Fecha de Vencimiento</th>
-                                <td><?php echo date('d/m/Y', strtotime($deuda['fecha_vencimiento'])); ?></td>
-                            </tr>
-                            <tr>
-                                <th>Estado</th>
-                                <td>
-                                    <?php if($deuda['estado'] == 'pendiente'): ?>
-                                        Pendiente
-                                    <?php elseif($deuda['estado'] == 'pagado'): ?>
-                                        Pagado
-                                    <?php elseif($deuda['estado'] == 'vencido'): ?>
-                                        Vencido
-                                    <?php endif; ?>
-                                </td>
-                            </tr>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-12">
-                        <h5>Plan de Cuotas</h5>
-                        <table class="table table-bordered">
-                            <thead>
-                                <tr>
-                                    <th>Cuota</th>
-                                    <th>Monto</th>
-                                    <th>Vencimiento</th>
-                                    <th>Estado</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php 
-                                // Reiniciar el puntero del resultado
-                                $result_cuotas->data_seek(0);
-                                while($cuota = $result_cuotas->fetch_assoc()): 
-                                ?>
-                                <tr>
-                                    <td><?php echo $cuota['numero_cuota']; ?></td>
-                                    <td><?php echo formatMoney($cuota['monto_cuota']); ?></td>
-                                    <td><?php echo date('d/m/Y', strtotime($cuota['fecha_vencimiento'])); ?></td>
-                                    <td>
-                                        <?php if($cuota['estado'] == 'pendiente'): ?>
-                                            Pendiente
-                                        <?php elseif($cuota['estado'] == 'pagado'): ?>
-                                            Pagado
-                                        <?php elseif($cuota['estado'] == 'vencido'): ?>
-                                            Vencido
-                                        <?php endif; ?>
-                                    </td>
-                                </tr>
-                                <?php endwhile; ?>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-                
-                <div class="row mt-4">
-                    <div class="col-12 text-center">
-                        <p>Este documento no tiene validez fiscal. Es solo un comprobante informativo.</p>
-                    </div>
-                </div>
+            <div class="modal-body">
+                <p>¿Estás seguro de que deseas eliminar esta deuda? Esta acción no se puede deshacer.</p>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                <button type="button" class="btn btn-primary" onclick="printComprobante()">Imprimir</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="eliminar_deuda.php?id=<?php echo $deuda_id; ?>" class="btn btn-danger">Eliminar</a>
             </div>
         </div>
     </div>
 </div>
 
-<style>
-    .timeline {
-        position: relative;
-        padding: 20px 0;
-    }
-    
-    .timeline-item {
-        position: relative;
-        margin-bottom: 20px;
-        padding-left: 30px;
-        border-left: 2px solid var(--border-color);
-    }
-    
-    .timeline-date {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 5px;
-    }
-    
-    .timeline-content {
-        background-color: var(--card-bg);
-        padding: 15px;
-        border-radius: 5px;
-    }
-    
-    .info-section-title {
-        border-bottom: 2px solid #121a35;
-        padding-bottom: 8px;
-        margin-bottom: 15px;
-    }
-    
-    .bg-custom {
-        background-color: #121a35;
-    }
-    
-    /* Dark mode adaptations */
-    body.dark-mode {
-        background-color: #121a35;
-        color: #e9ecef;
-    }
-    
-    body.dark-mode .info-section-title {
-        border-bottom-color: #2a3c70;
-    }
-    
-    body.dark-mode .card,
-    body.dark-mode .dark-mode-element {
-        background-color: #1e2337;
-        border-color: #2a3c70;
-        color: #e9ecef;
-    }
-    
-    body.dark-mode .list-group-item {
-        background-color: #1e2337;
-        border-color: #2a3c70;
-        color: #e9ecef;
-    }
-    
-    body.dark-mode .modal-content {
-        background-color: #1e2337;
-        color: #e9ecef;
-    }
-    
-    body.dark-mode .table {
-        color: #e9ecef;
-    }
-    
-    body.dark-mode .table-bordered,
-    body.dark-mode .table-bordered th,
-    body.dark-mode .table-bordered td {
-        border-color: #2a3c70;
-    }
-    
-    body.dark-mode .alert-info {
-        background-color: #0d2e45;
-        color: #9eeaf9;
-        border-color: #0f5885;
-    }
-    
-    body.dark-mode .bg-light {
-        background-color: #1e2337 !important;
-    }
-    
-    body.dark-mode .text-dark {
-        color: #e9ecef !important;
-    }
-    
-    /* CSS variables for theme consistency */
-    :root {
-        --border-color: #dee2e6;
-        --text-muted: #6c757d;
-        --card-bg: #f8f9fa;
-    }
-    
-    body.dark-mode {
-        --border-color: #2a3c70;
-        --text-muted: #adb5bd;
-        --card-bg: #2a3c70;
-    }
-    
-    @media print {
-        body * {
-            visibility: hidden;
-        }
-        #comprobante-contenido, #comprobante-contenido * {
-            visibility: visible;
-        }
-        #comprobante-contenido {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background-color: white !important;
-            color: black !important;
-        }
-        
-        #comprobante-contenido .table {
-            color: black !important;
-        }
-        
-        #comprobante-contenido .table-bordered,
-        #comprobante-contenido .table-bordered th,
-        #comprobante-contenido .table-bordered td {
-            border-color: #dee2e6 !important;
-        }
-    }
-</style>
+<!-- Modal para ver comprobante -->
+<div class="modal fade" id="comprobanteModal" tabindex="-1" aria-labelledby="comprobanteModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="comprobanteModalLabel">Comprobante de Pago</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="comprobanteImg" src="" class="img-fluid" alt="Comprobante de pago">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <a id="descargarComprobante" href="" download class="btn btn-primary">Descargar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <script>
-    // Apply theme-specific classes to elements when theme changes
-    document.addEventListener('DOMContentLoaded', function() {
-        // Check if there's a theme preference stored
-        const isDarkMode = localStorage.getItem('darkMode') === 'true';
-        
-        // Apply dark mode if it's enabled
-        if (isDarkMode) {
-            document.body.classList.add('dark-mode');
-            applyDarkModeStyles();
-        }
-        
-        // Listen for theme changes
-        document.addEventListener('click', function(e) {
-            if (e.target && e.target.id === 'darkModeButton') {
-                setTimeout(function() {
-                    const isDarkModeNow = document.body.classList.contains('dark-mode');
-                    if (isDarkModeNow) {
-                        applyDarkModeStyles();
-                    } else {
-                        removeDarkModeStyles();
-                    }
-                }, 100);
-            }
-        });
-    });
-    
-    function applyDarkModeStyles() {
-        // Apply dark mode styles to specific elements
-        document.querySelectorAll('.card, .list-group-item, .modal-content, .table').forEach(el => {
-            el.classList.add('dark-mode-element');
-        });
-        
-        // Update table styles
-        document.querySelectorAll('.table-bordered, .table-bordered th, .table-bordered td').forEach(el => {
-            el.style.borderColor = '#2a3c70';
-        });
-        
-        // Update alert styles
-        document.querySelectorAll('.alert-info').forEach(el => {
-            el.style.backgroundColor = '#0d2e45';
-            el.style.color = '#9eeaf9';
-            el.style.borderColor = '#0f5885';
-        });
-    }
-    
-    function removeDarkModeStyles() {
-        // Remove dark mode styles
-        document.querySelectorAll('.card, .list-group-item, .modal-content, .table').forEach(el => {
-            el.classList.remove('dark-mode-element');
-        });
-        
-        // Reset table styles
-        document.querySelectorAll('.table-bordered, .table-bordered th, .table-bordered td').forEach(el => {
-            el.style.borderColor = '';
-        });
-        
-        // Reset alert styles
-        document.querySelectorAll('.alert-info').forEach(el => {
-            el.style.backgroundColor = '';
-            el.style.color = '';
-            el.style.borderColor = '';
-        });
-    }
-    
-    function imprimirComprobante() {
-        var modal = new bootstrap.Modal(document.getElementById('imprimirModal'));
-        modal.show();
-    }
-    
-    function printComprobante() {
-        window.print();
-    }
+// Función para ver comprobante
+function verComprobante(rutaComprobante) {
+    document.getElementById('comprobanteImg').src = '../../../../uploads/comprobantes/' + rutaComprobante;
+    document.getElementById('descargarComprobante').href = '../../../../uploads/comprobantes/' + rutaComprobante;
+    var comprobanteModal = new bootstrap.Modal(document.getElementById('comprobanteModal'));
+    comprobanteModal.show();
+}
 
+// Función para eliminar pago
+function eliminarPago(pagoId) {
+    if (confirm('¿Estás seguro de que deseas eliminar este pago? Esta acción no se puede deshacer.')) {
+        window.location.href = 'eliminar_pago.php?id=' + pagoId + '&deuda_id=<?php echo $deuda_id; ?>';
+    }
+}
+
+// Función para imprimir comprobante
+function imprimirComprobante() {
+    window.open('generar_pdf_deuda.php?id=<?php echo $deuda_id; ?>', '_blank');
+}
 </script>
 
 <style>
-    .timeline {
-        position: relative;
-        padding: 20px 0;
+    /* Estilos generales */
+    .content-wrapper {
+        padding: 20px;
     }
     
-    .timeline-item {
-        position: relative;
+    .card {
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         margin-bottom: 20px;
-        padding-left: 30px;
-        border-left: 2px solid var(--border-color);
+        transition: all 0.3s ease;
     }
     
-    .timeline-date {
-        font-size: 0.8rem;
-        color: var(--text-muted);
-        margin-bottom: 5px;
-    }
-    
-    .timeline-content {
-        background-color: var(--card-bg);
-        padding: 15px;
-        border-radius: 5px;
-    }
-    
-    .info-section-title {
-        border-bottom: 2px solid #121a35;
-        padding-bottom: 8px;
-        margin-bottom: 15px;
+    .card-header {
+        border-radius: 8px 8px 0 0;
+        font-weight: 600;
     }
     
     .bg-custom {
         background-color: #121a35;
     }
     
-    /* Dark mode adaptations */
-    body.dark-mode {
-        background-color: #121a35;
-        color: #e9ecef;
+    .info-section-title {
+        color: #121a35;
+        border-bottom: 2px solid #121a35;
+        padding-bottom: 8px;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
+    
+    /* Estilos para la tabla */
+    .table {
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+        border-bottom: 2px solid #dee2e6;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    /* Estilos para la línea de tiempo */
+    .timeline {
+        position: relative;
+        padding: 20px 0;
+    }
+    
+    .timeline:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 15px;
+        height: 100%;
+        width: 2px;
+        background: #dee2e6;
+    }
+    
+    .timeline-item {
+        position: relative;
+        margin-bottom: 25px;
+        padding-left: 40px;
+    }
+    
+    .timeline-marker {
+        position: absolute;
+        top: 5px;
+        left: 0;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        background: #121a35;
+        border: 4px solid #fff;
+    }
+    
+    .timeline-title {
+        margin-bottom: 5px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .timeline-text {
+        margin-bottom: 0;
+    }
+    
+    /* Estilos para modo oscuro */
+    body.dark-mode .card {
+        background-color: #1e2746;
+        border-color: #2a3356;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    }
+    
+    body.dark-mode .card-header:not(.bg-custom) {
+        background-color: #2a3356;
+        color: #fff;
+        border-color: #3a4366;
+    }
+    
+    body.dark-mode .card-body {
+        color: #fff;
     }
     
     body.dark-mode .info-section-title {
-        border-bottom-color: #2a3c70;
-    }
-    
-    body.dark-mode .card,
-    body.dark-mode .dark-mode-element {
-        background-color: #1e2337;
-        border-color: #2a3c70;
-        color: #e9ecef;
+        color: #fff;
+        border-bottom-color: #764AF1;
     }
     
     body.dark-mode .list-group-item {
-        background-color: #1e2337;
-        border-color: #2a3c70;
-        color: #e9ecef;
+        background-color: #2a3356;
+        color: #fff;
+        border-color: #3a4366;
     }
     
-    body.dark-mode .modal-content {
-        background-color: #1e2337;
-        color: #e9ecef;
+    body.dark-mode .list-group-item a {
+        color: #8be9fd;
+    }
+    
+    body.dark-mode .text-muted {
+        color: #adb5bd !important;
     }
     
     body.dark-mode .table {
-        color: #e9ecef;
+        color: #fff;
     }
     
-    body.dark-mode .table-bordered,
-    body.dark-mode .table-bordered th,
-    body.dark-mode .table-bordered td {
-        border-color: #2a3c70;
+    body.dark-mode .table th {
+        background-color: #2a3356;
+        color: #fff;
+        border-color: #3a4366;
+    }
+    
+    body.dark-mode .table td {
+        border-color: #3a4366;
+    }
+    
+    body.dark-mode .table-hover tbody tr:hover {
+        background-color: rgba(118, 74, 241, 0.1);
     }
     
     body.dark-mode .alert-info {
-        background-color: #0d2e45;
-        color: #9eeaf9;
-        border-color: #0f5885;
+        background-color: rgba(13, 202, 240, 0.1);
+        color: #0dcaf0;
+        border-color: rgba(13, 202, 240, 0.2);
     }
     
-    body.dark-mode .bg-light {
-        background-color: #1e2337 !important;
+    body.dark-mode .timeline:before {
+        background: #3a4366;
     }
     
-    body.dark-mode .text-dark {
-        color: #e9ecef !important;
+    body.dark-mode .timeline-marker {
+        background: #764AF1;
+        border-color: #1e2746;
     }
     
-    /* Remove hover effect from cuotas table */
-    .card-body .table tr:hover {
-        background-color: inherit !important;
+    body.dark-mode .btn-light {
+        background-color: #2a3356;
+        border-color: #3a4366;
+        color: #fff;
     }
     
-    body.dark-mode .card-body .table tr:hover {
-        background-color: inherit !important;
+    body.dark-mode .btn-light:hover {
+        background-color: #3a4366;
+        color: #fff;
     }
     
-    /* CSS variables for theme consistency */
-    :root {
-        --border-color: #dee2e6;
-        --text-muted: #6c757d;
-        --card-bg: #f8f9fa;
+    body.dark-mode .btn-outline-info {
+        color: #0dcaf0;
+        border-color: #0dcaf0;
     }
     
-    body.dark-mode {
-        --border-color: #2a3c70;
-        --text-muted: #adb5bd;
-        --card-bg: #2a3c70;
+    body.dark-mode .btn-outline-info:hover {
+        background-color: #0dcaf0;
+        color: #000;
     }
     
+    body.dark-mode .modal-content {
+        background-color: #1e2746;
+        color: #fff;
+    }
+    
+    body.dark-mode .modal-header, 
+    body.dark-mode .modal-footer {
+        border-color: #3a4366;
+    }
+    
+    body.dark-mode .btn-close {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    
+    /* Estilos para la tarjeta de información de mora en modo oscuro */
+    body.dark-mode .card.bg-light {
+        background-color: #2a3356 !important;
+    }
+    
+    body.dark-mode .card.bg-light .card-title {
+        color: #ff6b6b;
+    }
+    
+    body.dark-mode .card.bg-light .list-group-item {
+        background-color: #1e2746;
+    }
+    
+    /* Mejoras para modo claro */
+    .card-header.bg-custom h4,
+    .card-header.bg-custom h5 {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        font-weight: 600;
+    }
+    
+    .list-group-item {
+        border-left: none;
+        border-right: none;
+    }
+    
+    .list-group-item:first-child {
+        border-top: none;
+    }
+    
+    .list-group-item:last-child {
+        border-bottom: none;
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+    
+    /* Estilos para impresión */
     @media print {
-        body * {
-            visibility: hidden;
+        .content-wrapper {
+            margin-left: 0;
+            padding: 0;
         }
-        #comprobante-contenido, #comprobante-contenido * {
-            visibility: visible;
+        .card {
+            box-shadow: none;
+            border: 1px solid #ddd;
         }
-        #comprobante-contenido {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            background-color: white !important;
-            color: black !important;
+        .card-header.bg-custom {
+            background-color: #f8f9fa !important;
+            color: #000 !important;
         }
-        
-        #comprobante-contenido .table {
-            color: black !important;
-        }
-        
-        #comprobante-contenido .table-bordered,
-        #comprobante-contenido .table-bordered th,
-        #comprobante-contenido .table-bordered td {
-            border-color: #dee2e6 !important;
+        .btn, .sidebar {
+            display: none;
         }
     }
 </style>

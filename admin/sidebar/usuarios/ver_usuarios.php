@@ -45,7 +45,7 @@ $conn = $pdo;
                       <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
                           <i class="bi bi-person-plus"></i> Nuevo Usuario
                       </button>
-                      <button onclick="window.location.href='generar_pdf.php'" class="btn btn-light">
+                      <button onclick="window.location.href='generar01_pdf.php'" class="btn btn-light">
                           <i class="bi bi-printer"></i> Imprimir
                       </button>
                   </div>
@@ -108,9 +108,6 @@ $conn = $pdo;
                                       <?php endif; ?>
                                   </td>
                                   <td>
-                                      <button class="btn btn-sm btn-custom-info" onclick="verUsuario(<?php echo $row['id']; ?>)">
-                                          <i class="bi bi-eye"></i> Ver
-                                      </button>
                                       <button class="btn btn-sm btn-primary" onclick="editarUsuario(<?php echo $row['id']; ?>)">
                                           <i class="bi bi-pencil"></i> Editar
                                       </button>
@@ -217,7 +214,6 @@ $conn = $pdo;
     }
   </script>
 
-  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -168,7 +168,7 @@
     <ul class="menu">
       <!-- Inicio -->
       <li class="menu-item">
-        <a href="" class="menu-link">
+        <a href="/sistemacobranzas/gestor/index.php" class="menu-link">
           <i class="bi bi-house-door icono-menu"></i> Inicio
         </a>
       </li>
@@ -181,7 +181,7 @@
         </a>
         <ul class="submenu">
           <li>
-            <a href="#">
+            <a href="/sistemacobranzas/gestor/sidebar/clientes/ver_clientes.php">
               <i class="bi bi-eye"></i> Ver Clientes
             </a>
           </li>

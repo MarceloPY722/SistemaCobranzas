@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id'])) {
 $stmt = $conn->prepare("UPDATE usuarios SET last_activity = NOW() WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 
-include '../../../admin/include/sidebar.php';
+include '../../inc/sidebar.php';
 
 ?>
 <div class="content-wrapper">

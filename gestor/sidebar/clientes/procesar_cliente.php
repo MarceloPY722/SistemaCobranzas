@@ -11,13 +11,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $direccion = isset($_POST['direccion']) ? $_POST['direccion'] : '';
     $telefono = isset($_POST['telefono']) ? $_POST['telefono'] : '';
     
-    // Validar que los campos requeridos no estén vacíos
     if (empty($nombre) || empty($email) || empty($password) || empty($identificacion)) {
         header('Location: agregar.php?error=campos_vacios');
         exit();
     }
     
-    // Verificar si el email ya existe
     $stmt = $conn->prepare("SELECT id FROM clientes WHERE email = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
@@ -28,7 +26,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    // Verificar si la identificación ya existe
     $stmt = $conn->prepare("SELECT id FROM clientes WHERE identificacion = ?");
     $stmt->bind_param("s", $identificacion);
     $stmt->execute();
@@ -39,7 +36,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit();
     }
     
-    // Verificar si el teléfono ya existe (si se proporcionó)
     if (!empty($telefono)) {
         $stmt = $conn->prepare("SELECT id FROM clientes WHERE telefono = ?");
         $stmt->bind_param("s", $telefono);

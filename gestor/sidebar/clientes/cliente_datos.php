@@ -1,4 +1,4 @@
-<?php include '../../../admin/include/sidebar.php'; ?>
+<?php include '../../inc/sidebar.php'; ?>
 
 <!-- Remove these map-related includes -->
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
@@ -15,8 +15,6 @@ if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
 
 $cliente_id = $_GET['id'];
 
-// Consulta modificada para obtener los datos del cliente
-// Eliminamos la referencia a usuario_id que no existe
 $query = "SELECT c.* 
           FROM clientes c 
           WHERE c.id = ?";
@@ -32,7 +30,6 @@ if ($result->num_rows === 0) {
 
 $cliente = $result->fetch_assoc();
 
-// Consulta para obtener las deudas del cliente
 $query_deudas = "SELECT d.*, p.nombre as politica_nombre, p.tasa 
                 FROM deudas d 
                 JOIN politicas_interes p ON d.politica_interes_id = p.id 
@@ -113,9 +110,7 @@ $result_reclamos = $stmt_reclamos->get_result();
                                             </div>
                                         </div>
                                         <div class="d-grid gap-2 mt-3">
-                                            <a href="editar_cliente.php?id=<?php echo $cliente['id']; ?>" class="btn btn-primary">
-                                                <i class="bi bi-pencil-square"></i> Editar Cliente
-                                            </a>
+                                            
                                             <a href="agregar_deuda.php?cliente_id=<?php echo $cliente['id']; ?>" class="btn btn-success">
                                                 <i class="bi bi-plus-circle"></i> Agregar Deuda
                                             </a>

@@ -2,7 +2,7 @@
 // Iniciar buffer de salida para evitar "headers already sent"
 ob_start();
 
-include '../../../../admin/include/sidebar.php';
+<?php include '../../../inc/sidebar.php'; ?>
 require_once '../../cnx.php';
 
 // Verificar si se proporcionó un ID de deuda

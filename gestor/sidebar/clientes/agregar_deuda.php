@@ -62,37 +62,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $final_cliente_id = $post_cliente_id;
     }
-    
-    // Validaciones básicas
     $errores = [];
-    
     if (!$final_cliente_id) {
         $errores[] = "Debe seleccionar un cliente válido";
     }
-    
     if (!$politica_interes_id) {
         $errores[] = "Debe seleccionar una política de interés válida";
     }
-    
     if (!$monto || $monto <= 0) {
         $errores[] = "El monto debe ser un valor positivo";
     }
-    
     if (!$fecha_emision) {
         $errores[] = "La fecha de emisión es requerida";
     }
-    
     if (!$fecha_vencimiento) {
         $errores[] = "La fecha de vencimiento es requerida";
     }
-    
-    // Si no hay errores, proceder a guardar
     if (empty($errores)) {
         try {
-            // El saldo pendiente inicialmente es igual al monto total
             $saldo_pendiente = $monto;
-            
-            // Insertar la deuda
             $stmt = $conn->prepare("INSERT INTO deudas (cliente_id, politica_interes_id, monto, fecha_emision, saldo_pendiente, descripcion, fecha_vencimiento, notas) 
                      VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
             
@@ -121,11 +109,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 }
-
-include '../../../admin/include/sidebar.php';
+include '../../inc/sidebar.php';
 ?>
 
-<!-- Contenido principal -->
 <div class="content-wrapper">
     <div class="container-fluid">
         <div class="row">
@@ -144,7 +130,6 @@ include '../../../admin/include/sidebar.php';
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         <?php endif; ?>
-                        
                         <?php if (!empty($errores)): ?>
                             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                                 <ul class="mb-0">
@@ -155,7 +140,6 @@ include '../../../admin/include/sidebar.php';
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                             </div>
                         <?php endif; ?>
-                        
                         <form method="POST" action="" class="needs-validation" novalidate>
                             <?php if (!$cliente_id): ?>
                             <div class="row mb-3">
@@ -175,7 +159,6 @@ include '../../../admin/include/sidebar.php';
                             <?php else: ?>
                                 <input type="hidden" name="cliente_id" value="<?php echo $cliente_id; ?>">
                             <?php endif; ?>
-                            
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="politica_interes_id" class="form-label required">Política de Interés</label>
@@ -195,7 +178,6 @@ include '../../../admin/include/sidebar.php';
                                     <div class="invalid-feedback">Por favor ingrese un monto válido</div>
                                 </div>
                             </div>
-                            
                             <div class="row mb-3">
                                 <div class="col-md-12">
                                     <label for="descripcion" class="form-label required">Descripción de la Deuda</label>
@@ -203,7 +185,6 @@ include '../../../admin/include/sidebar.php';
                                     <div class="invalid-feedback">Por favor ingrese una descripción</div>
                                 </div>
                             </div>
-                            
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="fecha_emision" class="form-label required">Fecha de Emisión</label>
@@ -216,12 +197,10 @@ include '../../../admin/include/sidebar.php';
                                     <div class="invalid-feedback">Por favor seleccione una fecha de vencimiento</div>
                                 </div>
                             </div>
-                            
                             <div class="mb-3">
                                 <label for="notas" class="form-label">Notas Adicionales</label>
                                 <textarea name="notas" id="notas" class="form-control" rows="3"><?php echo isset($_POST['notas']) ? htmlspecialchars($_POST['notas']) : ''; ?></textarea>
                             </div>
-                            
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                                 <a href="<?php echo $cliente_id ? 'cliente_datos.php?id=' . $cliente_id : 'ver_clientes.php'; ?>" class="btn btn-secondary me-md-2">
                                     <i class="bi bi-x-circle"></i> Cancelar
