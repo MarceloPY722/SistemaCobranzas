@@ -47,6 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // If password verification is successful
             if (isset($clienteAuth['password']) && password_verify($password, $clienteAuth['password'])) {
                 $_SESSION['user_id'] = $cliente['id'];
+                $_SESSION['cliente_id'] = $cliente['id']; // Add this line to set cliente_id
                 $_SESSION['role'] = 'Cliente';
                 $_SESSION['nombre'] = $cliente['nombre'];
                 $_SESSION['email'] = $cliente['email'];
@@ -56,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
         
-        // If we get here, authentication failed
         header('Location: index.php?error=1');
         exit();
     }
@@ -93,7 +93,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <div class="input-group">
             <i class="bi bi-lock-fill input-icon"></i>
-            <input type="password" name="password" placeholder="Contraseña" required>
+            <input type="password" name="password" id="password" placeholder="Contraseña" required>
+            <i class="bi bi-eye-slash password-toggle" id="togglePassword"></i>
         </div>
         <button type="submit">
             <i class="bi bi-box-arrow-in-right"></i> Ingresar
@@ -117,6 +118,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
         });
+        
+        // Password visibility toggle
+        const togglePassword = document.getElementById('togglePassword');
+        const password = document.getElementById('password');
+        
+        if (togglePassword && password) {
+            togglePassword.addEventListener('click', function() {
+                // Toggle type attribute
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                // Toggle icon
+                this.classList.toggle('bi-eye');
+                this.classList.toggle('bi-eye-slash');
+            });
+        }
     });
 </script>
 
@@ -285,5 +302,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     .signup-link a:hover {
         color: #1a2547;
         text-decoration: underline;
+    }
+    
+    /* Password toggle icon */
+    .password-toggle {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #121a35;
+        font-size: 18px;
+        cursor: pointer;
+        z-index: 10;
+    }
+    
+    .password-toggle:hover {
+        color: #1a2547;
     }
 </style>

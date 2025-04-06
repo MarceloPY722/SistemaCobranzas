@@ -1,8 +1,13 @@
 <?php
+// Start output buffering to prevent any output before PDF
+ob_start();
+
 require_once '../../cnx.php';
 require('../../../../fpdf/fpdf.php');
 
 if (!isset($_GET['id']) || !is_numeric($_GET['id'])) {
+    // Redirect instead of outputting error messages
+    ob_end_clean(); // Clear buffer
     header('Location: ../../ver_clientes.php?error=id_invalido');
     exit();
 }
@@ -16,185 +21,202 @@ $query = "SELECT d.*, c.nombre as cliente_nombre, c.id as cliente_id,
           JOIN clientes c ON d.cliente_id = c.id
           JOIN politicas_interes p ON d.politica_interes_id = p.id
           WHERE d.id = ?";
+
 $stmt = $conn->prepare($query);
 $stmt->bind_param("i", $deuda_id);
 $stmt->execute();
 $result = $stmt->get_result();
 
 if ($result->num_rows === 0) {
+    // Redirect instead of outputting error messages
+    ob_end_clean(); // Clear buffer
     header('Location: ../../ver_clientes.php?error=deuda_no_encontrada');
     exit();
 }
 
 $deuda = $result->fetch_assoc();
 
-// Consulta para obtener los pagos relacionados con esta deuda
-$query_pagos = "SELECT * FROM pagos WHERE deuda_id = ? ORDER BY fecha_pago DESC";
+// Consulta para obtener los pagos de la deuda
+$query_pagos = "SELECT * FROM pagos WHERE deuda_id = ? ORDER BY fecha_pago ASC";
 $stmt_pagos = $conn->prepare($query_pagos);
 $stmt_pagos->bind_param("i", $deuda_id);
 $stmt_pagos->execute();
 $result_pagos = $stmt_pagos->get_result();
 
-// Calcular días de atraso si está vencida
-$dias_atraso = 0;
-if ($deuda['estado'] == 'vencido') {
-    $fecha_vencimiento = new DateTime($deuda['fecha_vencimiento']);
-    $hoy = new DateTime();
-    $diff = $hoy->diff($fecha_vencimiento);
-    $dias_atraso = $diff->days;
-}
-
-// Calcular interés acumulado
-$interes_acumulado = 0;
-if ($deuda['estado'] == 'vencido') {
-    $interes_diario = ($deuda['tasa'] / 100) / 30; // Tasa mensual dividida por 30 días
-    $interes_acumulado = $deuda['saldo_pendiente'] * $interes_diario * $dias_atraso;
-}
-
 // Función para formatear dinero
 function formatMoney($amount) {
+    // Check if amount is null or not numeric
+    if ($amount === null || !is_numeric($amount)) {
+        return '0 Gs.';
+    }
     return number_format($amount, 0, ',', '.') . ' Gs.';
+}
+
+// Función para manejar caracteres especiales
+function utf8_to_win1252($text) {
+    if (!is_string($text) || $text === null) {
+        return '';
+    }
+    
+    // Reemplazos manuales para caracteres problemáticos
+    $text = str_replace('á', 'a', $text);
+    $text = str_replace('é', 'e', $text);
+    $text = str_replace('í', 'i', $text);
+    $text = str_replace('ó', 'o', $text);
+    $text = str_replace('ú', 'u', $text);
+    $text = str_replace('ñ', 'n', $text);
+    $text = str_replace('Á', 'A', $text);
+    $text = str_replace('É', 'E', $text);
+    $text = str_replace('Í', 'I', $text);
+    $text = str_replace('Ó', 'O', $text);
+    $text = str_replace('Ú', 'U', $text);
+    $text = str_replace('Ñ', 'N', $text);
+    
+    return $text;
 }
 
 // Crear PDF
 class PDF extends FPDF {
     function Header() {
-        // No incluimos encabezado predeterminado ya que lo haremos manualmente
+        // Logo - Fix the path to the logo image
+        // Using an absolute path to ensure the file is found
+        $logo_path = 'C:/laragon/www/sistemacobranzas/assets/img/logo.png';
+        
+        // Check if the file exists before trying to use it
+        if (file_exists($logo_path)) {
+            $this->Image($logo_path, 10, 10, 30);
+        }
+        
+        // Título
+        $this->SetFont('Arial', 'B', 15);
+        $this->Cell(0, 10, 'DETALLE DE DEUDA', 0, 1, 'C');
+        $this->Ln(5);
     }
     
     function Footer() {
         $this->SetY(-15);
         $this->SetFont('Arial', 'I', 8);
-        // Fix the encoding issue by using ASCII characters instead of UTF-8
-        $this->Cell(0, 10, 'Pagina ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
-    }
-    
-    // Función para dibujar un rectángulo con borde
-    function RectangleWithBorder($x, $y, $w, $h) {
-        $this->Rect($x, $y, $w, $h);
+        $this->Cell(0, 10, 'Página ' . $this->PageNo() . '/{nb}', 0, 0, 'C');
     }
 }
 
 $pdf = new PDF();
 $pdf->AliasNbPages();
 $pdf->AddPage();
-
-// Centered main title with better spacing
-$pdf->SetFont('Arial', 'B', 16);
-$pdf->SetXY(0, 15);
-$pdf->Cell(210, 10, 'COMPROBANTE DE DEUDA', 0, 1, 'C');
-
-// Encabezado con información del cliente - better positioned
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->SetXY(0, 30);
-$pdf->Cell(210, 7, 'Informacion Personal Del Cliente', 0, 1, 'C');
-
-// Client info in a bordered box
-
 $pdf->SetFont('Arial', '', 12);
-$pdf->SetXY(25, 45);
-$pdf->Cell(40, 7, 'Cliente', 0, 0);
-$pdf->Cell(100, 7, utf8_decode($deuda['cliente_nombre']), 0, 1);
-$pdf->SetX(25);
-$pdf->Cell(40, 7, 'Email', 0, 0);
-$pdf->Cell(100, 7, $deuda['email'], 0, 1);
-$pdf->SetX(25);
-$pdf->Cell(40, 7, 'Telefono', 0, 0);
-$pdf->Cell(100, 7, $deuda['telefono'], 0, 1);
-$pdf->SetX(25);
-$pdf->Cell(40, 7, 'CI', 0, 0);
-$pdf->Cell(100, 7, $deuda['identificacion'], 0, 1);
 
-
-// Etiquetas para los rectángulos - better positioned
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->SetXY(20, 80);
-$pdf->Cell(80, 10, 'INFORMACION', 0, 0, 'C');
-$pdf->SetXY(110, 80);
-$pdf->Cell(80, 10, 'POLITICA DE INTERES', 0, 0, 'C');
-
-// Información en el rectángulo izquierdo - better spacing
+// Información del cliente
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, 'Informacion del Cliente', 0, 1);
 $pdf->SetFont('Arial', '', 12);
-$pdf->SetXY(25, 90);
-$pdf->MultiCell(70, 7, 'Descripcion: ' . utf8_decode($deuda['descripcion']) . "\n\n" .
-                       'Monto Original: ' . formatMoney($deuda['monto']) . "\n\n" .
-                       'Saldo Pendiente: ' . formatMoney($deuda['saldo_pendiente']) . "\n\n" .
-                       'Fecha Emision: ' . date('d/m/Y', strtotime($deuda['fecha_emision'])) . "\n\n" .
-                       'Fecha Vencimiento: ' . date('d/m/Y', strtotime($deuda['fecha_vencimiento'])) . "\n\n" .
-                       'Estado: ' . ucfirst($deuda['estado']), 0, 'L');
+$pdf->Cell(40, 7, 'Cliente:', 0);
+$pdf->Cell(0, 7, $deuda['cliente_nombre'] ?? 'No disponible', 0, 1);
+$pdf->Cell(40, 7, 'Identificacion:', 0);
+$pdf->Cell(0, 7, $deuda['identificacion'] ?? 'No disponible', 0, 1);
+$pdf->Cell(40, 7, 'Telefono:', 0);
+$pdf->Cell(0, 7, $deuda['telefono'] ?? 'No disponible', 0, 1);
+$pdf->Cell(40, 7, 'Email:', 0);
+$pdf->Cell(0, 7, $deuda['email'] ?? 'No disponible', 0, 1);
+$pdf->Ln(5);
 
-// Información en el rectángulo derecho - better spacing
-$pdf->SetXY(115, 90);
-$pdf->MultiCell(70, 7, 'Politica: ' . utf8_decode($deuda['politica_nombre']) . "\n\n" .
-                       'Tasa de Interes: ' . $deuda['tasa'] . '% mensual' . "\n\n" .
-                       'Tipo: ' . ucfirst(utf8_decode($deuda['politica_tipo'])), 0, 'L');
+// Información de la deuda
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, 'Informacion de la Deuda', 0, 1);
+$pdf->SetFont('Arial', '', 12);
+$pdf->Cell(60, 7, 'Descripcion:', 0);
+$pdf->Cell(0, 7, utf8_to_win1252($deuda['descripcion'] ?? 'No disponible'), 0, 1);
+$pdf->Cell(60, 7, 'Monto Original:', 0);
+$pdf->Cell(0, 7, formatMoney($deuda['monto']), 0, 1);
+$pdf->Cell(60, 7, 'Saldo Pendiente:', 0);
+$pdf->Cell(0, 7, formatMoney($deuda['saldo_pendiente']), 0, 1);
+$pdf->Cell(60, 7, 'Fecha de Emision:', 0);
+$pdf->Cell(0, 7, $deuda['fecha_emision'] ? date('d/m/Y', strtotime($deuda['fecha_emision'])) : 'No disponible', 0, 1);
+$pdf->Cell(60, 7, 'Fecha de Vencimiento:', 0);
+$pdf->Cell(0, 7, $deuda['fecha_vencimiento'] ? date('d/m/Y', strtotime($deuda['fecha_vencimiento'])) : 'No disponible', 0, 1);
+$pdf->Cell(60, 7, 'Estado:', 0);
+$pdf->Cell(0, 7, ucfirst($deuda['estado'] ?? 'No disponible'), 0, 1);
+$pdf->Cell(60, 7, 'Politica de Interes:', 0);
+$pdf->Cell(0, 7, utf8_to_win1252($deuda['politica_nombre'] ?? 'No disponible') . ' (' . ($deuda['tasa'] ?? '0') . '%)', 0, 1);
+$pdf->Ln(5);
 
-// Si está vencida, agregar información de mora
-if($deuda['estado'] == 'vencido') {
-    $pdf->SetXY(115, 130);
-    $pdf->SetFont('Arial', 'B', 12);
-    $pdf->Cell(70, 7, 'Información de Mora:', 0, 1);
-    $pdf->SetFont('Arial', '', 11);
-    $pdf->SetX(115);
-    $pdf->MultiCell(70, 7, 'Días de Atraso: ' . $dias_atraso . ' días' . "\n" .
-                           'Interés Acumulado: ' . formatMoney($interes_acumulado) . "\n" .
-                           'Total a Pagar: ' . formatMoney($deuda['saldo_pendiente'] + $interes_acumulado), 0, 'L');
-}
+// Historial de pagos
+$pdf->SetFont('Arial', 'B', 12);
+$pdf->Cell(0, 10, 'Historial de Pagos', 0, 1);
 
-// Dibujar el rectángulo para pagos - better positioned
-$pdf->RectangleWithBorder(20, 195, 170, 80);
+// Add debug info about number of payments found
+$pdf->SetFont('Arial', '', 8);
+$pdf->Cell(0, 5, "ID de deuda consultado: {$deuda_id} - Pagos encontrados: {$result_pagos->num_rows}", 0, 1);
+$pdf->SetFont('Arial', '', 10);
 
-// Título de pagos centrado
-$pdf->SetXY(20, 195);
-$pdf->SetFont('Arial', 'B', 14);
-$pdf->Cell(170, 10, 'Pagos Realizados', 0, 1, 'C');
-
-// Información de pagos en el rectángulo inferior
-$pdf->SetFont('Arial', '', 11);
-
-if($result_pagos->num_rows > 0) {
-    $pdf->SetX(25);
-    $pdf->Cell(20, 7, 'ID', 1, 0, 'C');
-    $pdf->Cell(45, 7, 'Fecha', 1, 0, 'C');
-    $pdf->Cell(50, 7, 'Monto', 1, 0, 'C');
-    $pdf->Cell(45, 7, 'Método', 1, 0, 'C');
+if ($result_pagos->num_rows > 0) {
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->Cell(40, 7, 'Fecha', 1);
+    $pdf->Cell(40, 7, 'Monto', 1);
+    $pdf->Cell(40, 7, 'Método', 1);
+    $pdf->Cell(0, 7, 'Referencia', 1);
     $pdf->Ln();
     
     $pdf->SetFont('Arial', '', 10);
-    $count = 0;
-    while($pago = $result_pagos->fetch_assoc() && $count < 5) { // Increased to 5 payments
-        $pdf->SetX(25);
-        $pdf->Cell(20, 6, $pago['id'], 1, 0, 'C');
-        $pdf->Cell(45, 6, date('d/m/Y', strtotime($pago['fecha_pago'])), 1, 0, 'C');
-        $pdf->Cell(50, 6, formatMoney($pago['monto_pagado']), 1, 0, 'R');
-        $pdf->Cell(45, 6, utf8_decode($pago['metodo_pago']), 1, 0, 'C');
+    $total_pagado = 0;
+    
+    while ($pago = $result_pagos->fetch_assoc()) {
+        // Add debug info for each payment
+        $fecha = isset($pago['fecha_pago']) ? date('d/m/Y', strtotime($pago['fecha_pago'])) : 'N/A';
+        $monto = isset($pago['monto']) ? formatMoney($pago['monto']) : '0 Gs.';
+        $metodo = isset($pago['metodo_pago']) ? $pago['metodo_pago'] : 'N/A';
+        $referencia = isset($pago['referencia']) ? $pago['referencia'] : '';
+        
+        $pdf->Cell(40, 7, $fecha, 1);
+        $pdf->Cell(40, 7, $monto, 1);
+        $pdf->Cell(40, 7, $metodo, 1);
+        $pdf->Cell(0, 7, $referencia, 1);
         $pdf->Ln();
-        $count++;
+        
+        $total_pagado += isset($pago['monto']) ? $pago['monto'] : 0;
     }
     
-    if($result_pagos->num_rows > 5) {
-        $pdf->SetX(25);
-        $pdf->Cell(160, 6, '... y ' . ($result_pagos->num_rows - 5) . ' pagos más', 0, 1, 'C');
-    }
-    
-    // Add total amount paid
-    $query_total = "SELECT SUM(monto_pagado) as total FROM pagos WHERE deuda_id = ?";
-    $stmt_total = $conn->prepare($query_total);
-    $stmt_total->bind_param("i", $deuda_id);
-    $stmt_total->execute();
-    $result_total = $stmt_total->get_result();
-    $total_pagado = $result_total->fetch_assoc()['total'];
-    
-    $pdf->Ln(5);
-    $pdf->SetX(25);
-    $pdf->SetFont('Arial', 'B', 11);
-    $pdf->Cell(115, 7, 'Total Pagado:', 0, 0, 'R');
-    $pdf->Cell(45, 7, formatMoney($total_pagado), 0, 1, 'R');
+    $pdf->SetFont('Arial', 'B', 10);
+    $pdf->Cell(40, 7, 'Total Pagado:', 1);
+    $pdf->Cell(40, 7, formatMoney($total_pagado), 1);
+    $pdf->Cell(0, 7, '', 1);
+    $pdf->Ln();
 } else {
-    $pdf->SetX(25);
-    $pdf->Cell(160, 20, 'No hay pagos registrados para esta deuda.', 0, 1, 'C');
+    $pdf->SetFont('Arial', '', 10);
+    $pdf->Cell(0, 7, 'No hay pagos registrados para esta deuda.', 1, 1);
 }
 
+// Información de mora (si aplica)
+if (isset($deuda['estado']) && $deuda['estado'] == 'vencido') {
+    $pdf->Ln(5);
+    $pdf->SetFont('Arial', 'B', 12);
+    $pdf->Cell(0, 10, 'Información de Mora', 0, 1);
+    $pdf->SetFont('Arial', '', 12);
+    
+    // Calcular días de mora
+    $fecha_vencimiento = isset($deuda['fecha_vencimiento']) ? new DateTime($deuda['fecha_vencimiento']) : null;
+    $hoy = new DateTime();
+    $dias_mora = $fecha_vencimiento ? $hoy->diff($fecha_vencimiento)->days : 0;
+    
+    // Calcular interés acumulado
+    $interes_acumulado = 0;
+    if (isset($deuda['saldo_pendiente']) && isset($deuda['tasa']) && $fecha_vencimiento) {
+        if ($deuda['politica_tipo'] == 'diario') {
+            $interes_acumulado = ($deuda['saldo_pendiente'] * ($deuda['tasa'] / 100) * $dias_mora);
+        } else {
+            // Mensual (aproximado)
+            $interes_acumulado = ($deuda['saldo_pendiente'] * ($deuda['tasa'] / 100) * ($dias_mora / 30));
+        }
+    }
+    
+    $pdf->Cell(60, 7, 'Días de Mora:', 0);
+    $pdf->Cell(0, 7, $dias_mora . ' días', 0, 1);
+    $pdf->Cell(60, 7, 'Interés Acumulado:', 0);
+    $pdf->Cell(0, 7, formatMoney($interes_acumulado), 0, 1);
+    $pdf->Cell(60, 7, 'Total a Pagar:', 0);
+    $pdf->Cell(0, 7, formatMoney(($deuda['saldo_pendiente'] ?? 0) + $interes_acumulado), 0, 1);
+}
 
-$pdf->Output('Deuda_' . $deuda_id . '.pdf', 'I');
+// Clean any output and send the PDF
+ob_end_clean();
+$pdf->Output('I', 'Deuda_' . $deuda_id . '.pdf');
 ?>

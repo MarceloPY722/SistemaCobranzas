@@ -10,7 +10,6 @@ if (!isset($_SESSION['user_id']) || empty($_SESSION['user_id'])) {
     exit;
 }
 
-// Include database connection
 require_once 'cnx.php';
 
 // Get user ID from session

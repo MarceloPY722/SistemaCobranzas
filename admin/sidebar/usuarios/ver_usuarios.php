@@ -3,6 +3,9 @@
 <?php
 require_once '../../../admin/include/cnx.php';
 $conn = $pdo;
+
+// Procesar búsqueda si existe
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 ?>
 
   <!-- Contenido principal -->
@@ -41,10 +44,27 @@ $conn = $pdo;
           <div class="card">
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Usuarios</h4>
-                  <div>
+                  <div class="d-flex align-items-center">
                       <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
                           <i class="bi bi-person-plus"></i> Nuevo Usuario
                       </button>
+                      
+                      <!-- Barra de búsqueda -->
+                      <form action="" method="GET" class="d-flex me-2">
+                          <div class="input-group">
+                              <input type="text" class="form-control" 
+                                     name="busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
+                              <button class="btn btn-primary" type="submit">
+                                  <i class="bi bi-search"></i>
+                              </button>
+                              <?php if(!empty($busqueda)): ?>
+                              <a href="ver_usuarios.php" class="btn btn-outline-secondary">
+                                  <i class="bi bi-x-circle"></i>
+                              </a>
+                              <?php endif; ?>
+                          </div>
+                      </form>
+                      
                       <button onclick="window.location.href='generar01_pdf.php'" class="btn btn-light">
                           <i class="bi bi-printer"></i> Imprimir
                       </button>
@@ -69,14 +89,29 @@ $conn = $pdo;
                               // Consulta para obtener los usuarios con su rol
                               $query = "SELECT u.id, u.nombre, u.email, u.imagen, u.activo, r.nombre as rol_nombre 
                                         FROM usuarios u 
-                                        JOIN roles r ON u.rol_id = r.id
-                                        ORDER BY u.id DESC";
+                                        JOIN roles r ON u.rol_id = r.id";
+                              
+                              // Agregar condición de búsqueda si existe
+                              if (!empty($busqueda)) {
+                                  $query .= " WHERE u.nombre LIKE :busqueda_nombre";
+                              }
+                              
+                              $query .= " ORDER BY u.id DESC";
+                              
                               $stmt = $conn->prepare($query);
+                              
+                              // Vincular parámetros de búsqueda si existen
+                              if (!empty($busqueda)) {
+                                  $stmt->bindValue(':busqueda_nombre', '%' . $busqueda . '%', PDO::PARAM_STR);
+                              }
+                              
                               $stmt->execute();
                               
                               if (!$stmt) {
                                   die("Error en la consulta: " . $conn->errorInfo()[2]);
                               }
+                              
+                              $resultados = $stmt->rowCount();
                               
                               while($row = $stmt->fetch()):
                               ?>
@@ -117,6 +152,12 @@ $conn = $pdo;
                                   </td>
                               </tr>
                               <?php endwhile; ?>
+                              
+                              <?php if($resultados == 0 && !empty($busqueda)): ?>
+                              <tr>
+                                  <td colspan="7" class="text-center">No se encontraron usuarios que coincidan con "<?php echo htmlspecialchars($busqueda); ?>"</td>
+                              </tr>
+                              <?php endif; ?>
                           </tbody>
                       </table>
                   </div>
@@ -212,6 +253,77 @@ $conn = $pdo;
             window.location.href = `eliminar_usuario.php?id=${id}`;
         }
     }
+    
+    // Búsqueda en tiempo real
+    document.addEventListener('DOMContentLoaded', function() {
+        const searchInput = document.getElementById('searchInput');
+        const searchResults = document.getElementById('searchResults');
+        let typingTimer;
+        const doneTypingInterval = 300; // tiempo en ms
+        
+        searchInput.addEventListener('input', function() {
+            clearTimeout(typingTimer);
+            if (searchInput.value) {
+                typingTimer = setTimeout(fetchResults, doneTypingInterval);
+            } else {
+                searchResults.style.display = 'none';
+            }
+        });
+        
+        // Ocultar resultados cuando se hace clic fuera
+        document.addEventListener('click', function(e) {
+            if (e.target !== searchInput && e.target !== searchResults) {
+                searchResults.style.display = 'none';
+            }
+        });
+        
+        function fetchResults() {
+            const searchTerm = searchInput.value;
+            if (searchTerm.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+            
+            fetch(`buscar_usuarios_ajax.php?term=${encodeURIComponent(searchTerm)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        let html = '<ul class="list-group list-group-flush">';
+                        data.forEach(user => {
+                            html += `<li class="list-group-item list-group-item-action py-2" 
+                                        onclick="selectUser('${user.nombre}')">
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-2">
+                                                <img src="${user.imagen ? '/sistemacobranzas/uploads/usuarios/' + user.imagen : '/sistemacobranzas/uploads/profiles/default.png'}" 
+                                                     class="rounded-circle" width="30" height="30" alt="Perfil">
+                                            </div>
+                                            <div>
+                                                <strong>${user.nombre}</strong>
+                                                <div class="small text-muted">${user.email}</div>
+                                            </div>
+                                        </div>
+                                    </li>`;
+                        });
+                        html += '</ul>';
+                        searchResults.innerHTML = html;
+                        searchResults.style.display = 'block';
+                    } else {
+                        searchResults.innerHTML = '<div class="p-3 text-center text-muted">No se encontraron usuarios</div>';
+                        searchResults.style.display = 'block';
+                    }
+                })
+                .catch(error => {
+                    console.error('Error en la búsqueda:', error);
+                });
+        }
+        
+        window.selectUser = function(nombre) {
+            searchInput.value = nombre;
+            searchResults.style.display = 'none';
+            // Opcional: enviar el formulario automáticamente
+            searchInput.form.submit();
+        };
+    });
   </script>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>

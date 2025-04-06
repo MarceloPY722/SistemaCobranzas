@@ -237,7 +237,7 @@ $result_reclamos = $stmt_reclamos->get_result();
                                             <a href="deudas/ver_deuda.php?id=<?php echo $deuda['id']; ?>" class="btn btn-sm btn-info" title="Ver deuda">
                                                 <i class="bi bi-eye"></i> Ver detalles
                                             </a>
-                                            <a href="editar_deuda.php?id=<?php echo $deuda['id']; ?>" class="btn btn-sm btn-primary" title="Editar deuda">
+                                            <a href="deudas/editar_deuda.php?id=<?php echo $deuda['id']; ?>" class="btn btn-sm btn-primary" title="Editar deuda">
                                                 <i class="bi bi-pencil"></i> Editar
                                             </a>
                                             <button class="btn btn-sm btn-danger" onclick="eliminarDeuda(<?php echo $deuda['id']; ?>)" title="Eliminar deuda">

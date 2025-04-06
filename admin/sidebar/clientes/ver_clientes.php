@@ -3,6 +3,9 @@
 <?php
 require_once '../../../admin/include/cnx.php';
 $conn = $pdo;
+
+// Procesar búsqueda si existe
+$busqueda = isset($_GET['busqueda']) ? $_GET['busqueda'] : '';
 ?>
 
   <!-- Contenido principal -->
@@ -41,10 +44,27 @@ $conn = $pdo;
           <div class="card">
               <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                   <h4 class="mb-0">Lista de Clientes</h4>
-                  <div>
+                  <div class="d-flex align-items-center">
                       <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
                           <i class="bi bi-person-plus"></i> Nuevo Cliente
                       </button>
+                      
+                      <!-- Barra de búsqueda -->
+                      <form action="" method="GET" class="d-flex me-2">
+                          <div class="input-group">
+                              <input type="text" class="form-control" 
+                                     name="busqueda" value="<?php echo htmlspecialchars($busqueda); ?>">
+                              <button class="btn btn-primary" type="submit">
+                                  <i class="bi bi-search"></i>
+                              </button>
+                              <?php if(!empty($busqueda)): ?>
+                              <a href="ver_clientes.php" class="btn btn-outline-secondary">
+                                  <i class="bi bi-x-circle"></i>
+                              </a>
+                              <?php endif; ?>
+                          </div>
+                      </form>
+                      
                       <button onclick="window.location.href='generar2_pdf.php'" class="btn btn-light">
                           <i class="bi bi-printer"></i> Imprimir
                       </button>
@@ -68,14 +88,30 @@ $conn = $pdo;
                               <?php
                               // Consulta para obtener los clientes
                               $query = "SELECT id, nombre, identificacion, telefono, email, imagen 
-                                        FROM clientes 
-                                        ORDER BY id DESC";
+                                        FROM clientes";
+                              
+                              // Agregar condición de búsqueda si existe
+                              if (!empty($busqueda)) {
+                                  $query .= " WHERE nombre LIKE :busqueda_nombre OR identificacion LIKE :busqueda_id";
+                              }
+                              
+                              $query .= " ORDER BY id DESC";
+                              
                               $stmt = $conn->prepare($query);
+                              
+                              // Vincular parámetros de búsqueda si existen
+                              if (!empty($busqueda)) {
+                                  $stmt->bindValue(':busqueda_nombre', '%' . $busqueda . '%', PDO::PARAM_STR);
+                                  $stmt->bindValue(':busqueda_id', '%' . $busqueda . '%', PDO::PARAM_STR);
+                              }
+                              
                               $stmt->execute();
                               
                               if (!$stmt) {
                                   die("Error en la consulta: " . $conn->errorInfo()[2]);
                               }
+                              
+                              $resultados = $stmt->rowCount();
                               
                               while($row = $stmt->fetch()):
                               ?>
@@ -83,13 +119,13 @@ $conn = $pdo;
                                   <td><?php echo $row['id']; ?></td>
                                   <td>
                                       <?php if(!empty($row['imagen']) && $row['imagen'] != 'default.png'): ?>
-                                          <img src="/sistemacobranzas/uploads/clientes/<?php echo $row['imagen']; ?>" 
+                                          <img src="../../../uploads/profiles/<?php echo $row['imagen']; ?>" 
                                                alt="Perfil" 
                                                class="rounded-circle profile-image"
                                                width="40" 
                                                height="40">
                                       <?php else: ?>
-                                          <img src="/sistemacobranzas/uploads/profiles/default.png" 
+                                          <img src="../../../uploads/profiles/default.png" 
                                                alt="Perfil" 
                                                class="rounded-circle profile-image"
                                                width="40" 
@@ -113,6 +149,12 @@ $conn = $pdo;
                                   </td>
                               </tr>
                               <?php endwhile; ?>
+                              
+                              <?php if($resultados == 0 && !empty($busqueda)): ?>
+                              <tr>
+                                  <td colspan="7" class="text-center">No se encontraron clientes que coincidan con "<?php echo htmlspecialchars($busqueda); ?>"</td>
+                              </tr>
+                              <?php endif; ?>
                           </tbody>
                       </table>
                   </div>

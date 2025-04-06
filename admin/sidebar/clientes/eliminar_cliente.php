@@ -11,20 +11,24 @@ if (!isset($_GET['id']) || empty($_GET['id'])) {
 $cliente_id = intval($_GET['id']);
 
 // Obtener información del cliente antes de eliminarlo
-$query = "SELECT c.nombre, c.usuario_id FROM clientes c WHERE c.id = ?";
-$stmt = $conn->prepare($query);
-$stmt->bind_param("i", $cliente_id);
-$stmt->execute();
-$result = $stmt->get_result();
+$query_cliente = "SELECT c.nombre, c.id 
+                 FROM clientes c 
+                 WHERE c.id = ?";
+$stmt_cliente = $conn->prepare($query_cliente);
+$stmt_cliente->bind_param("i", $cliente_id);
+$stmt_cliente->execute();
+$result_cliente = $stmt_cliente->get_result();
 
-if ($result->num_rows === 0) {
+if ($result_cliente->num_rows === 0) {
     header('Location: ver_clientes.php?error=cliente_no_encontrado');
     exit();
 }
 
-$cliente = $result->fetch_assoc();
+$cliente = $result_cliente->fetch_assoc();
 $nombre_cliente = $cliente['nombre'];
-$usuario_id = $cliente['usuario_id'];
+
+// Remove this line as usuario_id doesn't exist in the query results
+// $usuario_id = $cliente['usuario_id'];
 
 // Iniciar transacción
 $conn->begin_transaction();
@@ -36,11 +40,14 @@ try {
     $stmt->bind_param("i", $cliente_id);
     $stmt->execute();
     
+    // Remove this block since we don't have usuario_id
+    /*
     // Luego eliminar el usuario asociado
     $delete_usuario = "DELETE FROM usuarios WHERE id = ?";
     $stmt = $conn->prepare($delete_usuario);
     $stmt->bind_param("i", $usuario_id);
     $stmt->execute();
+    */
     
     // Confirmar la transacción
     $conn->commit();
