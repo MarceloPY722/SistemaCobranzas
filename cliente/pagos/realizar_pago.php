@@ -82,7 +82,15 @@ $success_msg = '';
 
 // Procesar el formulario de pago
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['realizar_pago'])) {
-    $monto_pagado = isset($_POST['monto_pagado']) ? floatval(str_replace('.', '', $_POST['monto_pagado'])) : 0;
+    // Asegurarse de que el monto sea un número entero sin formato
+    if (isset($_POST['monto_pagado_raw'])) {
+        // Si viene de una cuota seleccionada, usar el valor oculto
+        $monto_pagado = intval($_POST['monto_pagado_raw']);
+    } else {
+        // Si no, procesar el valor ingresado manualmente
+        $monto_pagado = isset($_POST['monto_pagado']) ? round(intval(preg_replace('/\D/', '', $_POST['monto_pagado']))) : 0;
+    }
+    
     $metodo_pago = isset($_POST['metodo_pago']) ? trim($_POST['metodo_pago']) : '';
     $cuota_id = isset($_POST['cuota_id']) ? intval($_POST['cuota_id']) : 0;
     
@@ -211,6 +219,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['realizar_pago'])) {
 
 // Función para formatear montos
 function formatMoney($amount) {
+    // Round to integer and format
+    $amount = round($amount);
     return '₲ ' . number_format($amount, 0, ',', '.');
 }
 
@@ -219,106 +229,87 @@ include '../include/sidebar.php';
 
 <div class="content-wrapper">
     <div class="container mt-4">
+        <?php if(isset($error_msg) && !empty($error_msg)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Error:</strong> <?php echo $error_msg; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+        
+        <?php if(isset($success_msg) && !empty($success_msg)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>¡Éxito!</strong> <?php echo $success_msg; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        <?php endif; ?>
+
         <div class="row">
             <div class="col-md-12 mb-4">
                 <div class="card">
-                    <div class="card-header bg-custom text-white">
+                    <div class="bg-black card-header bg-custom text-white d-flex justify-content-between align-items-center">
                         <h4 class="mb-0">Realizar Pago</h4>
+                        <a href="../prestamos/detalle_prestamo.php?id=<?php echo $deuda_id; ?>" class="btn btn-light">
+                            <i class="bi bi-arrow-left"></i> Volver
+                        </a>
                     </div>
                     <div class="card-body">
-                        <?php if (!empty($error_msg)): ?>
-                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                                <?php echo $error_msg; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <?php if (!empty($success_msg)): ?>
-                            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                <?php echo $success_msg; ?>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        <?php endif; ?>
-                        
-                        <div class="row mb-4">
+                        <div class="row">
                             <div class="col-md-6">
                                 <h5 class="border-bottom pb-2 mb-3">Información del Préstamo</h5>
-                                <table class="table table-bordered">
-                                    <tr>
-                                        <th>Descripción:</th>
-                                        <td><?php echo htmlspecialchars($deuda['descripcion']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Monto Total:</th>
-                                        <td><?php echo formatMoney($deuda['monto']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Saldo Pendiente:</th>
-                                        <td><?php echo formatMoney($deuda['saldo_pendiente']); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Fecha de Vencimiento:</th>
-                                        <td><?php echo date('d/m/Y', strtotime($deuda['fecha_vencimiento'])); ?></td>
-                                    </tr>
-                                    <tr>
-                                        <th>Estado:</th>
-                                        <td>
-                                            <span class="badge <?php 
-                                                if($deuda['estado'] == 'pendiente') echo 'bg-warning';
-                                                elseif($deuda['estado'] == 'pagado') echo 'bg-success';
-                                                elseif($deuda['estado'] == 'vencido') echo 'bg-danger';
-                                            ?>">
-                                                <?php echo ucfirst($deuda['estado']); ?>
-                                            </span>
-                                        </td>
-                                    </tr>
-                                </table>
+                                <div class="mb-3">
+                                    <p><strong>ID:</strong> <?php echo $deuda['id']; ?></p>
+                                    <p><strong>Descripción:</strong> <?php echo htmlspecialchars($deuda['descripcion']); ?></p>
+                                    <p><strong>Monto Original:</strong> <?php echo formatMoney($deuda['monto']); ?></p>
+                                    <p><strong>Saldo Pendiente:</strong> <?php echo formatMoney($deuda['saldo_pendiente']); ?></p>
+                                </div>
                             </div>
-                            
                             <div class="col-md-6">
                                 <h5 class="border-bottom pb-2 mb-3">Formulario de Pago</h5>
-                                <form method="post" action="" enctype="multipart/form-data" id="payment-form">
-                                    <input type="hidden" name="cuota_id" id="cuota_id" value="<?php echo $cuota_id; ?>">
+                                <form method="POST" enctype="multipart/form-data">
+                                    <input type="hidden" name="cuota_id" value="<?php echo $cuota_id; ?>">
+                                    
+                                    <?php if ($cuota_seleccionada): ?>
+                                        <div class="alert alert-info">
+                                            <p><strong>Cuota #<?php echo $cuota_seleccionada['numero_cuota']; ?></strong></p>
+                                            <p>Monto: <?php echo formatMoney($cuota_seleccionada['monto_cuota']); ?></p>
+                                            <p>Vencimiento: <?php echo date('d/m/Y', strtotime($cuota_seleccionada['fecha_vencimiento'])); ?></p>
+                                        </div>
+                                    <?php else: ?>
+                                        <div class="alert alert-warning">
+                                            No hay cuota seleccionada. El pago se aplicará al saldo general.
+                                        </div>
+                                    <?php endif; ?>
                                     
                                     <div class="mb-3">
-                                        <label for="monto_pagado" class="form-label">Monto a Pagar (₲):</label>
-                                        <input type="text" class="form-control" id="monto_pagado" name="monto_pagado" value="<?php echo number_format($monto_pagado, 0, ',', '.'); ?>" required>
-                                        <small class="text-muted">Ingrese el monto sin puntos ni símbolos.</small>
+                                        <label for="monto_pagado" class="form-label">Monto a Pagar</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">₲</span>
+                                            <?php if ($cuota_seleccionada): ?>
+                                                <input type="text" class="form-control" id="monto_pagado" name="monto_pagado" 
+                                                    value="<?php echo number_format(round($cuota_seleccionada['monto_cuota']), 0, ',', '.'); ?>" readonly>
+                                                <input type="hidden" name="monto_pagado_raw" value="<?php echo round($cuota_seleccionada['monto_cuota']); ?>">
+                                            <?php else: ?>
+                                                <input type="text" class="form-control" id="monto_pagado" name="monto_pagado" 
+                                                    value="<?php echo $monto_pagado ? number_format(round($monto_pagado), 0, ',', '.') : ''; ?>" required>
+                                            <?php endif; ?>
+                                        </div>
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="metodo_pago" class="form-label">Método de Pago:</label>
+                                        <label for="metodo_pago" class="form-label">Método de Pago</label>
                                         <select class="form-select" id="metodo_pago" name="metodo_pago" required>
-                                            <option value="">Seleccione un método</option>
+                                            <option value="" disabled selected>Seleccione un método de pago</option>
                                             <option value="Efectivo" <?php if($metodo_pago == 'Efectivo') echo 'selected'; ?>>Efectivo</option>
                                             <option value="Transferencia" <?php if($metodo_pago == 'Transferencia') echo 'selected'; ?>>Transferencia Bancaria</option>
                                             <option value="Tarjeta" <?php if($metodo_pago == 'Tarjeta') echo 'selected'; ?>>Tarjeta de Crédito/Débito</option>
-                                            <option value="Giro" <?php if($metodo_pago == 'Giro') echo 'selected'; ?>>Giro</option>
-                                            <option value="Otro" <?php if($metodo_pago == 'Otro') echo 'selected'; ?>>Otro</option>
+                                            <option value="Depósito" <?php if($metodo_pago == 'Depósito') echo 'selected'; ?>>Depósito Bancario</option>
                                         </select>
                                     </div>
                                     
                                     <div class="mb-3">
-                                        <label for="comprobante" class="form-label">Comprobante de Pago (opcional):</label>
+                                        <label for="comprobante" class="form-label">Comprobante de Pago (opcional)</label>
                                         <input type="file" class="form-control" id="comprobante" name="comprobante">
-                                        <small class="text-muted">Formatos permitidos: JPG, PNG, PDF. Máximo 2MB.</small>
-                                    </div>
-                                    
-                                    <div class="mb-3">
-                                        <label class="form-label">Cuota Seleccionada:</label>
-                                        <div id="cuota-seleccionada">
-                                            <?php if ($cuota_seleccionada): ?>
-                                                <div class="alert alert-info">
-                                                    Cuota #<?php echo $cuota_seleccionada['numero_cuota']; ?> - 
-                                                    Monto: <?php echo formatMoney($cuota_seleccionada['monto_cuota']); ?> - 
-                                                    Vencimiento: <?php echo date('d/m/Y', strtotime($cuota_seleccionada['fecha_vencimiento'])); ?>
-                                                </div>
-                                            <?php else: ?>
-                                                <div class="alert alert-warning">
-                                                    No hay cuota seleccionada. El pago se aplicará al saldo general.
-                                                </div>
-                                            <?php endif; ?>
-                                        </div>
+                                        <div class="form-text">Suba una imagen o PDF del comprobante de pago (máx. 2MB)</div>
                                     </div>
                                     
                                     <div class="d-grid gap-2">
@@ -333,12 +324,13 @@ include '../include/sidebar.php';
                             </div>
                         </div>
                         
-                        <!-- Tabla de cuotas -->
-                        <div class="row mb-4">
+                        <!-- Sección de Cuotas -->
+                        <?php if (count($cuotas) > 0): ?>
+                        <div class="row mt-4">
                             <div class="col-md-12">
                                 <h5 class="border-bottom pb-2 mb-3">Cuotas del Préstamo</h5>
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped table-hover cuotas-table">
                                         <thead class="table-dark">
                                             <tr>
                                                 <th class="text-white">Cuota</th>
@@ -350,11 +342,8 @@ include '../include/sidebar.php';
                                         </thead>
                                         <tbody>
                                             <?php 
-                                            // Crear un array para rastrear cuotas ya mostradas por número
-                                            $cuotas_mostradas = [];
-                                            
+                                            $cuotas_mostradas = []; // Array para controlar cuotas ya mostradas
                                             foreach ($cuotas as $cuota): 
-                                                // Evitar mostrar cuotas duplicadas con el mismo número
                                                 if (in_array($cuota['numero_cuota'], $cuotas_mostradas)) {
                                                     continue;
                                                 }
@@ -365,12 +354,12 @@ include '../include/sidebar.php';
                                                 $cuota_pagada = ($estado_cuota == 'pagado');
                                             ?>
                                                 <tr>
-                                                    <td>Cuota <?php echo $cuota['numero_cuota']; ?></td>
-                                                    <td><?php echo formatMoney($cuota['monto_cuota']); ?></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($fecha_vencimiento)); ?></td>
+                                                    <td class="cuota-text fw-bold">Cuota <?php echo $cuota['numero_cuota']; ?></td>
+                                                    <td class="cuota-text fw-bold"><?php echo formatMoney($cuota['monto_cuota']); ?></td>
+                                                    <td class="cuota-text"><?php echo date('d/m/Y', strtotime($fecha_vencimiento)); ?></td>
                                                     <td>
                                                         <span class="badge <?php 
-                                                            if($estado_cuota == 'pendiente') echo 'bg-warning';
+                                                            if($estado_cuota == 'pendiente') echo 'bg-warning text-dark';
                                                             elseif($estado_cuota == 'pagado') echo 'bg-success';
                                                             elseif($estado_cuota == 'vencido') echo 'bg-danger';
                                                         ?>">
@@ -379,12 +368,9 @@ include '../include/sidebar.php';
                                                     </td>
                                                     <td>
                                                         <?php if (!$cuota_pagada): ?>
-                                                            <button type="button" class="btn btn-sm btn-primary seleccionar-cuota" 
-                                                                    data-cuota-id="<?php echo $cuota['id']; ?>"
-                                                                    data-cuota-monto="<?php echo (int)$cuota['monto_cuota']; ?>"
-                                                                    data-cuota-numero="<?php echo $cuota['numero_cuota']; ?>">
+                                                            <a href="realizar_pago.php?deuda_id=<?php echo $deuda_id; ?>&cuota_id=<?php echo $cuota['id']; ?>" class="btn btn-sm btn-primary">
                                                                 Pagar esta cuota
-                                                            </button>
+                                                            </a>
                                                         <?php else: ?>
                                                             <span class="badge bg-success">Pagada</span>
                                                         <?php endif; ?>
@@ -396,6 +382,20 @@ include '../include/sidebar.php';
                                 </div>
                             </div>
                         </div>
+                        <!-- CSS para manejar el color del texto según el modo -->
+                        <style>
+                            /* Estilo para modo claro (por defecto) */
+                            .cuota-text {
+                                color: #212529 !important; /* Negro para modo claro */
+                            }
+                            
+                            /* Estilo para modo oscuro */
+                            .dark-mode .cuota-text,
+                            [data-bs-theme="dark"] .cuota-text {
+                                color: #ffffff !important; /* Blanco para modo oscuro */
+                            }
+                        </style>
+                        <?php endif; ?>
                     </div>
                 </div>
             </div>
@@ -405,79 +405,30 @@ include '../include/sidebar.php';
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Formatear el campo de monto al escribir
+    // Formatear el campo de monto al cargar la página
     const montoInput = document.getElementById('monto_pagado');
-    if (montoInput) {
+    if (montoInput && !montoInput.readOnly) {
+        let originalValue = montoInput.value.replace(/\D/g, '');
+        if (originalValue) {
+            montoInput.value = formatNumber(originalValue);
+        }
         montoInput.addEventListener('input', function(e) {
-            try {
-                // Guardar la posición del cursor
-                const start = this.selectionStart;
-                const end = this.selectionEnd;
-                
-                // Eliminar todo excepto números
-                let value = this.value.replace(/\D/g, '');
-                
-                // Formatear con puntos solo si hay un valor
-                if (value && value.length > 0) {
-                    value = Number(value).toLocaleString('es-PY');
-                }
-                
-                // Actualizar el valor
-                this.value = value;
-                
-                // Restaurar la posición del cursor
-                this.setSelectionRange(start, end);
-            } catch (error) {
-                // Si hay error, simplemente limpiar caracteres no numéricos
-                this.value = this.value.replace(/[^\d.]/g, '');
-                console.log('Error al formatear:', error);
-            }
+            let value = this.value.replace(/\D/g, '');
+            this.value = formatNumber(value);
         });
+        const form = document.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                if (montoInput && !montoInput.readOnly) {
+                    montoInput.value = montoInput.value.replace(/\D/g, '');
+                }
+            });
+        }
     }
     
-    // Manejar la selección de cuotas
-    const botonesSeleccionarCuota = document.querySelectorAll('.seleccionar-cuota');
-    const cuotaIdInput = document.getElementById('cuota_id');
-    const cuotaSeleccionadaDiv = document.getElementById('cuota-seleccionada');
-    
-    botonesSeleccionarCuota.forEach(function(boton) {
-        boton.addEventListener('click', function() {
-            const cuotaId = this.getAttribute('data-cuota-id');
-            const cuotaMonto = this.getAttribute('data-cuota-monto');
-            const cuotaNumero = this.getAttribute('data-cuota-numero');
-            
-            // Actualizar el campo oculto con el ID de la cuota
-            if (cuotaIdInput) cuotaIdInput.value = cuotaId;
-            
-            // Actualizar el monto a pagar con el monto de la cuota
-            if (montoInput) {
-                try {
-                    montoInput.value = Number(cuotaMonto).toLocaleString('es-PY');
-                } catch (error) {
-                    montoInput.value = cuotaMonto;
-                    console.log('Error al formatear monto de cuota:', error);
-                }
-            }
-            if (cuotaSeleccionadaDiv) {
-                try {
-                    cuotaSeleccionadaDiv.innerHTML = `
-                        <div class="alert alert-info">
-                            Cuota #${cuotaNumero} seleccionada - Monto: ₲ ${Number(cuotaMonto).toLocaleString('es-PY')}
-                        </div>
-                    `;
-                } catch (error) {
-                    cuotaSeleccionadaDiv.innerHTML = `
-                        <div class="alert alert-info">
-                            Cuota #${cuotaNumero} seleccionada - Monto: ₲ ${cuotaMonto}
-                        </div>
-                    `;
-                }
-            }
-            
-            // Hacer scroll al formulario
-            const form = document.getElementById('payment-form');
-            if (form) form.scrollIntoView({ behavior: 'smooth' });
-        });
-    });
+    function formatNumber(num) {
+        num = Math.round(parseInt(num, 10) || 0);
+        return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 });
 </script>

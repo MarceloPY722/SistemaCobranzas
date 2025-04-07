@@ -95,6 +95,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Si no hay errores, proceder a guardar
     if (empty($errores)) {
         try {
+            // Iniciar transacción
+            $conn->begin_transaction();
+            
             // El saldo pendiente inicialmente es igual al monto total
             $saldo_pendiente = $monto;
             
@@ -155,22 +158,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
             
-            // Registrar en el historial
+            // Verificar que el usuario exista en la tabla usuarios
             $usuario_id = $_SESSION['user_id'];
+            $check_user = "SELECT id FROM usuarios WHERE id = ?";
+            $stmt_check_user = $conn->prepare($check_user);
+            $stmt_check_user->bind_param("i", $usuario_id);
+            $stmt_check_user->execute();
+            $result_check_user = $stmt_check_user->get_result();
+            
+            if ($result_check_user->num_rows === 0) {
+                // Si el usuario no existe, usar un ID que sí exista
+                $get_valid_user = "SELECT id FROM usuarios LIMIT 1";
+                $result_valid_user = $conn->query($get_valid_user);
+                if ($result_valid_user->num_rows > 0) {
+                    $valid_user = $result_valid_user->fetch_assoc();
+                    $usuario_id = $valid_user['id'];
+                } else {
+                    // Si no hay usuarios, mostrar error
+                    throw new Exception("No hay usuarios válidos en el sistema.");
+                }
+            }
+            
+            // Registrar en el historial
             $accion = 'creación';
             $detalle = "Creación de nueva deuda por monto " . number_format($monto, 2, ',', '.') . " Gs.";
             
-            $stmt_hist = $conn->prepare("INSERT INTO historial_deudas (deuda_id, usuario_id, accion, detalle) 
-                          VALUES (?, ?, ?, ?)");
+            $stmt_hist = $conn->prepare("INSERT INTO historial_deudas (deuda_id, usuario_id, accion, detalle, created_at) 
+                          VALUES (?, ?, ?, ?, NOW())");
             
             $stmt_hist->bind_param("iiss", $deuda_id, $usuario_id, $accion, $detalle);
             $stmt_hist->execute();
+            
+            // Confirmar transacción
+            $conn->commit();
             
             // Redireccionar a la página del cliente
             header("Location: cliente_datos.php?id=" . $final_cliente_id . "&success=deuda_registrada");
             exit;
             
         } catch (Exception $e) {
+            // Revertir transacción en caso de error
+            $conn->rollback();
             $error = "Error al registrar la deuda: " . $e->getMessage();
         }
     }

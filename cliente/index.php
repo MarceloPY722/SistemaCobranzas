@@ -156,5 +156,16 @@ include 'include/sidebar.php';
         .card-body {
             color: white;
         }
+        .table th, 
+        .table td {
+            color: white !important;
+        }
+    }
+    
+    [data-bs-theme="dark"] .table th,
+    [data-bs-theme="dark"] .table td,
+    .dark-mode .table th,
+    .dark-mode .table td {
+        color: white !important;
     }
 </style>

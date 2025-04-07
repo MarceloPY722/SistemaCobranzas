@@ -50,10 +50,22 @@ foreach ($pagos as $pago) {
 }
 
 // Obtener las cuotas del préstamo
-$query_cuotas = "SELECT * FROM cuotas_deuda WHERE deuda_id = ? ORDER BY numero_cuota ASC";
+$query_cuotas = "SELECT * FROM cuotas_deuda 
+                WHERE deuda_id = ? 
+                ORDER BY numero_cuota ASC";
 $stmt_cuotas = $pdo->prepare($query_cuotas);
 $stmt_cuotas->execute([$prestamo_id]);
-$cuotas = $stmt_cuotas->fetchAll();
+$cuotas_todas = $stmt_cuotas->fetchAll();
+
+// Filtrar cuotas para mostrar solo una por número de cuota
+$cuotas = [];
+$numeros_cuota = [];
+foreach ($cuotas_todas as $cuota) {
+    if (!in_array($cuota['numero_cuota'], $numeros_cuota)) {
+        $numeros_cuota[] = $cuota['numero_cuota'];
+        $cuotas[] = $cuota;
+    }
+}
 
 // Función para formatear montos
 function formatMoney($amount) {
@@ -213,7 +225,15 @@ include '../include/sidebar.php';
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($cuotas as $cuota): ?>
+                                            <?php 
+                                            $cuotas_mostradas = []; // Array para controlar cuotas ya mostradas
+                                            foreach ($cuotas as $cuota): 
+                                                // Evitar mostrar cuotas duplicadas con el mismo número
+                                                if (in_array($cuota['numero_cuota'], $cuotas_mostradas)) {
+                                                    continue;
+                                                }
+                                                $cuotas_mostradas[] = $cuota['numero_cuota'];
+                                            ?>
                                                 <tr>
                                                     <td>Cuota <?php echo $cuota['numero_cuota']; ?></td>
                                                     <td><?php echo formatMoney($cuota['monto_cuota']); ?></td>
