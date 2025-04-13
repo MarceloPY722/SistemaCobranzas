@@ -83,9 +83,7 @@ function formatMoney($amount) {
                             <a href="../cliente_datos.php?id=<?php echo $deuda['cliente_id']; ?>" class="btn btn-light me-2">
                                 <i class="bi bi-arrow-left"></i> Volver al Cliente
                             </a>
-                            <a href="editar_deuda.php?id=<?php echo $deuda_id; ?>" class="btn btn-warning">
-                                <i class="bi bi-pencil"></i> Editar Deuda
-                            </a>
+                           
                         </div>
                     </div>
                     <div class="card-body">

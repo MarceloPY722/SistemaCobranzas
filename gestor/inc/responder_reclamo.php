@@ -220,11 +220,9 @@ include '../inc/sidebar.php';
                         <div class="card">
                             <div class="card-header bg-light d-flex justify-content-between align-items-center">
                                 <h5 class="mb-0">Responder</h5>
-                                <?php if($claim['estado'] != 'cerrado'): ?>
-                                    <button type="button" class="btn btn-success" onclick="confirmarCierre(<?php echo $claim_id; ?>)">
-                                        <i class="bi bi-check-circle"></i> Cerrar Reclamo
-                                    </button>
-                                <?php endif; ?>
+                                <button type="button" class="btn btn-success" onclick="confirmarCierre(<?php echo $claim_id; ?>)">
+                                    <i class="bi bi-check-circle"></i> Cerrar Reclamo
+                                </button>
                             </div>
                             <div class="card-body">
                                 <form method="POST" action="">
@@ -252,29 +250,11 @@ include '../inc/sidebar.php';
     </div>
 </div>
 
-<!-- Modal de confirmación para cerrar reclamo -->
-<div class="modal fade" id="cerrarReclamoModal" tabindex="-1" aria-labelledby="cerrarReclamoModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="cerrarReclamoModalLabel">Confirmar cierre de reclamo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                ¿Está seguro que desea cerrar este reclamo? Esta acción no se puede deshacer.
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                <a href="#" id="btnConfirmarCierre" class="btn btn-success">Confirmar</a>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script>
 function confirmarCierre(reclamoId) {
-    // Open confirmation page in new tab
-    window.open('confirmar_cierre.php?id=' + reclamoId, '_blank', 'width=600,height=400');
+    if(confirm('¿Está seguro que desea cerrar este reclamo? Esta acción no se puede deshacer.')) {
+        window.location.href = 'cerrar_reclamo.php?id=' + reclamoId;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -298,6 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
         alert(errorMessage);
     }
 });
+</script>
 
 </script>
 <style>

@@ -100,11 +100,6 @@ $result = $stmt->get_result();
                                             <a href="../../inc/responder_reclamo.php?id=<?php echo $reclamo['id']; ?>" class="btn btn-sm btn-primary" title="Responder">
                                                 <i class="bi bi-reply"></i>
                                             </a>
-                                            <button type="button" class="btn btn-sm btn-success" 
-                                                    onclick="confirmarCierre(<?php echo $reclamo['id']; ?>)" 
-                                                    title="Cerrar reclamo">
-                                                <i class="bi bi-check-circle"></i>
-                                            </button>
                                             <?php endif; ?>
                                         </div>
                                     </td>

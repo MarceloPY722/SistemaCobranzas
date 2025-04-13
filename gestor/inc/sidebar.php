@@ -210,14 +210,14 @@
         </a>
         <ul class="submenu">
           <li>
-            <a href="#">
+            <a href="/sistemacobranzas/gestor/sidebar/pagos/historial_pagos.php">
               <i class="bi bi-clock-history"></i> 
               Historial de Pagos
             </a>
           </li>
 
           <li>
-            <a href="#">
+            <a href="/sistemacobranzas/gestor/sidebar/pagos/registrar_pagos.php">
               <i class="bi bi-credit-card-2-front"></i> 
               Registrar Pagos
             </a>
@@ -225,35 +225,6 @@
         </ul>
       </li>
   
-       <!-- Categoría: Reportes -->
-       <li class="menu-item">
-        <a href="#" class="menu-link">
-          <i class="bi bi-people icono-menu"></i> Reportes
-          <span class="toggle-icon">&#9654;</span>
-        </a>
-        <ul class="submenu">
-          <li>
-            <a href="#">
-              <i class="bi bi-eye"></i> Reporte Generales
-            </a>
-          </li>
-
-          <li>
-            <a href="#">
-              <i class="bi bi-eye"></i> Reporte de Pagos
-            </a>
-          </li>
-
-          <li>
-            <a href="#">
-              <i class="bi bi-eye"></i> Reportes de Deudas  <!-- Quienes estan en rojo o deben cuotas del mes -->
-            </a>
-          </li>
-
-        </ul>
-      </li>
-
-     
       <li class="menu-item">
         <a href="#" class="menu-link">
           <i class="bi bi-gear-fill icono-menu"></i> Configuración
