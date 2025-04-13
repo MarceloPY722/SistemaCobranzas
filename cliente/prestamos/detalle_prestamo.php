@@ -156,7 +156,7 @@ include '../include/sidebar.php';
                                 <h5 class="border-bottom pb-2 mb-3">Historial de Pagos</h5>
                                 <?php if (count($pagos) > 0): ?>
                                 <div class="table-responsive">
-                                    <table class="table table-striped table-hover">
+                                    <table class="table table-striped">
                                         <thead class="table-dark">
                                             <tr>
                                                 <th class="text-white">Fecha</th>
@@ -170,7 +170,7 @@ include '../include/sidebar.php';
                                         <tbody>
                                             <?php foreach ($pagos as $pago): ?>
                                                 <tr>
-                                                    <td><?php echo date('d/m/Y H:i', strtotime($pago['fecha_pago'])); ?></td>
+                                                    <td><?php echo date('d/m/Y H:i:s', strtotime($pago['created_at'])); ?></td>
                                                     <td><?php echo formatMoney($pago['monto_pagado']); ?></td>
                                                     <td>
                                                         <?php 
@@ -192,7 +192,7 @@ include '../include/sidebar.php';
                                                         </span>
                                                     </td>
                                                     <td>
-                                                        <a href="../pagos/comprobante_pago.php?id=<?php echo $pago['id']; ?>" class="btn btn-sm btn-info" target="_blank">
+                                                        <a href="../pagos/comprobante_pago.php?id=<?php echo $pago['id']; ?>" class="btn btn-sm btn-info text-white">
                                                             <i class="bi bi-download"></i> Descargar
                                                         </a>
                                                     </td>
@@ -250,10 +250,10 @@ include '../include/sidebar.php';
                                                     <td>
                                                         <?php if ($cuota['estado'] != 'pagado' && $prestamo['estado'] != 'pagado'): ?>
                                                             <a href="../pagos/realizar_pago.php?deuda_id=<?php echo $prestamo_id; ?>&cuota_id=<?php echo $cuota['id']; ?>" class="btn btn-sm btn-primary">
-                                                                Pagar
+                                                             <i class="bi bi-credit-card-2-back-fill">  Pagar</i>
                                                             </a>
                                                         <?php else: ?>
-                                                            <span class="badge bg-success">Pagada</span>
+                                                            <span class="badge bg-success"> <i class="bi bi-check-all"> Pagada</i> </span>
                                                         <?php endif; ?>
                                                     </td>
                                                 </tr>

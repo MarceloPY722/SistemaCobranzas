@@ -196,7 +196,7 @@
         </a>
         <ul class="submenu">
           <li>
-            <a href="#">
+            <a href="/sistemacobranzas/gestor/sidebar/reclamos/ver_reclamos.php">
               <i class="bi bi-eye"></i> Ver Reclamos
             </a>
           </li>

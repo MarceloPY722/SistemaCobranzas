@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 07-04-2025 a las 00:41:17
+-- Tiempo de generación: 12-04-2025 a las 17:13:53
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.1.10
 
@@ -21,7 +21,7 @@ SET time_zone = "+00:00";
 -- Base de datos: `sistema_cobranzas`
 --
 
--- --------------------------------------------------------
+-- -------------------------------------------------Error al enviar el reclamo: SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'deuda_id' at row 1-------
 
 --
 -- Estructura de tabla para la tabla `chats`
@@ -126,8 +126,8 @@ INSERT INTO `cuotas_deuda` (`id`, `deuda_id`, `numero_cuota`, `monto_cuota`, `sa
 (180, 11, 12, 4166666.67, 4166666.67, 0.00, '2026-04-30', 'pendiente', '2025-04-04 17:11:44'),
 (243, 15, 1, 3571428.57, 0.00, 0.00, '2025-05-07', 'pagado', '2025-04-07 00:09:15'),
 (244, 15, 2, 3571428.57, 0.00, 0.00, '2025-06-07', 'pagado', '2025-04-07 00:09:15'),
-(245, 15, 3, 3571428.57, NULL, 0.00, '2025-07-07', 'pendiente', '2025-04-07 00:09:15'),
-(246, 15, 4, 3571428.57, NULL, 0.00, '2025-08-07', 'pendiente', '2025-04-07 00:09:15'),
+(245, 15, 3, 3571428.57, 0.00, 0.00, '2025-07-07', 'pagado', '2025-04-07 00:09:15'),
+(246, 15, 4, 3571428.57, 0.00, 0.00, '2025-08-07', 'pagado', '2025-04-07 00:09:15'),
 (247, 15, 5, 3571428.57, NULL, 0.00, '2025-09-07', 'pendiente', '2025-04-07 00:09:15'),
 (248, 15, 6, 3571428.57, NULL, 0.00, '2025-10-07', 'pendiente', '2025-04-07 00:09:15'),
 (249, 15, 7, 3571428.57, NULL, 0.00, '2025-11-07', 'pendiente', '2025-04-07 00:09:15'),
@@ -226,7 +226,7 @@ CREATE TABLE `deudas` (
 INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `notas`, `monto`, `cuotas`, `fecha_emision`, `saldo_pendiente`, `interes_acumulado`, `ultima_actualizacion_interes`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
 (5, 32, 3, '', 41000000.00, 1, '2025-03-16', 41000000.00, 0.00, NULL, 'CrediAgil San Lorenzo', '2026-04-15', 'pendiente', '2025-03-16 23:13:03'),
 (11, 33, 2, '', 50000000.00, 12, '2025-04-04', 0.00, 0.00, NULL, 'CrediAmigo', '2026-04-04', 'pagado', '2025-04-04 17:11:44'),
-(15, 33, 2, '', 100000000.00, 28, '2025-04-07', 92857142.00, 0.00, NULL, 'CrediAmigo', '2027-08-07', 'pendiente', '2025-04-07 00:09:15');
+(15, 33, 2, '', 100000000.00, 28, '2025-04-07', 85714284.00, 0.00, NULL, 'CrediAmigo', '2027-08-07', 'pendiente', '2025-04-07 00:09:15');
 
 --
 -- Disparadores `deudas`
@@ -273,6 +273,16 @@ CREATE TABLE `documentos` (
   `ruta_archivo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `documentos`
+--
+
+INSERT INTO `documentos` (`id`, `cliente_id`, `deuda_id`, `tipo_documento`, `ruta_archivo`, `created_at`) VALUES
+(1, 33, 15, 'reclamo', 'uploads/reclamos/67fa99ed16dea_Comprobante de Pago #24.pdf', '2025-04-12 16:50:53'),
+(2, 33, 15, 'reclamo', 'uploads/reclamos/67fa9a6fce611_Comprobante de Pago #24.pdf', '2025-04-12 16:53:03'),
+(3, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b174b6ea_Comprobante de Pago #24.pdf', '2025-04-12 16:55:51'),
+(4, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b6435043_Comprobante de Pago #24.pdf', '2025-04-12 16:57:08');
 
 -- --------------------------------------------------------
 
@@ -341,7 +351,9 @@ INSERT INTO `pagos` (`id`, `deuda_id`, `monto_pagado`, `metodo_pago`, `fecha_pag
 (23, 11, 4166667.00, 'Efectivo', '2025-04-04', '', '2025-04-04 18:37:30', 0, 'aprobado', 157),
 (24, 11, 416666667.00, 'Depósito', '2025-04-06', '', '2025-04-07 00:00:40', 0, 'aprobado', 158),
 (25, 15, 3571429.00, 'Efectivo', '2025-04-06', '', '2025-04-07 00:22:30', 0, 'aprobado', 243),
-(26, 15, 3571429.00, 'Tarjeta', '2025-04-06', '', '2025-04-07 00:35:16', 0, 'aprobado', 244);
+(26, 15, 3571429.00, 'Tarjeta', '2025-04-06', '', '2025-04-07 00:35:16', 0, 'aprobado', 244),
+(27, 15, 3571429.00, 'Tarjeta', '2025-04-12', '', '2025-04-12 16:12:10', 0, 'aprobado', 245),
+(28, 15, 3571429.00, 'Transferencia', '2025-04-12', '', '2025-04-12 16:18:30', 0, 'aprobado', 246);
 
 -- --------------------------------------------------------
 
@@ -383,11 +395,39 @@ CREATE TABLE `reclamos` (
   `id` int NOT NULL,
   `cliente_id` int NOT NULL,
   `deuda_id` int DEFAULT NULL,
+  `asunto` varchar(255) CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
   `descripcion` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `estado` enum('abierto','en_proceso','resuelto','cerrado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'abierto',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `respuesta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
   `respondido_por` int DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Volcado de datos para la tabla `reclamos`
+--
+
+INSERT INTO `reclamos` (`id`, `cliente_id`, `deuda_id`, `asunto`, `descripcion`, `estado`, `created_at`, `respuesta`, `respondido_por`) VALUES
+(1, 33, 15, 'No se me registro un pago', 'Adjunto prueba', 'abierto', '2025-04-12 16:50:53', NULL, NULL),
+(2, 33, 15, 'No se me registro un pago', 'Adjunto prueba', 'abierto', '2025-04-12 16:53:03', NULL, NULL),
+(3, 33, 15, 'No se me registro un pago', 'Adjunto Prueba', 'abierto', '2025-04-12 16:55:51', NULL, NULL),
+(4, 33, 15, 'No se me registro un pago', 'Adjunto Prueba', 'abierto', '2025-04-12 16:57:08', NULL, NULL),
+(5, 33, 11, 'Ya pague todo', 'Adjunto', 'abierto', '2025-04-12 16:57:48', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `respuestas_reclamos`
+--
+
+CREATE TABLE `respuestas_reclamos` (
+  `id` int NOT NULL,
+  `reclamo_id` int NOT NULL,
+  `usuario_id` int DEFAULT NULL,
+  `cliente_id` int DEFAULT NULL,
+  `respuesta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- --------------------------------------------------------
@@ -550,6 +590,15 @@ ALTER TABLE `reclamos`
   ADD KEY `idx_reclamos_cliente` (`cliente_id`);
 
 --
+-- Indices de la tabla `respuestas_reclamos`
+--
+ALTER TABLE `respuestas_reclamos`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `reclamo_id` (`reclamo_id`),
+  ADD KEY `usuario_id` (`usuario_id`),
+  ADD KEY `cliente_id` (`cliente_id`);
+
+--
 -- Indices de la tabla `roles`
 --
 ALTER TABLE `roles`
@@ -602,7 +651,7 @@ ALTER TABLE `deudas`
 -- AUTO_INCREMENT de la tabla `documentos`
 --
 ALTER TABLE `documentos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_deudas`
@@ -620,7 +669,7 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
 
 --
 -- AUTO_INCREMENT de la tabla `politicas_interes`
@@ -632,6 +681,12 @@ ALTER TABLE `politicas_interes`
 -- AUTO_INCREMENT de la tabla `reclamos`
 --
 ALTER TABLE `reclamos`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+-- AUTO_INCREMENT de la tabla `respuestas_reclamos`
+--
+ALTER TABLE `respuestas_reclamos`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
@@ -711,6 +766,14 @@ ALTER TABLE `notificaciones`
 ALTER TABLE `pagos`
   ADD CONSTRAINT `fk_pagos_cuota` FOREIGN KEY (`cuota_id`) REFERENCES `cuotas_deuda` (`id`),
   ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`deuda_id`) REFERENCES `deudas` (`id`) ON DELETE CASCADE;
+
+--
+-- Filtros para la tabla `respuestas_reclamos`
+--
+ALTER TABLE `respuestas_reclamos`
+  ADD CONSTRAINT `respuestas_reclamos_ibfk_1` FOREIGN KEY (`reclamo_id`) REFERENCES `reclamos` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `respuestas_reclamos_ibfk_2` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id`) ON DELETE SET NULL,
+  ADD CONSTRAINT `respuestas_reclamos_ibfk_3` FOREIGN KEY (`cliente_id`) REFERENCES `clientes` (`id`) ON DELETE SET NULL;
 
 DELIMITER $$
 --

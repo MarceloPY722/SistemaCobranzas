@@ -256,7 +256,7 @@
             </a>
           </li>
           <li>
-            <a href="/sistemacobranzas/cliente/prestamos/historial_pagos.php">
+            <a href="/sistemacobranzas/cliente/pagos/historial_pagos.php">
               <i class="bi bi-clock-history"></i> Historial de Pagos
             </a>
           </li>

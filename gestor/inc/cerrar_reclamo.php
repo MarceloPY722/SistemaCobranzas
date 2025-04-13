@@ -1,25 +1,28 @@
 <?php
 session_start();
-require_once 'cnx.php'; // Asegúrate de que este archivo contenga la conexión a tu base de datos
+require_once 'cnx.php';
 
-// Verificar que el usuario esté autenticado
 if (!isset($_SESSION['user_id'])) {
     header('Location: ../../index.php');
     exit;
 }
 
-// Procesar la solicitud POST
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $reclamo_id = intval($_POST['reclamo_id']); // Obtener el ID del reclamo
+$claim_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
-    // Actualizar el estado del reclamo a "cerrado"
-    $stmt = $pdo->prepare("UPDATE reclamos SET estado = 'cerrado' WHERE id = ?");
-    $stmt->execute([$reclamo_id]);
-
-    // Redirigir al index después de cerrar el reclamo
-    header("Location: ../index.php");
+if ($claim_id == 0) {
+    header('Location: ../sidebar/reclamos/ver_reclamos.php?error=id_invalido');
     exit;
-    header("Location: responder_reclamo.php?id=$reclamo_id");
+}
+
+try {
+    // Update claim status to 'cerrado'
+    $stmt = $pdo->prepare("UPDATE reclamos SET estado = 'cerrado', respondido_por = ?, fecha_respuesta = NOW() WHERE id = ?");
+    $stmt->execute([$_SESSION['user_id'], $claim_id]);
+    
+    header('Location: ../sidebar/reclamos/ver_reclamos.php?success=reclamo_cerrado');
+    exit;
+} catch (Exception $e) {
+    header('Location: ../sidebar/reclamos/ver_reclamos.php?error=db_error&mensaje=' . urlencode($e->getMessage()));
     exit;
 }
 ?>

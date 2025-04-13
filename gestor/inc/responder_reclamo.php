@@ -1,7 +1,5 @@
 <?php
-
 session_start();
-
 require_once 'cnx.php'; 
 
 if (!isset($_SESSION['user_id'])) {
@@ -12,11 +10,11 @@ if (!isset($_SESSION['user_id'])) {
 $claim_id = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
 if ($claim_id == 0) {
-    echo "ID de reclamo inválido.";
+    header('Location: ../sidebar/reclamos/ver_reclamos.php?error=id_invalido');
     exit;
 }
 
-$stmt = $pdo->prepare("SELECT r.*, c.nombre AS cliente_nombre 
+$stmt = $pdo->prepare("SELECT r.*, c.nombre AS cliente_nombre, c.email, c.telefono, c.identificacion 
                        FROM reclamos r
                        JOIN clientes c ON r.cliente_id = c.id
                        WHERE r.id = ?");
@@ -24,291 +22,330 @@ $stmt->execute([$claim_id]);
 $claim = $stmt->fetch(PDO::FETCH_ASSOC);
 
 if (!$claim) {
-    echo "Reclamo no encontrado.";
+    header('Location: ../sidebar/reclamos/ver_reclamos.php?error=reclamo_no_encontrado');
     exit;
 }
 
+// Obtener documentos adjuntos del reclamo
+$query_docs = "SELECT * FROM documentos 
+              WHERE cliente_id = ? AND tipo_documento = 'reclamo' 
+              AND created_at >= ? AND created_at <= DATE_ADD(?, INTERVAL 1 DAY)";
+$stmt_docs = $pdo->prepare($query_docs);
+$stmt_docs->execute([$claim['cliente_id'], $claim['created_at'], $claim['created_at']]);
+$documentos = $stmt_docs->fetchAll(PDO::FETCH_ASSOC);
+
+$success_message = '';
+$error_message = '';
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-    $respuesta = trim($_POST['respuesta']); // Obtener la respuesta del formulario
-    $user_id = $_SESSION['user_id']; // ID del usuario que responde
+    $respuesta = trim($_POST['respuesta']); 
+    $user_id = $_SESSION['user_id']; 
     
     if (!empty($respuesta)) {
-
-        $update_stmt = $pdo->prepare("UPDATE reclamos SET respuesta = ?, respondido_por = ? WHERE id = ?");
-        $update_stmt->execute([$respuesta, $user_id, $claim_id]);
-        
-        echo "Respuesta enviada con éxito.";
-
+        try {
+            // Actualizar el estado del reclamo a "en_proceso" si estaba "abierto"
+            if ($claim['estado'] == 'abierto') {
+                $update_estado = $pdo->prepare("UPDATE reclamos SET estado = 'en_proceso', respuesta = ?, fecha_respuesta = NOW() WHERE id = ?");
+                $update_estado->execute([$respuesta, $claim_id]);
+            } else {
+                // Si ya está en proceso, solo actualizamos la respuesta
+                $update_reclamo = $pdo->prepare("UPDATE reclamos SET respuesta = ?, fecha_respuesta = NOW() WHERE id = ?");
+                $update_reclamo->execute([$respuesta, $claim_id]);
+            }
+            
+            $success_message = "Respuesta enviada con éxito.";
+            
+            // Recargar los datos del reclamo
+            $stmt->execute([$claim_id]);
+            $claim = $stmt->fetch(PDO::FETCH_ASSOC);
+            
+        } catch (Exception $e) {
+            $error_message = "Error al enviar la respuesta: " . $e->getMessage();
+        }
     } else {
-        echo "Por favor, ingrese una respuesta.";
+        $error_message = "Por favor, ingrese una respuesta.";
     }
 }
+
+include '../inc/sidebar.php';
 ?>
 
-    <style>
-        :root {
-            --primary-color: #343a40;
-            --secondary-color: #495057;
-            --accent-color: #fd7e14;
-            --text-color: #333;
-            --light-bg: #f5f7fa;
-            --white: #ffffff;
-            --border-radius: 4px;
-            --box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-        
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--light-bg);
-        }
-        
-        .header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 1rem;
-            box-shadow: var(--box-shadow);
-        }
-        
-        .nav {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-        
-        .nav-brand {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-        
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-        
-        .nav-links li {
-            margin-left: 1.5rem;
-        }
-        
-        .nav-links a {
-            color: var(--white);
-            text-decoration: none;
-            font-weight: 500;
-        }
-        
-        .nav-links a:hover {
-            text-decoration: underline;
-        }
-        
-        .container {
-            max-width: 800px;
-            margin: 2rem auto;
-            padding: 2rem;
-            background-color: var(--white);
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-        }
-        
-        .page-title {
-            color: var(--primary-color);
-            margin-bottom: 1.5rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--light-bg);
-        }
-        
-        .claim-info {
-            background-color: var(--light-bg);
-            padding: 1.5rem;
-            border-radius: var(--border-radius);
-            margin-bottom: 1.5rem;
-        }
-        
-        .claim-info p {
-            margin-bottom: 0.8rem;
-        }
-        
-        .claim-label {
-            font-weight: 600;
-            margin-right: 0.5rem;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 600;
-        }
-        
-        textarea {
-            width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: var(--border-radius);
-            font-family: inherit;
-            font-size: 1rem;
-            resize: vertical;
-            min-height: 150px;
-        }
-        
-        textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(52, 58, 64, 0.2);
-        }
-
-        .btn {
-            background-color: #343a40;
-            color: var(--white);
-            border: none;
-            padding: 0.8rem 1.5rem;
-            font-size: 1rem;
-            font-weight: 600;
-            border-radius: var(--border-radius);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            text-decoration: none;
-        }
-
-        .btn:hover {
-            background-color: #23272b;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
-        }
-
-        .btn:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-                
-                .button-group {
-                    display: flex;
-                    gap: 10px;
-                }
-                
-                .alert {
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border-radius: var(--border-radius);
-            font-weight: 500;
-        }
-        
-        .alert-success {
-            background-color: #d4edda;
-            color: #155724;
-        }
-        
-        .alert-danger {
-            background-color: #f8d7da;
-            color: #721c24;
-        }
-        
-        @media screen and (max-width: 768px) {
-            .container {
-                padding: 1rem;
-                margin: 1rem;
-            }
-            
-            .nav {
-                flex-direction: column;
-                text-align: center;
-            }
-            
-            .nav-links {
-                margin-top: 1rem;
-                justify-content: center;
-            }
-            
-            .nav-links li {
-                margin: 0 0.75rem;
-            }
-        }
-    </style>
-
-    <header class="header">
-        <nav class="nav">
-            <div class="nav-brand">Gestionar Reclamos</div>
-            <ul class="nav-links">
-                <li><a href="../index.php">Inicio</a></li>
-                <li><a href="../reclamos.php">Reclamos</a></li>
-                <li><a href="../clientes.php">Clientes</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <div class="container">
-    <h1 class="page-title">Responder al Reclamo #<?php echo $claim_id; ?></h1>
-    
-    <?php if ($_SERVER['REQUEST_METHOD'] == 'POST' && !empty($_POST['respuesta'])): ?>
-        <div class="alert alert-success">Respuesta enviada con éxito.</div>
-    <?php elseif ($_SERVER['REQUEST_METHOD'] == 'POST'): ?>
-        <div class="alert alert-danger">Por favor, ingrese una respuesta.</div>
-    <?php endif; ?>
-    
-    <div class="row">
-        <!-- Columna izquierda: Formulario de respuesta -->
-        <div class="col-md-6">
-            <div class="claim-info">
-                <p><span class="claim-label">Cliente:</span> <?php echo htmlspecialchars($claim['cliente_nombre']); ?></p>
-                <p><span class="claim-label">Descripción:</span> <?php echo htmlspecialchars($claim['descripcion']); ?></p>
+<div class="content-wrapper">
+    <div class="container mt-4">
+        <?php if(!empty($success_message)): ?>
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>¡Éxito!</strong> <?php echo $success_message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <form method="post">
-                <div class="form-group">
-                    <label for="respuesta">Respuesta:</label>
-                    <textarea id="respuesta" name="respuesta" required></textarea>
-                </div>
-                <div class="button-group">
-                    <button type="submit" class="btn">Enviar Respuesta</button>
-                    <a href="../index.php" class="btn">Regresar</a>
-                    <a href="cerrar_reclamo.php" class="btn" onclick="event.preventDefault(); if(confirm('¿Estás seguro de cerrar este reclamo?')) { document.getElementById('form-cerrar-reclamo').submit(); }">Cerrar Reclamo</a>
-                </div>
-                </form>
-                <form id="form-cerrar-reclamo" method="post" action="cerrar_reclamo.php" style="display: none;">
-                    <input type="hidden" name="reclamo_id" value="<?php echo $claim_id; ?>">
-                </form>
-        </div>
+        <?php endif; ?>
         
-        <!-- Columna derecha: Chat con el cliente -->
-        <div class="col-md-6">
-            <h2>Chat con el cliente</h2>
-            <div id="chat-historial" style="max-height: 300px; overflow-y: auto; background-color: #f5f7fa; padding: 1rem; border-radius: 4px;">
-                <?php
-                // Consulta para obtener mensajes del chat
-                $chat_stmt = $pdo->prepare("SELECT c.*, u.nombre AS emisor_nombre 
-                                            FROM chats c 
-                                            JOIN usuarios u ON c.emisor_id = u.id 
-                                            WHERE c.reclamo_id = ? 
-                                            ORDER BY c.fecha_hora ASC");
-                $chat_stmt->execute([$claim_id]);
-                $messages = $chat_stmt->fetchAll(PDO::FETCH_ASSOC);
-
-                foreach ($messages as $message) {
-                    $emisor = $message['tipo_emisor'] === 'administrador' ? 'Tú' : htmlspecialchars($message['emisor_nombre']);
-                    echo "<p><strong>$emisor (" . date('H:i d/m/Y', strtotime($message['fecha_hora'])) . "):</strong> " . htmlspecialchars($message['contenido']) . "</p>";
-                }
-                ?>
+        <?php if(!empty($error_message)): ?>
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>¡Error!</strong> <?php echo $error_message; ?>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
-            <form method="post" action="enviar_mensaje.php" style="margin-top: 1rem;">
-                <div class="form-group">
-                    <textarea name="mensaje" placeholder="Escribe un mensaje..." required style="min-height: 80px;"></textarea>
+        <?php endif; ?>
+        
+        <div class="card">
+            <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Responder al Reclamo #<?php echo $claim_id; ?></h4>
+                <a href="../sidebar/reclamos/ver_reclamos.php" class="btn btn-light">
+                    <i class="bi bi-arrow-left"></i> Volver
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Información del Reclamo</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="30%">Estado:</th>
+                                <td>
+                                    <span class="badge <?php 
+                                        if($claim['estado'] == 'abierto') echo 'bg-danger';
+                                        elseif($claim['estado'] == 'en_proceso') echo 'bg-warning';
+                                        elseif($claim['estado'] == 'cerrado') echo 'bg-success';
+                                        else echo 'bg-secondary';
+                                    ?>">
+                                        <?php echo ucfirst(str_replace('_', ' ', $claim['estado'])); ?>
+                                    </span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Fecha de Creación:</th>
+                                <td><?php echo date('d/m/Y H:i', strtotime($claim['created_at'])); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Asunto:</th>
+                                <td><?php echo htmlspecialchars($claim['asunto']); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Descripción:</th>
+                                <td><?php echo nl2br(htmlspecialchars($claim['descripcion'])); ?></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-6">
+                        <h5 class="border-bottom pb-2">Información del Cliente</h5>
+                        <table class="table table-borderless">
+                            <tr>
+                                <th width="30%">Nombre:</th>
+                                <td><?php echo htmlspecialchars($claim['cliente_nombre']); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Identificación:</th>
+                                <td><?php echo htmlspecialchars($claim['identificacion']); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Teléfono:</th>
+                                <td><?php echo htmlspecialchars($claim['telefono']); ?></td>
+                            </tr>
+                            <tr>
+                                <th>Email:</th>
+                                <td><?php echo htmlspecialchars($claim['email']); ?></td>
+                            </tr>
+                        </table>
+                    </div>
                 </div>
-                <input type="hidden" name="reclamo_id" value="<?php echo $claim_id; ?>">
-                <button type="submit" class="btn">Enviar</button>
-            </form>
+                
+                <!-- Documentos Adjuntos -->
+                <?php if (count($documentos) > 0): ?>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="border-bottom pb-2">Documentos Adjuntos</h5>
+                        <div class="row">
+                            <?php foreach ($documentos as $doc): ?>
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h6 class="card-title"><?php echo htmlspecialchars($doc['nombre_original'] ?? 'Documento'); ?></h6>
+                                            <p class="card-text small text-muted">
+                                                Subido: <?php echo date('d/m/Y H:i', strtotime($doc['created_at'])); ?>
+                                            </p>
+                                            <a href="../../uploads/documentos/<?php echo htmlspecialchars($doc['nombre_archivo'] ?? ''); ?>" 
+                                               class="btn btn-sm btn-primary" target="_blank">
+                                                <i class="bi bi-download"></i> Descargar
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Respuesta Anterior (si existe) -->
+                <?php if(!empty($claim['respuesta'])): ?>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="border-bottom pb-2">Respuesta Anterior</h5>
+                        <div class="p-3 bg-light rounded">
+                            <div class="mb-2">
+                                <strong>Fecha:</strong> 
+                                <?php echo !empty($claim['fecha_respuesta']) ? date('d/m/Y H:i', strtotime($claim['fecha_respuesta'])) : 'No disponible'; ?>
+                            </div>
+                            <div class="p-3 border rounded bg-white">
+                                <?php echo nl2br(htmlspecialchars($claim['respuesta'])); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Respuesta del cliente (si existe) -->
+                <?php if (!empty($claim['respuesta_cliente'])): ?>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <h5 class="border-bottom pb-2">Respuesta del Cliente</h5>
+                        <div class="p-3 bg-light rounded">
+                            <?php if (!empty($claim['fecha_respuesta_cliente'])): ?>
+                            <div class="mb-2">
+                                <strong>Fecha:</strong> 
+                                <?php echo date('d/m/Y H:i', strtotime($claim['fecha_respuesta_cliente'])); ?>
+                            </div>
+                            <?php endif; ?>
+                            <div class="p-3 border rounded bg-white">
+                                <?php echo nl2br(htmlspecialchars($claim['respuesta_cliente'])); ?>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+                
+                <!-- Formulario de Respuesta -->
+                <?php if($claim['estado'] != 'cerrado'): ?>
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">Responder</h5>
+                                <?php if($claim['estado'] != 'cerrado'): ?>
+                                    <button type="button" class="btn btn-success" onclick="confirmarCierre(<?php echo $claim_id; ?>)">
+                                        <i class="bi bi-check-circle"></i> Cerrar Reclamo
+                                    </button>
+                                <?php endif; ?>
+                            </div>
+                            <div class="card-body">
+                                <form method="POST" action="">
+                                    <div class="mb-3">
+                                        <label for="respuesta" class="form-label">Su respuesta</label>
+                                        <textarea class="form-control" id="respuesta" name="respuesta" rows="4" required></textarea>
+                                    </div>
+                                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bi bi-send"></i> Enviar Respuesta
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <?php else: ?>
+                <div class="alert alert-info mt-4">
+                    <i class="bi bi-info-circle"></i> Este reclamo ha sido finalizado y no puede recibir más respuestas.
+                </div>
+                <?php endif; ?>
+            </div>
         </div>
     </div>
 </div>
+
+<!-- Modal de confirmación para cerrar reclamo -->
+<div class="modal fade" id="cerrarReclamoModal" tabindex="-1" aria-labelledby="cerrarReclamoModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cerrarReclamoModalLabel">Confirmar cierre de reclamo</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                ¿Está seguro que desea cerrar este reclamo? Esta acción no se puede deshacer.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <a href="#" id="btnConfirmarCierre" class="btn btn-success">Confirmar</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmarCierre(reclamoId) {
+    // Open confirmation page in new tab
+    window.open('confirmar_cierre.php?id=' + reclamoId, '_blank', 'width=600,height=400');
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    if (urlParams.has('success')) {
+        const successType = urlParams.get('success');
+        if (successType === 'reclamo_finalizado') {
+            alert('El reclamo ha sido finalizado exitosamente.');
+            window.location.href = 'responder_reclamo.php?id=<?php echo $claim_id; ?>';
+        }
+    }
+    if (urlParams.has('error')) {
+        const errorType = urlParams.get('error');
+        let errorMessage = 'Ha ocurrido un error.';   
+        if (errorType === 'no_actualizado') {
+            errorMessage = 'No se pudo actualizar el estado del reclamo.';
+        } else if (errorType === 'db_error') {
+            errorMessage = 'Error en la base de datos: ' + urlParams.get('mensaje');
+        }
+        alert(errorMessage);
+    }
+});
+
+</script>
+<style>
+    .content-wrapper {
+        margin-left: 250px;
+        padding: 20px;
+    }
+    .bg-custom {
+        background-color: #121a35;
+    }
+    body.dark-mode .card {
+        background-color: #2d3748 !important;
+        color: #fff !important;
+    }
+    body.dark-mode .bg-light {
+        background-color: #1a202c !important;
+    }
+    body.dark-mode .border {
+        border-color: #4a5568 !important;
+    }
+    body.dark-mode .bg-white {
+        background-color: #2d3748 !important;
+        color: #fff !important;
+    }
+    body.dark-mode .text-muted {
+        color: #a0aec0 !important;
+    }
+    body.dark-mode .table {
+        color: #fff !important;
+    }
+    body.dark-mode .table td, 
+    body.dark-mode .table th {
+        color: #fff !important;
+    }
+    body.dark-mode .form-label {
+        color: #fff !important;
+    }
+    body.dark-mode .form-control {
+        background-color: #1a202c !important;
+        color: #fff !important;
+        border-color: #4a5568 !important;
+    }
+    body.dark-mode .form-control:focus {
+        background-color: #2d3748 !important;
+        color: #fff !important;
+    }
+    body.dark-mode .card-header.bg-light {
+        background-color: #2d3748 !important;
+        color: #fff !important;
+    }
+</style>
