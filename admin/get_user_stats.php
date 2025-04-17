@@ -9,7 +9,6 @@ try {
     $pdo = new PDO("mysql:host=$host;dbname=$dbname", $username, $password);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-    // Get client growth data instead of user growth
     $stmt = $pdo->query("
         SELECT DATE(created_at) as join_date, COUNT(*) as count 
         FROM clientes 
@@ -18,7 +17,6 @@ try {
     ");
     $growth_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Keep the user roles data as is
     $stmt = $pdo->query("
         SELECT r.nombre, COUNT(u.id) as count
         FROM roles r
@@ -27,7 +25,6 @@ try {
     ");
     $roles_data = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-    // Format data for charts
     $dates = array_column($growth_data, 'join_date');
     $counts = array_column($growth_data, 'count');
 

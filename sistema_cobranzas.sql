@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: localhost:3306
--- Tiempo de generación: 12-04-2025 a las 17:13:53
+-- Tiempo de generación: 13-04-2025 a las 03:19:36
 -- Versión del servidor: 8.0.30
 -- Versión de PHP: 8.1.10
 
@@ -20,21 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `sistema_cobranzas`
 --
-
--- -------------------------------------------------Error al enviar el reclamo: SQLSTATE[HY000]: General error: 1366 Incorrect integer value: '' for column 'deuda_id' at row 1-------
-
---
--- Estructura de tabla para la tabla `chats`
---
-
-CREATE TABLE `chats` (
-  `id` int NOT NULL,
-  `reclamo_id` int NOT NULL,
-  `emisor_id` int NOT NULL,
-  `contenido` text CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL,
-  `fecha_hora` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
-  `tipo_emisor` enum('administrador','cliente') CHARACTER SET utf8mb3 COLLATE utf8mb3_unicode_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_unicode_ci;
 
 -- --------------------------------------------------------
 
@@ -102,7 +87,7 @@ CREATE TABLE `cuotas_deuda` (
 INSERT INTO `cuotas_deuda` (`id`, `deuda_id`, `numero_cuota`, `monto_cuota`, `saldo_pendiente`, `interes_acumulado`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
 (157, 11, 1, 4166666.67, 0.00, 0.00, '2025-05-04', 'pagado', '2025-04-04 17:11:44'),
 (158, 11, 2, 4166666.67, 0.00, 0.00, '2025-06-04', 'pagado', '2025-04-04 17:11:44'),
-(159, 11, 3, 4166666.67, 4166666.67, 0.00, '2025-07-04', 'pendiente', '2025-04-04 17:11:44'),
+(159, 11, 3, 4166666.67, 4166666.67, 0.00, '2025-04-04', 'pendiente', '2025-04-04 17:11:44'),
 (160, 11, 4, 4166666.67, 4166666.67, 0.00, '2025-08-04', 'pendiente', '2025-04-04 17:11:44'),
 (161, 11, 5, 4166666.67, 4166666.67, 0.00, '2025-09-04', 'pendiente', '2025-04-04 17:11:44'),
 (162, 11, 6, 4166666.67, 4166666.67, 0.00, '2025-10-04', 'pendiente', '2025-04-04 17:11:44'),
@@ -179,7 +164,57 @@ INSERT INTO `cuotas_deuda` (`id`, `deuda_id`, `numero_cuota`, `monto_cuota`, `sa
 (295, 15, 25, 3571428.57, NULL, 0.00, '2027-05-30', 'pendiente', '2025-04-07 00:09:15'),
 (296, 15, 26, 3571428.57, NULL, 0.00, '2027-06-30', 'pendiente', '2025-04-07 00:09:15'),
 (297, 15, 27, 3571428.57, NULL, 0.00, '2027-07-30', 'pendiente', '2025-04-07 00:09:15'),
-(298, 15, 28, 3571428.57, NULL, 0.00, '2027-08-30', 'pendiente', '2025-04-07 00:09:15');
+(298, 15, 28, 3571428.57, NULL, 0.00, '2027-08-30', 'pendiente', '2025-04-07 00:09:15'),
+(299, 16, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(300, 16, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(301, 16, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(302, 16, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(303, 16, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(304, 17, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(305, 17, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(306, 17, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(307, 17, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(308, 17, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(309, 18, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(310, 18, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(311, 18, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(312, 18, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(313, 18, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(314, 19, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(315, 19, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(316, 19, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(317, 19, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(318, 19, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(319, 20, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(320, 20, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(321, 20, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(322, 20, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(323, 20, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(324, 21, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(325, 21, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(326, 21, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(327, 21, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(328, 21, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(329, 22, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(330, 22, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(331, 22, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(332, 22, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(333, 22, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(334, 23, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(335, 23, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(336, 23, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(337, 23, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(338, 23, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(339, 24, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(340, 24, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(341, 24, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(342, 24, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(343, 24, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48'),
+(344, 25, 1, 1000000.00, 1000000.00, 0.00, '2025-04-11', 'vencido', '2025-04-13 01:39:48'),
+(345, 25, 2, 1000000.00, 1000000.00, 0.00, '2025-05-11', 'pendiente', '2025-04-13 01:39:48'),
+(346, 25, 3, 1000000.00, 1000000.00, 0.00, '2025-06-11', 'pendiente', '2025-04-13 01:39:48'),
+(347, 25, 4, 1000000.00, 1000000.00, 0.00, '2025-07-11', 'pendiente', '2025-04-13 01:39:48'),
+(348, 25, 5, 1000000.00, 1000000.00, 0.00, '2025-08-11', 'pendiente', '2025-04-13 01:39:48');
 
 -- --------------------------------------------------------
 
@@ -226,7 +261,17 @@ CREATE TABLE `deudas` (
 INSERT INTO `deudas` (`id`, `cliente_id`, `politica_interes_id`, `notas`, `monto`, `cuotas`, `fecha_emision`, `saldo_pendiente`, `interes_acumulado`, `ultima_actualizacion_interes`, `descripcion`, `fecha_vencimiento`, `estado`, `created_at`) VALUES
 (5, 32, 3, '', 41000000.00, 1, '2025-03-16', 41000000.00, 0.00, NULL, 'CrediAgil San Lorenzo', '2026-04-15', 'pendiente', '2025-03-16 23:13:03'),
 (11, 33, 2, '', 50000000.00, 12, '2025-04-04', 0.00, 0.00, NULL, 'CrediAmigo', '2026-04-04', 'pagado', '2025-04-04 17:11:44'),
-(15, 33, 2, '', 100000000.00, 28, '2025-04-07', 85714284.00, 0.00, NULL, 'CrediAmigo', '2027-08-07', 'pendiente', '2025-04-07 00:09:15');
+(15, 33, 2, '', 100000000.00, 28, '2025-04-07', 85214284.00, 0.00, NULL, 'CrediAmigo', '2027-08-07', 'pendiente', '2025-04-07 00:09:15'),
+(16, 13, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(17, 14, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(18, 15, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(19, 16, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(20, 17, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(21, 18, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 4500000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(22, 19, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(23, 20, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(24, 21, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 5000000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48'),
+(25, 22, 2, 'Préstamo personal', 5000000.00, 5, '2025-03-11', 4495000.00, 0.00, NULL, 'Préstamo personal 5 cuotas', '2025-08-11', 'vencido', '2025-04-13 01:39:48');
 
 --
 -- Disparadores `deudas`
@@ -271,6 +316,7 @@ CREATE TABLE `documentos` (
   `deuda_id` int DEFAULT NULL,
   `tipo_documento` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ruta_archivo` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `nombre_original` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -278,11 +324,12 @@ CREATE TABLE `documentos` (
 -- Volcado de datos para la tabla `documentos`
 --
 
-INSERT INTO `documentos` (`id`, `cliente_id`, `deuda_id`, `tipo_documento`, `ruta_archivo`, `created_at`) VALUES
-(1, 33, 15, 'reclamo', 'uploads/reclamos/67fa99ed16dea_Comprobante de Pago #24.pdf', '2025-04-12 16:50:53'),
-(2, 33, 15, 'reclamo', 'uploads/reclamos/67fa9a6fce611_Comprobante de Pago #24.pdf', '2025-04-12 16:53:03'),
-(3, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b174b6ea_Comprobante de Pago #24.pdf', '2025-04-12 16:55:51'),
-(4, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b6435043_Comprobante de Pago #24.pdf', '2025-04-12 16:57:08');
+INSERT INTO `documentos` (`id`, `cliente_id`, `deuda_id`, `tipo_documento`, `ruta_archivo`, `nombre_original`, `created_at`) VALUES
+(1, 33, 15, 'reclamo', 'uploads/reclamos/67fa99ed16dea_Comprobante de Pago #24.pdf', NULL, '2025-04-12 16:50:53'),
+(2, 33, 15, 'reclamo', 'uploads/reclamos/67fa9a6fce611_Comprobante de Pago #24.pdf', NULL, '2025-04-12 16:53:03'),
+(3, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b174b6ea_Comprobante de Pago #24.pdf', NULL, '2025-04-12 16:55:51'),
+(4, 33, 15, 'reclamo', 'uploads/reclamos/67fa9b6435043_Comprobante de Pago #24.pdf', NULL, '2025-04-12 16:57:08'),
+(5, 33, NULL, 'reclamo', '67facae7bd5c7_Comprobante de Pago #24.pdf', 'Comprobante de Pago #24.pdf', '2025-04-12 20:19:51');
 
 -- --------------------------------------------------------
 
@@ -306,7 +353,17 @@ CREATE TABLE `historial_deudas` (
 INSERT INTO `historial_deudas` (`id`, `deuda_id`, `usuario_id`, `accion`, `detalle`, `created_at`) VALUES
 (5, 5, 6, 'creación', 'Creación de nueva deuda por monto 41.000.000,00 Gs.', '2025-03-16 23:13:03'),
 (21, 11, 6, 'creación', 'Creación de nueva deuda por monto 50.000.000,00 Gs.', '2025-04-04 17:11:44'),
-(25, 15, 6, 'creación', 'Creación de nueva deuda por monto 100.000.000,00 Gs.', '2025-04-07 00:09:15');
+(25, 15, 6, 'creación', 'Creación de nueva deuda por monto 100.000.000,00 Gs.', '2025-04-07 00:09:15'),
+(26, 16, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(27, 17, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(28, 18, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(29, 19, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(30, 20, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(31, 21, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(32, 22, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(33, 23, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(34, 24, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48'),
+(35, 25, 6, 'creación', 'Creación de nueva deuda por monto 5.000.000,00 Gs.', '2025-04-13 01:39:48');
 
 -- --------------------------------------------------------
 
@@ -340,20 +397,24 @@ CREATE TABLE `pagos` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `is_anulado` tinyint(1) DEFAULT '0',
   `estado` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'pendiente',
-  `cuota_id` int DEFAULT NULL
+  `cuota_id` int DEFAULT NULL,
+  `notas` text COLLATE utf8mb4_unicode_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `pagos`
 --
 
-INSERT INTO `pagos` (`id`, `deuda_id`, `monto_pagado`, `metodo_pago`, `fecha_pago`, `comprobante`, `created_at`, `is_anulado`, `estado`, `cuota_id`) VALUES
-(23, 11, 4166667.00, 'Efectivo', '2025-04-04', '', '2025-04-04 18:37:30', 0, 'aprobado', 157),
-(24, 11, 416666667.00, 'Depósito', '2025-04-06', '', '2025-04-07 00:00:40', 0, 'aprobado', 158),
-(25, 15, 3571429.00, 'Efectivo', '2025-04-06', '', '2025-04-07 00:22:30', 0, 'aprobado', 243),
-(26, 15, 3571429.00, 'Tarjeta', '2025-04-06', '', '2025-04-07 00:35:16', 0, 'aprobado', 244),
-(27, 15, 3571429.00, 'Tarjeta', '2025-04-12', '', '2025-04-12 16:12:10', 0, 'aprobado', 245),
-(28, 15, 3571429.00, 'Transferencia', '2025-04-12', '', '2025-04-12 16:18:30', 0, 'aprobado', 246);
+INSERT INTO `pagos` (`id`, `deuda_id`, `monto_pagado`, `metodo_pago`, `fecha_pago`, `comprobante`, `created_at`, `is_anulado`, `estado`, `cuota_id`, `notas`) VALUES
+(23, 11, 4166667.00, 'Efectivo', '2025-04-04', '', '2025-04-04 18:37:30', 0, 'aprobado', 157, NULL),
+(24, 11, 416666667.00, 'Depósito', '2025-04-06', '', '2025-04-07 00:00:40', 0, 'aprobado', 158, NULL),
+(25, 15, 3571429.00, 'Efectivo', '2025-04-06', '', '2025-04-07 00:22:30', 0, 'aprobado', 243, NULL),
+(26, 15, 3571429.00, 'Tarjeta', '2025-04-06', '', '2025-04-07 00:35:16', 0, 'aprobado', 244, NULL),
+(27, 15, 3571429.00, 'Tarjeta', '2025-04-12', '', '2025-04-12 16:12:10', 0, 'aprobado', 245, NULL),
+(28, 15, 3571429.00, 'Transferencia', '2025-04-12', '', '2025-04-12 16:18:30', 0, 'aprobado', 246, NULL),
+(29, 15, 500000.00, 'Tarjeta de Débito', '2025-04-13', NULL, '2025-04-13 02:54:17', 0, 'pendiente', NULL, NULL),
+(30, 21, 500000.00, 'Cheque', '2025-04-13', NULL, '2025-04-13 02:54:35', 0, 'pendiente', NULL, NULL),
+(31, 25, 505000.00, 'Efectivo', '2025-04-13', NULL, '2025-04-13 02:55:07', 0, 'pendiente', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -400,19 +461,21 @@ CREATE TABLE `reclamos` (
   `estado` enum('abierto','en_proceso','resuelto','cerrado') CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT 'abierto',
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   `respuesta` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci,
-  `respondido_por` int DEFAULT NULL
+  `respondido_por` int DEFAULT NULL,
+  `fecha_respuesta` datetime DEFAULT NULL,
+  `respuesta_cliente` text COLLATE utf8mb4_unicode_ci,
+  `fecha_respuesta_cliente` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Volcado de datos para la tabla `reclamos`
 --
 
-INSERT INTO `reclamos` (`id`, `cliente_id`, `deuda_id`, `asunto`, `descripcion`, `estado`, `created_at`, `respuesta`, `respondido_por`) VALUES
-(1, 33, 15, 'No se me registro un pago', 'Adjunto prueba', 'abierto', '2025-04-12 16:50:53', NULL, NULL),
-(2, 33, 15, 'No se me registro un pago', 'Adjunto prueba', 'abierto', '2025-04-12 16:53:03', NULL, NULL),
-(3, 33, 15, 'No se me registro un pago', 'Adjunto Prueba', 'abierto', '2025-04-12 16:55:51', NULL, NULL),
-(4, 33, 15, 'No se me registro un pago', 'Adjunto Prueba', 'abierto', '2025-04-12 16:57:08', NULL, NULL),
-(5, 33, 11, 'Ya pague todo', 'Adjunto', 'abierto', '2025-04-12 16:57:48', NULL, NULL);
+INSERT INTO `reclamos` (`id`, `cliente_id`, `deuda_id`, `asunto`, `descripcion`, `estado`, `created_at`, `respuesta`, `respondido_por`, `fecha_respuesta`, `respuesta_cliente`, `fecha_respuesta_cliente`) VALUES
+(9, 33, 11, 'Ya pague todo', 'Hola jaja', 'cerrado', '2025-04-12 20:19:51', NULL, 9, '2025-04-12 21:44:46', NULL, NULL),
+(10, 33, 15, 'Hola Mundo', 'JIJIJIJA', 'cerrado', '2025-04-13 00:46:08', NULL, 33, '2025-04-12 21:48:27', NULL, NULL),
+(11, 33, 11, 'ewqewqe', 'weqweqwe', 'cerrado', '2025-04-13 00:48:38', 'OKOKOKOKOKOKOKO', 33, '2025-04-12 22:19:40', NULL, NULL),
+(12, 33, 11, 'weqeqweq', 'ewewqeqw', 'cerrado', '2025-04-13 00:48:45', 'Solucionado!!\r\nAtte Marcelo.', 33, '2025-04-12 21:51:34', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -506,14 +569,6 @@ CREATE TABLE `v_deudas_con_interes` (
 --
 -- Índices para tablas volcadas
 --
-
---
--- Indices de la tabla `chats`
---
-ALTER TABLE `chats`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `reclamo_id` (`reclamo_id`),
-  ADD KEY `emisor_id` (`emisor_id`);
 
 --
 -- Indices de la tabla `clientes`
@@ -618,12 +673,6 @@ ALTER TABLE `usuarios`
 --
 
 --
--- AUTO_INCREMENT de la tabla `chats`
---
-ALTER TABLE `chats`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
 -- AUTO_INCREMENT de la tabla `clientes`
 --
 ALTER TABLE `clientes`
@@ -633,7 +682,7 @@ ALTER TABLE `clientes`
 -- AUTO_INCREMENT de la tabla `cuotas_deuda`
 --
 ALTER TABLE `cuotas_deuda`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=299;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=349;
 
 --
 -- AUTO_INCREMENT de la tabla `detalles_pago`
@@ -645,19 +694,19 @@ ALTER TABLE `detalles_pago`
 -- AUTO_INCREMENT de la tabla `deudas`
 --
 ALTER TABLE `deudas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
 
 --
 -- AUTO_INCREMENT de la tabla `documentos`
 --
 ALTER TABLE `documentos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_deudas`
 --
 ALTER TABLE `historial_deudas`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de la tabla `notificaciones`
@@ -669,7 +718,7 @@ ALTER TABLE `notificaciones`
 -- AUTO_INCREMENT de la tabla `pagos`
 --
 ALTER TABLE `pagos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=29;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `politicas_interes`
@@ -681,7 +730,7 @@ ALTER TABLE `politicas_interes`
 -- AUTO_INCREMENT de la tabla `reclamos`
 --
 ALTER TABLE `reclamos`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `respuestas_reclamos`
@@ -713,13 +762,6 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 -- Restricciones para tablas volcadas
 --
-
---
--- Filtros para la tabla `chats`
---
-ALTER TABLE `chats`
-  ADD CONSTRAINT `chats_ibfk_1` FOREIGN KEY (`reclamo_id`) REFERENCES `reclamos` (`id`),
-  ADD CONSTRAINT `chats_ibfk_2` FOREIGN KEY (`emisor_id`) REFERENCES `usuarios` (`id`);
 
 --
 -- Filtros para la tabla `cuotas_deuda`

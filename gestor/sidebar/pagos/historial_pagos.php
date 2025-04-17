@@ -107,8 +107,8 @@ include '../../inc/sidebar.php';
                 <div class="card">
                     <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">
-                            <i class="bi bi-clock-history me-2"></i>
-                            Historial de Pagos - <?php echo $titulo_periodo; ?>
+                        <span class="text-black"> <i class="bi bi-clock-history me-2"></i>
+                            Historial de Pagos- <?php echo $titulo_periodo; ?> </span> 
                         </h5>
                         <div>
                             <button class="btn btn-sm btn-light" onclick="exportToExcel()">

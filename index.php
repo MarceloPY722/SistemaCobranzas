@@ -7,7 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usernameOrEmail = $_POST['usernameOrEmail'];
     $password = $_POST['password'];
     
-    // First check in Usuarios table (for admin and gestor roles)
     $stmt = $pdo->prepare("SELECT u.*, r.nombre as rol 
                           FROM Usuarios u 
                           JOIN Roles r ON u.rol_id = r.id 
@@ -32,22 +31,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         exit();
     } else {
-        // If not found in Usuarios, check in Clientes table
         $stmt = $pdo->prepare("SELECT * FROM Clientes WHERE email = ? OR identificacion = ?");
         $stmt->execute([$usernameOrEmail, $usernameOrEmail]);
         $cliente = $stmt->fetch();
         
-        // Check if client exists and password matches
         if ($cliente) {
-            // Get the password hash from the database for this client
+            
             $stmt = $pdo->prepare("SELECT password FROM Clientes WHERE id = ?");
             $stmt->execute([$cliente['id']]);
             $clienteAuth = $stmt->fetch();
             
-            // If password verification is successful
             if (isset($clienteAuth['password']) && password_verify($password, $clienteAuth['password'])) {
                 $_SESSION['user_id'] = $cliente['id'];
-                $_SESSION['cliente_id'] = $cliente['id']; // Add this line to set cliente_id
+                $_SESSION['cliente_id'] = $cliente['id']; 
                 $_SESSION['role'] = 'Cliente';
                 $_SESSION['nombre'] = $cliente['nombre'];
                 $_SESSION['email'] = $cliente['email'];
@@ -119,17 +115,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         });
         
-        // Password visibility toggle
         const togglePassword = document.getElementById('togglePassword');
         const password = document.getElementById('password');
         
         if (togglePassword && password) {
             togglePassword.addEventListener('click', function() {
-                // Toggle type attribute
+              
                 const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
                 password.setAttribute('type', type);
                 
-                // Toggle icon
                 this.classList.toggle('bi-eye');
                 this.classList.toggle('bi-eye-slash');
             });
