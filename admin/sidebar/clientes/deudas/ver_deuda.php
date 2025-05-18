@@ -270,41 +270,7 @@ function formatMoney($amount) {
         </div>
 
         <!-- Historial de la Deuda -->
-        <div class="card mb-4">
-            <div class="card-header bg-custom text-white">
-                <h5 class="mb-0">Historial de la Deuda</h5>
-            </div>
-            <div class="card-body">
-                <?php if($result_historial->num_rows > 0): ?>
-                    <div class="timeline">
-                        <?php while($historial = $result_historial->fetch_assoc()): ?>
-                            <div class="timeline-item">
-                                <div class="timeline-marker"></div>
-                                <div class="timeline-content">
-                                    <h6 class="timeline-title">
-                                        <?php echo ucfirst($historial['accion']); ?>
-                                        <small class="text-muted"><?php echo date('d/m/Y H:i', strtotime($historial['created_at'])); ?></small>
-                                    </h6>
-                                    <p class="timeline-text">
-                                        <?php echo isset($historial['descripcion']) ? htmlspecialchars($historial['descripcion']) : ''; ?>
-                                        <?php if(!empty($historial['usuario_nombre'])): ?>
-                                            <br><small>Por: <?php echo htmlspecialchars($historial['usuario_nombre']); ?></small>
-                                        <?php endif; ?>
-                                    </p>
-                                </div>
-                            </div>
-                        <?php endwhile; ?>
-                    </div>
-                <?php else: ?>
-                    <div class="alert alert-info">
-                        No hay registros en el historial de esta deuda.
-                    </div>
-                <?php endif; ?>
-            </div>
-        </div>
-    </div>
-</div>
-
+        
 <!-- Modal para eliminar deuda -->
 <div class="modal fade" id="eliminarDeudaModal" tabindex="-1" aria-labelledby="eliminarDeudaModalLabel" aria-hidden="true">
     <div class="modal-dialog">

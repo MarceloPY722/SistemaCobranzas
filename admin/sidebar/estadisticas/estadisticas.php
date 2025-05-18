@@ -228,6 +228,21 @@ $result_usuarios = $conn->query($sql_usuarios_activos);
             background-color: #2a3356;
             color: #fff;
         }
+
+        body.dark-mode .table-hover tbody tr {
+            background-color: #1e2746;
+            color: #a8afc7;
+        }
+
+        body.dark-mode .table thead {
+            background-color: #121a35;
+            color: #fff;
+        }
+
+        body.dark-mode .table {
+            color: #a8afc7;
+            border-color: #2a3356;
+        }
         
         body.dark-mode .alert-info {
             background-color: #2a3356;
@@ -384,50 +399,7 @@ $result_usuarios = $conn->query($sql_usuarios_activos);
         </div>
         
         <!-- Últimos Pagos -->
-        <div class="row">
-            <div class="col-12">
-                <div class="card">
-                    <div class="card-header d-flex align-items-center">
-                        <i class="bi bi-cash stats-icon"></i>
-                        <h5 class="mb-0">Últimos Pagos Realizados</h5>
-                    </div>
-                    <div class="card-body">
-                        <?php if($result_pagos->num_rows > 0): ?>
-                            <div class="table-responsive">
-                                <table class="table table-hover">
-                                    <thead>
-                                        <tr>
-                                            <th>Cliente</th>
-                                            <th>Descripción</th>
-                                            <th>Método</th>
-                                            <th>Monto</th>
-                                            <th>Fecha</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <?php while($pago = $result_pagos->fetch_assoc()): ?>
-                                        <tr>
-                                            <td><?= htmlspecialchars($pago['cliente_nombre']) ?></td>
-                                            <td><?= htmlspecialchars($pago['descripcion']) ?></td>
-                                            <td><?= htmlspecialchars($pago['metodo_pago'] ?: 'No especificado') ?></td>
-                                            <td><?= formatMoney($pago['monto_pagado']) ?></td>
-                                            <td><?= date('d/m/Y H:i', strtotime($pago['created_at'])) ?></td>
-                                        </tr>
-                                        <?php endwhile; ?>
-                                    </tbody>
-                                </table>
-                            </div>
-                        <?php else: ?>
-                            <div class="alert alert-info">
-                                No hay pagos registrados.
-                            </div>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+     
 
 <!-- Chart.js -->
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

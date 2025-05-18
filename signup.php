@@ -31,11 +31,11 @@ $clientData = null;
 if (isset($_POST['verify_ci'])) {
     $ci = $_POST['ci'];
     
-    // Check if CI exists in the database
-    $stmt = $pdo->prepare("SELECT * FROM Clientes WHERE identificacion = ?");
+    // Check if CI exists in the database - Specify columns instead of *
+    $stmt = $pdo->prepare("SELECT id, nombre, email, password, identificacion FROM Clientes WHERE identificacion = ?");
     $stmt->execute([$ci]);
     $clientData = $stmt->fetch();
-    
+
     if ($clientData) {
         // Check if client already has a password
         if (!empty($clientData['password'])) {
@@ -43,15 +43,15 @@ if (isset($_POST['verify_ci'])) {
             $messageType = "error";
         } else {
             // Store client data in session
-            $_SESSION['client_data'] = $clientData;
-            
+            $_SESSION['client_data'] = $clientData; // Only necessary data is stored
+
             // Generate a 6-digit verification code
             $verificationCode = sprintf("%06d", mt_rand(1, 999999));
-            
+
             // Store the code in session for verification
             $_SESSION['verification_code'] = $verificationCode;
             $_SESSION['verification_email'] = $clientData['email'];
-            
+
             // In a real application, you would send this code via email
             // For demonstration purposes, we'll just display it
             $message = "Código de verificación generado: $verificationCode (En un entorno real, este código sería enviado por correo electrónico a {$clientData['email']})";
@@ -89,34 +89,86 @@ if (isset($_POST['setup_password'])) {
     $clientData = isset($_SESSION['client_data']) ? $_SESSION['client_data'] : null;
     $clienteId = isset($clientData['id']) ? $clientData['id'] : '';
     $userEmail = isset($clientData['email']) ? $clientData['email'] : '';
-    
+    $userName = isset($clientData['nombre']) ? strtolower($clientData['nombre']) : ''; // Get name in lowercase
+    $userCI = isset($clientData['identificacion']) ? $clientData['identificacion'] : ''; // Get CI
+
     if (!$clientData) {
         $message = "Por favor, verifique su CI primero.";
         $messageType = "error";
     } else {
         $password = $_POST['password'];
         $confirmPassword = $_POST['confirm_password'];
-        
+
         if ($password === $confirmPassword) {
-            // Hash the password
-            $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            
-            // Update the client's password in the database
-            $stmt = $pdo->prepare("UPDATE Clientes SET password = ? WHERE id = ?");
-            $result = $stmt->execute([$hashedPassword, $clienteId]);
-            
-            if ($result) {
-                // Clear session data
-                unset($_SESSION['client_data']);
-                
-                // Redirect to login page with success message
-                header('Location: index.php?registered=1');
-                exit();
-            } else {
-                $message = "Error al actualizar la contraseña. Por favor, intente nuevamente.";
+            // --- BEGIN PASSWORD VALIDATION ---
+            $errors = [];
+            $passwordLower = strtolower($password); // Password in lowercase for checks
+
+            // 1. Minimum length
+            if (strlen($password) < 8) {
+                $errors[] = "La contraseña debe tener al menos 8 caracteres.";
+            }
+            // 2. Uppercase letter
+            if (!preg_match('/[A-Z]/', $password)) {
+                $errors[] = "La contraseña debe contener al menos una letra mayúscula.";
+            }
+            // 3. Lowercase letter
+            if (!preg_match('/[a-z]/', $password)) {
+                $errors[] = "La contraseña debe contener al menos una letra minúscula.";
+            }
+            // 4. Number
+            if (!preg_match('/[0-9]/', $password)) {
+                $errors[] = "La contraseña debe contener al menos un número.";
+            }
+            // 5. Special character
+            if (!preg_match('/[\W_]/', $password)) { // \W matches any non-word character, _ is added explicitly
+                $errors[] = "La contraseña debe contener al menos un símbolo especial (ej: !@#$%^&*).";
+            }
+            // 6. Cannot contain name parts
+            if (!empty($userName)) {
+                $nameParts = explode(' ', $userName);
+                foreach ($nameParts as $part) {
+                    if (strlen($part) >= 3 && strpos($passwordLower, $part) !== false) { // Check parts longer than 2 chars
+                        $errors[] = "La contraseña no puede contener partes de su nombre.";
+                        break; // Stop checking name parts once found
+                    }
+                }
+            }
+            // 7. Cannot contain CI
+            if (!empty($userCI) && strpos($password, $userCI) !== false) {
+                $errors[] = "La contraseña no puede contener su número de CI.";
+            }
+
+            if (!empty($errors)) {
+                // If there are validation errors
+                $message = "<ul><li>" . implode("</li><li>", $errors) . "</li></ul>";
                 $messageType = "error";
                 $showPasswordForm = true;
-            }
+            } else {
+                // --- END PASSWORD VALIDATION ---
+
+                // Validation passed, proceed to hash and update
+                $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+                // Update the client's password in the database
+                $stmt = $pdo->prepare("UPDATE Clientes SET password = ? WHERE id = ?");
+                $result = $stmt->execute([$hashedPassword, $clienteId]);
+
+                if ($result) {
+                    // Clear session data
+                    unset($_SESSION['client_data']);
+                    unset($_SESSION['verification_code']); // Also clear verification code
+                    unset($_SESSION['verification_email']);
+
+                    // Redirect to login page with success message
+                    header('Location: index.php?registered=1');
+                    exit();
+                } else {
+                    $message = "Error al actualizar la contraseña. Por favor, intente nuevamente.";
+                    $messageType = "error";
+                    $showPasswordForm = true;
+                }
+            } // End validation check else
         } else {
             $message = "Las contraseñas no coinciden. Por favor, intente nuevamente.";
             $messageType = "error";
@@ -134,8 +186,14 @@ if (isset($_POST['setup_password'])) {
     
     <?php if ($message): ?>
         <div class="<?php echo $messageType === 'error' ? 'error-message' : 'success-message'; ?>">
-            <i class="bi <?php echo $messageType === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'; ?>"></i> 
-            <?php echo $message; ?>
+            <?php if ($messageType === 'error' && strpos($message, '<ul>') === 0): ?>
+                 <!-- Display list for password errors -->
+                 <?php echo $message; ?>
+            <?php else: ?>
+                 <!-- Display standard message -->
+                 <i class="bi <?php echo $messageType === 'error' ? 'bi-exclamation-triangle-fill' : 'bi-check-circle-fill'; ?>"></i>
+                 <?php echo $message; ?>
+            <?php endif; ?>
         </div>
     <?php endif; ?>
 

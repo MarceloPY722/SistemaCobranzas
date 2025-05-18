@@ -1,5 +1,7 @@
+<?php include 'include/header_index.php' ?>
+<?php include 'include/sidebar.php'?>
+
 <?php
-session_start();
 require_once 'include/cnx.php';
 
 if (!isset($_SESSION['cliente_id'])) {
@@ -14,19 +16,66 @@ $stmt = $pdo->prepare($query);
 $stmt->execute([$cliente_id]);
 $cliente = $stmt->fetch();
 
-include 'include/sidebar.php';
-?>
+$mensaje_vencimiento = '';
+try {
+    $query_vencidas = "SELECT 1 FROM cuotas_deuda cd
+                       JOIN deudas d ON cd.deuda_id = d.id
+                       WHERE d.cliente_id = ?
+                       AND cd.estado != 'pagado'
+                       AND cd.fecha_vencimiento < CURDATE()
+                       LIMIT 1";
+    $stmt_vencidas = $pdo->prepare($query_vencidas);
+    $stmt_vencidas->execute([$cliente_id]);
+    $tiene_vencidas = $stmt_vencidas->fetchColumn();
 
+    if ($tiene_vencidas) {
+        $mensaje_vencimiento = '<div class="alert alert-danger" role="alert"><i class="bi bi-exclamation-octagon-fill"></i> ¡Atención! Tienes cuotas vencidas pendientes de pago.</div>';
+    } else {
+        $query_proximo_vencimiento = "SELECT MIN(cd.fecha_vencimiento) as proxima_fecha
+                                      FROM cuotas_deuda cd
+                                      JOIN deudas d ON cd.deuda_id = d.id
+                                      WHERE d.cliente_id = ?
+                                      AND cd.estado = 'pendiente'
+                                      AND cd.fecha_vencimiento >= CURDATE()"; // Get only future or today's due dates
+        $stmt_proximo_vencimiento = $pdo->prepare($query_proximo_vencimiento);
+        $stmt_proximo_vencimiento->execute([$cliente_id]);
+        $proxima_cuota = $stmt_proximo_vencimiento->fetch();
+
+        if ($proxima_cuota && $proxima_cuota['proxima_fecha']) {
+            $fecha_vencimiento = new DateTime($proxima_cuota['proxima_fecha']);
+            $hoy = new DateTime();
+            $hoy->setTime(0, 0, 0);
+            $fecha_vencimiento->setTime(0, 0, 0);
+
+            $diferencia = $hoy->diff($fecha_vencimiento);
+            $dias_restantes = $diferencia->days;
+
+            if ($dias_restantes == 0) {
+                $mensaje_vencimiento = '<div class="alert alert-warning" role="alert"><i class="bi bi-exclamation-triangle-fill"></i> ¡Tu próxima cuota vence hoy!</div>';
+            } elseif ($dias_restantes == 1) {
+                $mensaje_vencimiento = '<div class="alert alert-info" role="alert"><i class="bi bi-info-circle-fill"></i> Tu próxima cuota vence mañana.</div>';
+            } else {
+                $mensaje_vencimiento = '<div class="alert alert-info" role="alert"><i class="bi bi-info-circle-fill"></i> Próximo vencimiento en ' . $dias_restantes . ' días.</div>';
+            }
+        } else {
+             $mensaje_vencimiento = '<div class="alert alert-success" role="alert"><i class="bi bi-check-circle-fill"></i> ¡Estás al día con tus pagos! No tienes vencimientos próximos.</div>';
+        }
+    }
+
+} catch (PDOException $e) {
+    error_log("Database error fetching due date info: " . $e->getMessage()); // Log the specific error
+    $mensaje_vencimiento = '<div class="alert alert-danger" role="alert">Error al obtener información de vencimientos.</div>';
+}
+
+?>
 <div class="content-wrapper">
     <div class="container mt-4">
         <div class="row">
             <div class="col-md-12 mb-4">
                 <div class="card">
                     <div class="card-header bg-custom text-white">
+                        <?php echo $mensaje_vencimiento; ?>
                         <h4 class="mb-0">Bienvenido, <?php echo htmlspecialchars($cliente['nombre']); ?></h4>
-                    </div>
-                    <div class="card-body">
-                        <p>Bienvenido al panel de cliente. Aquí podrás gestionar tus préstamos y pagos.</p>
                     </div>
                 </div>
             </div>

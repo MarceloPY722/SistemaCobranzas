@@ -178,29 +178,34 @@ include '../include/sidebar.php';
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            <?php foreach ($vencimientos as $cuota): ?>
+                                            <?php if (!empty($vencimientos)): ?>
+                                                <?php foreach ($vencimientos as $vencimiento): ?>
+                                                    <?php $dias = calcularDiasDiferencia($vencimiento['fecha_vencimiento']); ?>
+                                                    <tr>
+                                                        <td><?php echo htmlspecialchars($vencimiento['prestamo_descripcion']); ?></td>
+                                                        <td><?php echo $vencimiento['numero_cuota']; ?></td>
+                                                        <td><?php echo date('d/m/Y', strtotime($vencimiento['fecha_vencimiento'])); ?></td>
+                                                        <td><?php echo formatMoney($vencimiento['monto_cuota']); ?></td>
+                                                        <td>
+                                                            <?php if ($dias == 0): ?>
+                                                                <span class="badge bg-warning text-dark">Vence Hoy</span>
+                                                            <?php else: ?>
+                                                                <span class="badge bg-info text-dark">Vence en <?php echo $dias; ?> días</span>
+                                                            <?php endif; ?>
+                                                        </td>
+                                                        <td>
+                                                            <!-- Update the href attribute here -->
+                                                            <a href="realizar_pago.php?deuda_id=<?php echo $vencimiento['deuda_id']; ?>&cuota_id=<?php echo $vencimiento['id']; ?>" class="btn btn-success btn-sm">
+                                                                <i class="bi bi-cash"></i> Pagar
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
                                                 <tr>
-                                                    <td>
-                                                        <a href="../prestamos/detalle_prestamo.php?id=<?php echo $cuota['deuda_id']; ?>">
-                                                            <?php echo htmlspecialchars($cuota['prestamo_descripcion']); ?>
-                                                        </a>
-                                                    </td>
-                                                    <td>Cuota <?php echo $cuota['numero_cuota']; ?></td>
-                                                    <td><?php echo formatMoney($cuota['monto_cuota']); ?></td>
-                                                    <td><?php echo date('d/m/Y', strtotime($cuota['fecha_vencimiento'])); ?></td>
-                                                    <td>
-                                                        <?php $dias_restantes = calcularDiasDiferencia($cuota['fecha_vencimiento']); ?>
-                                                        <span class="badge <?php echo $dias_restantes <= 7 ? 'bg-danger' : 'bg-warning text-dark'; ?>">
-                                                            <?php echo $dias_restantes; ?> días
-                                                        </span>
-                                                    </td>
-                                                    <td>
-                                                        <a href="realizar_pago.php?id=<?php echo $cuota['deuda_id']; ?>&cuota=<?php echo $cuota['id']; ?>" class="btn btn-sm btn-primary">
-                                                            <i class="bi bi-cash"></i> Pagar
-                                                        </a>
-                                                    </td>
+                                                    <td colspan="6" class="text-center">No tienes vencimientos en los próximos 30 días.</td>
                                                 </tr>
-                                            <?php endforeach; ?>
+                                            <?php endif; ?>
                                         </tbody>
                                     </table>
                                 </div>

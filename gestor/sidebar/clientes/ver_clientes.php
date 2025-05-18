@@ -56,9 +56,7 @@ require_once '../cnx.php';
             <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                 <h4 class="mb-0">Lista de Clientes</h4>
                 <div>
-                    <button onclick="window.location.href='agregar.php'" class="btn btn-success me-2">
-                        <i class="bi bi-person-plus"></i> Nuevo Cliente
-                    </button>
+                    
                     <button onclick="window.location.href='generar_pdf.php'" class="btn btn-light">
                         <i class="bi bi-printer"></i> Imprimir
                     </button>
@@ -118,19 +116,11 @@ require_once '../cnx.php';
                                 <td>
                                     <div class="btn-group">
                                         <a href="cliente_datos.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-info" title="Ver detalles">
-                                            <i class="bi bi-eye"></i>
+                                            <i class="bi bi-eye">Ver Usuario</i>
                                         </a>
-                                        <a href="editar_cliente.php?id=<?php echo $row['id']; ?>" class="btn btn-sm btn-warning" title="Editar">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <a href="agregar_deuda.php?cliente_id=<?php echo $row['id']; ?>" class="btn btn-sm btn-primary" title="Agregar deuda">
-                                            <i class="bi bi-plus-circle"></i>
-                                        </a>
-                                        <button type="button" class="btn btn-sm btn-danger" 
-                                                onclick="confirmarEliminacion(<?php echo $row['id']; ?>, '<?php echo htmlspecialchars($row['nombre'], ENT_QUOTES); ?>')" 
-                                                title="Eliminar">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
+                                      
+                                      
+                                        
                                     </div>
                                 </td>
                             </tr>

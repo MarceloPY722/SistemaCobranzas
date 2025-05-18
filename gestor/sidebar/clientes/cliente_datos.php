@@ -110,10 +110,7 @@ $result_reclamos = $stmt_reclamos->get_result();
                                             </div>
                                         </div>
                                         <div class="d-grid gap-2 mt-3">
-                                            
-                                            <a href="agregar_deuda.php?cliente_id=<?php echo $cliente['id']; ?>" class="btn btn-success">
-                                                <i class="bi bi-plus-circle"></i> Agregar Deuda
-                                            </a>
+                                        
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -185,9 +182,7 @@ $result_reclamos = $stmt_reclamos->get_result();
         <div class="card mb-4">
             <div class="card-header bg-custom text-white d-flex justify-content-between align-items-center">
                 <h5 class="mb-0">Deudas del Cliente</h5>
-                <a href="agregar_deuda.php?cliente_id=<?php echo $cliente_id; ?>" class="btn btn-light btn-sm">
-                    <i class="bi bi-plus-circle"></i> Nueva Deuda
-                </a>
+              
             </div>
             <div class="card-body">
                 <?php if($result_deudas->num_rows > 0): ?>
@@ -232,12 +227,7 @@ $result_reclamos = $stmt_reclamos->get_result();
                                             <a href="deudas/ver_deuda.php?id=<?php echo $deuda['id']; ?>" class="btn btn-sm btn-info" title="Ver deuda">
                                                 <i class="bi bi-eye"></i> Ver detalles
                                             </a>
-                                            <a href="editar_deuda.php?id=<?php echo $deuda['id']; ?>" class="btn btn-sm btn-primary" title="Editar deuda">
-                                                <i class="bi bi-pencil"></i> Editar
-                                            </a>
-                                            <button class="btn btn-sm btn-danger" onclick="eliminarDeuda(<?php echo $deuda['id']; ?>)" title="Eliminar deuda">
-                                                <i class="bi bi-trash"></i> Eliminar
-                                            </button>
+                                           
                                         </div>
                                     </div>
                                 </div>
